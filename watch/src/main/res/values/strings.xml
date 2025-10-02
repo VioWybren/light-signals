@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name" translatable="false">Light Signals</string>
+
+    <!--  Dialogs-->
+    <string name="dialog_title_app_unavailable_on_phone">"Light Signals Unavailable"</string>
+    <string name="dialog_message_app_unavailable_on_phone">"Your watch can’t reach your phone, or the companion app isn’t installed\n"
+                "• Check that your phone is connected\n"
+                "• If you haven’t already, install the Light Signals phone app\n"
+                "Tap to open Google Play"</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals not found</string>
+    <string name="dialog_message_install_on_phone">Install Light Signals on your phone to unlock all features. Tap to open Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">Installation has started on your phone</string>
+    <string name="dialog_success_open_on_phone">Light Signals is open on your phone. Use your watch to control it</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">Installation on your phone failed. Please try again later</string>
+    <string name="dialog_fail_no_connected_phones">No connected phones found</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Link the Light Signals apps on your watch and phone to control the flashlight</string>
+
+    <!--  Sound selector  -->
+    <string name="sound_settings">Sound Settings</string>
+    <string name="no_sound">None</string>
+    <string name="sound">Sound</string>
+
+    <!--  Indicator  -->
+    <string name="circular_indicator_text">Launching on phone</string>
+
+    <!-- Common buttons -->
+    <string name="_cancel">Cancel</string>
+
+</resources>

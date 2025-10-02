@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.gms.permission.WEARABLE_DATA_SYNC" />
+    <uses-permission android:name="com.google.android.gms.permission.BIND_WEARABLE_SERVICE" />
+
+    <uses-feature android:name="android.hardware.type.watch" />
+
+    <application
+        android:name=".WearLightSignalsApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.DeviceDefault">
+
+        <uses-library
+            android:name="com.google.android.wearable"
+            android:required="true" />
+
+        <!--
+               Set to true if your app is Standalone, that is, it does not require the handheld
+               app to run.
+        -->
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="true" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <!-- + Your new Wearable-Capabilities tag -->
+        <!--        <meta-data-->
+        <!--            android:name="com.google.android.gms.wearable.CAPABILITIES"-->
+        <!--            android:resource="@xml/wear_capabilities" />-->
+
+        <activity
+            android:name=".WearMainActivity"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:launchMode="singleTop"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:taskAffinity=""
+            android:theme="@style/Theme.App.Starting">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <!--        <service-->
+        <!--            android:name=".model.WearCommandListenerService"-->
+        <!--            android:exported="true"-->
+        <!--            tools:ignore="ExportedService">-->
+
+        <!--            <intent-filter>-->
+
+        <!--                &lt;!&ndash;                                <action android:name="com.google.android.gms.wearable.BIND_LISTENER"&ndash;&gt;-->
+        <!--                &lt;!&ndash;                                    tools:ignore="WearableBindListener" />&ndash;&gt;-->
+        <!--                &lt;!&ndash; listeners receive events that match the action and data filters &ndash;&gt;-->
+        <!--                &lt;!&ndash;                                <action android:name="com. google. android. gms. wearable. DATA_CHANGED" />&ndash;&gt;-->
+        <!--                &lt;!&ndash;                <action android:name="com. google. android. gms. wearable. MESSAGE_RECEIVED" />&ndash;&gt;-->
+        <!--                &lt;!&ndash;                                <action android:name="com. google. android. gms. wearable. REQUEST_RECEIVED" />&ndash;&gt;-->
+        <!--                &lt;!&ndash;                                <action android:name="com. google. android. gms. wearable. CAPABILITY_CHANGED" />&ndash;&gt;-->
+        <!--                &lt;!&ndash;                                <action android:name="com. google. android. gms. wearable. CHANNEL_EVENT" />&ndash;&gt;-->
+        <!--                &lt;!&ndash;                <data android:scheme="wear" android:host="*" android:pathPrefix="/prefix" />&ndash;&gt;-->
+        <!--                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />-->
+        <!--                &lt;!&ndash;                <data android:scheme="wear" android:host="*" android:pathPrefix="/command"&ndash;&gt;-->
+        <!--                <data-->
+        <!--                    android:host="*"-->
+        <!--                    android:pathPrefix="/ack"-->
+        <!--                    android:scheme="wear" />-->
+        <!--            </intent-filter>-->
+
+        <!--        </service>-->
+
+    </application>
+
+</manifest>

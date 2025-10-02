@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="btn_size">40dp</dimen>
+    <dimen name="column_height">120dp</dimen>
+    <dimen name="phone_torch_btn_spacing">2dp</dimen>
+    <dimen name="color_btns_slider_spacing">5dp</dimen>
+    <dimen name="slider_spacing">0dp</dimen>
+
+    <dimen name="screen_padding">8dp</dimen>
+    <dimen name="element_spacing">4dp</dimen>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- values-it/strings.xml -->
+<resources>
+    <!-- Dialogs -->
+    <string name="dialog_title_app_unavailable_on_phone">Light Signals non disponibile</string>
+    <string name="dialog_message_app_unavailable_on_phone">Il tuo orologio non riesce a raggiungere il telefono o l\'app companion non è installata.\n• Controlla che il telefono sia connesso\n• Se non l\'hai già fatto, installa l\'app Light Signals sul telefono\nTocca per aprire Google Play</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals non trovato</string>
+    <string name="dialog_message_install_on_phone">Installa Light Signals sul tuo telefono per sbloccare tutte le funzionalità. Tocca per aprire Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">L\'installazione è stata avviata sul tuo telefono</string>
+    <string name="dialog_success_open_on_phone">Light Signals è aperto sul tuo telefono. Usa l\'orologio per controllarlo</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">L\'installazione sul telefono è fallita. Per favore riprova più tardi</string>
+    <string name="dialog_fail_no_connected_phones">Nessun telefono connesso trovato</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Collega le app Light Signals su orologio e telefono per controllare la torcia</string>
+
+    <!-- Sound selector -->
+    <string name="sound_settings">Impostazioni audio</string>
+    <string name="no_sound">Nessuno</string>
+    <string name="sound">Suono</string>
+
+    <!-- Indicator -->
+    <string name="circular_indicator_text">Avvio sul telefono</string>
+
+    <!-- Common buttons -->
+    <string name="_cancel">Annulla</string>
+</resources>

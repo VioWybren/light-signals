@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- values-de/strings.xml -->
+<resources>
+    <!-- Dialogs -->
+    <string name="dialog_title_app_unavailable_on_phone">Light Signals nicht verfügbar</string>
+    <string name="dialog_message_app_unavailable_on_phone">Deine Uhr kann das Telefon nicht erreichen oder die Begleit-App ist nicht installiert.\n• Überprüfe, ob dein Telefon verbunden ist\n• Falls noch nicht geschehen, installiere die Light Signals-App auf dem Telefon\nTippe, um den Google Play Store zu öffnen</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals nicht gefunden</string>
+    <string name="dialog_message_install_on_phone">Installiere Light Signals auf deinem Telefon, um alle Funktionen freizuschalten. Tippe, um den Google Play Store zu öffnen</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">Die Installation auf deinem Telefon wurde gestartet</string>
+    <string name="dialog_success_open_on_phone">Light Signals ist auf deinem Telefon geöffnet. Verwende deine Uhr, um die App zu steuern</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">Die Installation auf deinem Telefon ist fehlgeschlagen. Bitte versuche es später erneut</string>
+    <string name="dialog_fail_no_connected_phones">Keine verbundenen Telefone gefunden</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Verknüpfe die Light Signals-Apps auf Uhr und Telefon, um die Taschenlampe zu steuern</string>
+
+    <!-- Sound selector -->
+    <string name="sound_settings">Sound-Einstellungen</string>
+    <string name="no_sound">Keine</string>
+    <string name="sound">Ton</string>
+
+    <!-- Indicator -->
+    <string name="circular_indicator_text">Wird auf dem Telefon gestartet</string>
+
+    <!-- Common buttons -->
+    <string name="_cancel">Abbrechen</string>
+</resources>

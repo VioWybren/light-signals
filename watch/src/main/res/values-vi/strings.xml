@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- values-vi/strings.xml -->
+<resources>
+    <!-- Dialogs -->
+    <string name="dialog_title_app_unavailable_on_phone">Light Signals không khả dụng</string>
+    <string name="dialog_message_app_unavailable_on_phone">Đồng hồ của bạn không thể truy cập điện thoại hoặc ứng dụng đồng hành chưa được cài đặt.\n• Kiểm tra xem điện thoại của bạn đã kết nối chưa\n• Nếu chưa, hãy cài đặt ứng dụng Light Signals trên điện thoại\nChạm để mở Google Play</string>
+
+    <string name="dialog_title_install_on_phone">Không tìm thấy Light Signals</string>
+    <string name="dialog_message_install_on_phone">Cài Light Signals trên điện thoại để mở khóa tất cả tính năng. Chạm để mở Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">Việc cài đặt trên điện thoại đã bắt đầu</string>
+    <string name="dialog_success_open_on_phone">Light Signals đã được mở trên điện thoại. Sử dụng đồng hồ để điều khiển</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">Cài đặt trên điện thoại thất bại. Vui lòng thử lại sau</string>
+    <string name="dialog_fail_no_connected_phones">Không tìm thấy điện thoại được kết nối</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Liên kết ứng dụng Light Signals trên đồng hồ và điện thoại để điều khiển đèn pin</string>
+
+    <!-- Sound selector -->
+    <string name="sound_settings">Cài đặt âm thanh</string>
+    <string name="no_sound">Không</string>
+    <string name="sound">Âm thanh</string>
+
+    <!-- Indicator -->
+    <string name="circular_indicator_text">Đang khởi chạy trên điện thoại</string>
+
+    <!-- Common buttons -->
+    <string name="_cancel">Hủy</string>
+</resources>

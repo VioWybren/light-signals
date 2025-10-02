@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- values-it/strings.xml -->
+<resources>
+
+    <!--Permission dialogs-->
+    <string name="dialog_title_pre_explain">Autorizzazioni richieste</string>
+    <string name="dialog_message_pre_explain_base">Perché abbiamo bisogno di questi permessi:\n\n</string>
+    <string name="dialog_message_pre_explain_camera">• Fotocamera — usata solo per attivare la torcia. Light Signals non scatta foto né registra video.\n</string>
+    <string name="dialog_message_pre_explain_notification">• Notifiche — permettono all\'app di mostrare avvisi e fornire accesso rapido quando è in background.\n</string>
+
+    <string name="dialog_title_rationale_dialog">Autorizzazioni richieste</string>
+    <string name="confirm_button_rationale_dialog">Richiedi di nuovo</string>
+    <string name="dialog_message_rationale_dialog_base">Per continuare, l\'app necessita di:\n</string>
+    <string name="dialog_message_rationale_dialog_camera">• Fotocamera — per attivare la torcia.</string>
+    <string name="dialog_message_rationale_dialog_notification">• Notifiche — per mostrare avvisi in background e azioni rapide.\n</string>
+
+    <string name="dialog_title_setting_dialog">Abilita i permessi nelle Impostazioni</string>
+    <string name="confirm_button_setting_dialog">Apri Impostazioni</string>
+    <string name="dialog_message_setting_dialog_base">Una o più autorizzazioni sono state negate permanentemente. Apri le impostazioni dell\'app per abilitarle:\n</string>
+    <string name="dialog_message_setting_dialog_camera">• Fotocamera (torcia)\n</string>
+    <string name="dialog_message_setting_dialog_notification">• Notifiche\n</string>
+
+    <string name="_ok">OK</string>
+    <string name="_cancel">Annulla</string>
+    <string name="_continue">Continua</string>
+    <string name="_later">Più tardi</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_title_wear_api_unavailable">Funzioni Wear non disponibili</string>
+    <string name="dialog_message_wear_api_unavailable">Questo dispositivo non supporta le funzionalità per dispositivi indossabili</string>
+
+    <string name="dialog_title_connect_to_watch">Connetti all\'orologio</string>
+    <string name="dialog_message_connect_to_watch">Vuoi connettere l\'app del telefono all\'app companion Light Signals sul tuo orologio?</string>
+
+    <string name="dialog_title_install_on_watch">Installa Light Signals sull\'orologio</string>
+    <string name="dialog_message_install_on_watch">L\'app non è installata sull\'orologio collegato. Vuoi installarla?</string>
+
+    <!-- Snackbars -->
+    <string name="snackbar_app_installed_on_watch_success">L\'installazione sull\'orologio è stata avviata</string>
+    <string name="snackbar_installation_on_watch_failed">L\'installazione sull\'orologio è fallita. Riprova più tardi</string>
+    <string name="snackbar_app_failed_to_launch_on_watch">Impossibile avviare l\'app sull\'orologio</string>
+    <string name="snackbar_app_launched_on_watch">Avviata sull\'orologio. Controlla l\'app dal tuo orologio</string>
+    <string name="snackbar_no_connected_watches">Nessun orologio connesso</string>
+
+    <!-- Notification strings -->
+    <string name="notification_title">Apri Light Signals</string>
+    <string name="notification_text">Usa la torcia o lo schermo per mostrare segnali. Tocca per aprire</string>
+
+    <!-- Notification channel -->
+    <string name="notification_channel_name">Canale notifiche Light Signals</string>
+    <string name="notification_channel_description">Accesso rapido ai segnali tramite torcia e schermo</string>
+
+    <!-- Menu items -->
+    <string name="menu_item_synchronize_with_watch">Sincronizza con l\'orologio</string>
+
+    <!-- Sound selector -->
+    <string name="no_sound">Nessuno</string>
+    <string name="sound_1">Suono 1</string>
+    <string name="sound_2">Suono 2</string>
+    <string name="sound_3">Suono 3</string>
+
+    <!--  Indicator  -->
+    <string name="circular_indicator_text">Avvio sullo smartwatch</string>
+
+</resources>

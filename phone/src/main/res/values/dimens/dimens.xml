@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="left_column_btn_height">40dp</dimen>
+    <dimen name="left_column_btn_width">40dp</dimen>
+    <dimen name="left_column_icon_size">40dp</dimen>
+    <dimen name="left_column_padding_start">40dp</dimen>
+
+    <dimen name="right_column_btn_size">40dp</dimen>
+    <dimen name="right_column_icon_size">40dp</dimen>
+    <dimen name="right_column_padding_end">40dp</dimen>
+
+
+</resources>

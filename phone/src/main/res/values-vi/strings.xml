@@ -1,0 +1,63 @@
+<!--<?xml version="1.0" encoding="utf-8"?>&lt;!&ndash; values-vi/strings.xml &ndash;&gt;-->
+<resources>
+
+    <!--Permission dialogs-->
+    <string name="dialog_title_pre_explain">Cần quyền</string>
+    <string name="dialog_message_pre_explain_base">Lý do chúng tôi cần các quyền sau:\n\n</string>
+    <string name="dialog_message_pre_explain_camera">• Camera — chỉ dùng để bật/tắt đèn pin. Light Signals không chụp ảnh hoặc quay video.\n</string>
+    <string name="dialog_message_pre_explain_notification">• Thông báo — cho phép ứng dụng hiển thị cảnh báo và cung cấp truy cập nhanh khi chạy nền.\n</string>
+
+    <string name="dialog_title_rationale_dialog">Cần quyền</string>
+    <string name="confirm_button_rationale_dialog">Yêu cầu lại</string>
+    <string name="dialog_message_rationale_dialog_base">Để tiếp tục, ứng dụng cần:\n</string>
+    <string name="dialog_message_rationale_dialog_camera">• Camera — để bật/tắt đèn pin.</string>
+    <string name="dialog_message_rationale_dialog_notification">• Thông báo — để hiển thị cảnh báo nền và các hành động nhanh.\n</string>
+
+    <string name="dialog_title_setting_dialog">Bật quyền trong Cài đặt</string>
+    <string name="confirm_button_setting_dialog">Mở Cài đặt</string>
+    <string name="dialog_message_setting_dialog_base">Một hoặc nhiều quyền đã bị từ chối vĩnh viễn. Mở cài đặt ứng dụng để bật chúng:\n</string>
+    <string name="dialog_message_setting_dialog_camera">• Camera (đèn pin)\n</string>
+    <string name="dialog_message_setting_dialog_notification">• Thông báo\n</string>
+
+    <string name="_ok">OK</string>
+    <string name="_cancel">Hủy</string>
+    <string name="_continue">Tiếp tục</string>
+    <string name="_later">Sau</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_title_wear_api_unavailable">Tính năng Wear không khả dụng</string>
+    <string name="dialog_message_wear_api_unavailable">Thiết bị này không hỗ trợ tính năng cho thiết bị đeo.</string>
+
+    <string name="dialog_title_connect_to_watch">Kết nối với đồng hồ</string>
+    <string name="dialog_message_connect_to_watch">Bạn có muốn kết nối ứng dụng điện thoại với ứng dụng đồng hành Light Signals trên đồng hồ của bạn không?</string>
+
+    <string name="dialog_title_install_on_watch">Cài Light Signals trên đồng hồ</string>
+    <string name="dialog_message_install_on_watch">Ứng dụng chưa được cài trên đồng hồ đã kết nối. Bạn có muốn cài đặt không?</string>
+
+    <!-- Snackbars -->
+    <string name="snackbar_app_installed_on_watch_success">Quá trình cài đặt trên đồng hồ đã bắt đầu</string>
+    <string name="snackbar_installation_on_watch_failed">Cài đặt trên đồng hồ thất bại. Vui lòng thử lại sau.</string>
+    <string name="snackbar_app_failed_to_launch_on_watch">Không thể khởi chạy ứng dụng trên đồng hồ</string>
+    <string name="snackbar_app_launched_on_watch">Đã khởi chạy trên đồng hồ. Điều khiển ứng dụng từ đồng hồ của bạn.</string>
+    <string name="snackbar_no_connected_watches">Không có đồng hồ được kết nối</string>
+
+    <!-- Notification strings -->
+    <string name="notification_title">Mở Light Signals</string>
+    <string name="notification_text">Sử dụng đèn pin hoặc màn hình để hiển thị tín hiệu. Chạm để mở.</string>
+
+    <!-- Notification channel -->
+    <string name="notification_channel_name">Kênh thông báo Light Signals</string>
+    <string name="notification_channel_description">Truy cập nhanh đến tín hiệu đèn pin và màn hình</string>
+
+    <!-- Menu items -->
+    <string name="menu_item_synchronize_with_watch">Đồng bộ với đồng hồ</string>
+
+    <!-- Sound selector -->
+    <string name="no_sound">Không</string>
+    <string name="sound_1">Âm thanh 1</string>
+    <string name="sound_2">Âm thanh 2</string>
+    <string name="sound_3">Âm thanh 3</string>
+
+    <string name="circular_indicator_text">Đang khởi chạy trên đồng hồ</string>
+
+</resources>

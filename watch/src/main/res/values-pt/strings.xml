@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- values-pt/strings.xml -->
+<resources>
+    <!-- Dialogs -->
+    <string name="dialog_title_app_unavailable_on_phone">Light Signals indisponível</string>
+    <string name="dialog_message_app_unavailable_on_phone">Seu relógio não consegue alcançar o telefone ou o app companheiro não está instalado.\n• Verifique se o telefone está conectado\n• Se ainda não o fez, instale o app Light Signals no telefone\nToque para abrir o Google Play</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals não encontrado</string>
+    <string name="dialog_message_install_on_phone">Instale o Light Signals no seu telefone para desbloquear todos os recursos. Toque para abrir o Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">A instalação foi iniciada no seu telefone</string>
+    <string name="dialog_success_open_on_phone">Light Signals foi aberto no seu telefone. Use seu relógio para controlá-lo</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">A instalação no telefone falhou. Por favor, tente novamente mais tarde</string>
+    <string name="dialog_fail_no_connected_phones">Nenhum telefone conectado foi encontrado</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Vincule os apps Light Signals no relógio e no telefone para controlar a lanterna</string>
+
+    <!-- Sound selector -->
+    <string name="sound_settings">Configurações de som</string>
+    <string name="no_sound">Nenhum</string>
+    <string name="sound">Som</string>
+
+    <!-- Indicator -->
+    <string name="circular_indicator_text">Iniciando no telefone</string>
+
+    <!-- Common buttons -->
+    <string name="_cancel">Cancelar</string>
+</resources>

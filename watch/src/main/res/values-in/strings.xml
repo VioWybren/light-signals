@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- values-id/strings.xml -->
+<resources>
+    <!-- Dialogs -->
+    <string name="dialog_title_app_unavailable_on_phone">Light Signals tidak tersedia</string>
+    <string name="dialog_message_app_unavailable_on_phone">Jam tangan Anda tidak dapat menjangkau telepon atau aplikasi pendamping tidak terpasang.\n• Periksa apakah ponsel Anda terhubung\n• Jika belum, instal aplikasi Light Signals di ponsel Anda\nKetuk untuk membuka Google Play</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals tidak ditemukan</string>
+    <string name="dialog_message_install_on_phone">Instal Light Signals di ponsel Anda untuk membuka semua fitur. Ketuk untuk membuka Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">Instalasi telah dimulai di ponsel Anda</string>
+    <string name="dialog_success_open_on_phone">Light Signals dibuka di ponsel Anda. Gunakan jam tangan untuk mengontrolnya</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">Instalasi di ponsel gagal. Silakan coba lagi nanti</string>
+    <string name="dialog_fail_no_connected_phones">Tidak ditemukan ponsel yang tersambung</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Hubungkan aplikasi Light Signals di jam tangan dan ponsel Anda untuk mengontrol senter</string>
+
+    <!-- Sound selector -->
+    <string name="sound_settings">Pengaturan Suara</string>
+    <string name="no_sound">Tidak ada</string>
+    <string name="sound">Suara</string>
+
+    <!-- Indicator -->
+    <string name="circular_indicator_text">Meluncurkan di ponsel</string>
+
+    <!-- Common buttons -->
+    <string name="_cancel">Batal</string>
+</resources>

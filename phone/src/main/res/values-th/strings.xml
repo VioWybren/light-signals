@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--    values-th/strings.xml-->
+<resources>
+
+    <!--Dialogs buttons-->
+    <string name="_ok">ตกลง</string>
+    <string name="_cancel">ยกเลิก</string>
+    <string name="_continue">ดำเนินการต่อ</string>
+    <string name="_later">ภายหลัง</string>
+
+    <!--Permission dialogs-->
+    <!--    Pre-explain dialog-->
+    <string name="dialog_title_pre_explain">สิทธิ์ที่จำเป็น</string>
+    <string name="dialog_message_pre_explain_base">เหตุผลที่เราต้องการสิทธิ์เหล่านี้:\n\n</string>
+    <string name="dialog_message_pre_explain_camera">• กล้อง — ใช้เพื่อสลับไฟฉายเท่านั้น Light Signals จะไม่ถ่ายภาพหรือบันทึกวิดีโอ\n</string>
+    <string name="dialog_message_pre_explain_notification">• การแจ้งเตือน — ทำให้แอปสามารถแสดงการแจ้งเตือนและให้การเข้าถึงที่รวดเร็วขณะทำงานเบื้องหลัง</string>
+    <!--    Rationale dialog-->
+    <string name="dialog_title_rationale_dialog">สิทธิ์ที่จำเป็น</string>
+    <string name="confirm_button_rationale_dialog">ขออีกครั้ง</string>
+    <string name="dialog_message_rationale_dialog_base">เพื่อดำเนินการต่อ แอปต้องการ:\n\n</string>
+    <string name="dialog_message_rationale_dialog_camera">• กล้อง — เพื่อสลับไฟฉาย \n</string>
+    <string name="dialog_message_rationale_dialog_notification">• การแจ้งเตือน — เพื่อแสดงการแจ้งเตือนเบื้องหลังและให้การดำเนินการด่วน</string>
+    <!--     Setting dialog-->
+    <string name="dialog_title_setting_dialog">เปิดสิทธิ์ในการตั้งค่า</string>
+    <string name="confirm_button_setting_dialog">เปิดการตั้งค่า</string>
+    <string name="dialog_message_setting_dialog_base">มีสิทธิ์อย่างน้อยหนึ่งรายการถูกปฏิเสธอย่างถาวร เปิดการตั้งค่าแอปเพื่อเปิดใช้งาน:\n\n</string>
+    <string name="dialog_message_setting_dialog_camera">• กล้อง (ไฟฉาย)\n</string>
+    <string name="dialog_message_setting_dialog_notification">• การแจ้งเตือน\n</string>
+    <!--  Dialogs  -->
+    <string name="dialog_title_wear_api_unavailable">ฟีเจอร์ Wear ไม่พร้อมใช้งาน</string>
+    <string name="dialog_message_wear_api_unavailable">อุปกรณ์นี้ไม่รองรับฟีเจอร์สำหรับอุปกรณ์สวมใส่</string>
+
+    <string name="dialog_title_connect_to_watch">เชื่อมต่อกับนาฬิกา</string>
+    <string name="dialog_message_connect_to_watch">คุณต้องการเชื่อมต่อแอปบนโทรศัพท์กับแอป Light Signals บนสมาร์ทวอทช์ของคุณหรือไม่?</string>
+
+    <string name="dialog_title_install_on_watch">ติดตั้ง Light Signals บนสมาร์ทวอทช์</string>
+    <string name="dialog_message_install_on_watch">แอปยังไม่ได้ติดตั้งบนสมาร์ทวอทช์ที่เชื่อมต่อของคุณ ต้องการติดตั้งหรือไม่?</string>
+
+    <!--   Snackbars   -->
+    <string name="snackbar_app_installed_on_watch_success">การติดตั้งเริ่มต้นบนสมาร์ทวอทช์แล้ว</string>
+    <string name="snackbar_installation_on_watch_failed">การติดตั้งบนสมาร์ทวอทช์ล้มเหลว โปรดลองอีกครั้งในภายหลัง</string>
+    <string name="snackbar_app_failed_to_launch_on_watch">ไม่สามารถเปิดแอปบนสมาร์ทวอทช์ได้</string>
+    <string name="snackbar_app_launched_on_watch">เปิดบนสมาร์ทวอทช์แล้ว ควบคุมแอปจากนาฬิกาของคุณได้</string>
+    <string name="snackbar_no_connected_watches">ไม่มีนาฬิกาที่เชื่อมต่อ</string>
+
+    <!-- Notification strings -->
+    <string name="notification_title">เปิด Light Signals</string>
+    <string name="notification_text">ใช้ไฟฉายหรือหน้าจอเพื่อแสดงสัญญาณ แตะเพื่อเปิด</string>
+
+    <!-- Notification channel -->
+    <string name="notification_channel_name">ช่องแจ้งเตือน Light Signals</string>
+    <string name="notification_channel_description">การเข้าถึงด่วนไปยังไฟฉายและสัญญาณบนหน้าจอ</string>
+
+    <!--Menu items-->
+    <string name="menu_item_synchronize_with_watch">ซิงค์กับนาฬิกา</string>
+
+    <!--   Sound selector/sound menu  -->
+    <string name="no_sound">ไม่มี</string>
+    <string name="sound_1">เสียง 1</string>
+    <string name="sound_2">เสียง 2</string>
+    <string name="sound_3">เสียง 3</string>
+
+    <!--  Indicator  -->
+    <string name="circular_indicator_text">กำลังเริ่มบนสมาร์ทวอทช์</string>
+
+</resources>

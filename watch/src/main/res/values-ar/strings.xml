@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- values-ar/strings.xml -->
+<resources>
+    <!-- Dialogs -->
+    <string name="dialog_title_app_unavailable_on_phone">Light Signals غير متوفر</string>
+    <string name="dialog_message_app_unavailable_on_phone">لا يمكن لساعة يدك الوصول إلى هاتفك أو لم يتم تثبيت التطبيق المرافق.\n• تحقق من أن هاتفك متصل\n• إذا لم تقم بذلك بعد، قم بتثبيت تطبيق Light Signals على هاتفك\nانقر لفتح Google Play</string>
+
+    <string name="dialog_title_install_on_phone">لم يتم العثور على Light Signals</string>
+    <string name="dialog_message_install_on_phone">قم بتثبيت Light Signals على هاتفك لفتح جميع الميزات. انقر لفتح Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">تم بدء التثبيت على هاتفك</string>
+    <string name="dialog_success_open_on_phone">تم فتح Light Signals على هاتفك. استخدم ساعتك للتحكم به</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">فشل التثبيت على هاتفك. الرجاء المحاولة لاحقًا</string>
+    <string name="dialog_fail_no_connected_phones">لم يتم العثور على هواتف متصلة</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">اربط تطبيقات Light Signals على ساعتك وهاتفك للتحكم بالمصباح</string>
+
+    <!-- Sound selector -->
+    <string name="sound_settings">إعدادات الصوت</string>
+    <string name="no_sound">لا شيء</string>
+    <string name="sound">الصوت</string>
+
+    <!-- Indicator -->
+    <string name="circular_indicator_text">يتم التشغيل على الهاتف</string>
+
+    <!-- Common buttons -->
+    <string name="_cancel">إلغاء</string>
+</resources>

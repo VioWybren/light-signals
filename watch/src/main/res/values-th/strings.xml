@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- values-th/strings.xml -->
+<resources>
+    <!-- Dialogs -->
+    <string name="dialog_title_app_unavailable_on_phone">ไม่สามารถใช้ Light Signals ได้</string>
+    <string name="dialog_message_app_unavailable_on_phone">นาฬิกาของคุณไม่สามารถติดต่อกับโทรศัพท์หรือแอปคู่หูยังไม่ได้ติดตั้ง\n• ตรวจสอบว่าโทรศัพท์ของคุณเชื่อมต่ออยู่หรือไม่\n• หากยังไม่ได้ติดตั้ง ให้ติดตั้งแอป Light Signals บนโทรศัพท์ของคุณ\nแตะเพื่อเปิด Google Play</string>
+
+    <string name="dialog_title_install_on_phone">ไม่พบ Light Signals</string>
+    <string name="dialog_message_install_on_phone">ติดตั้ง Light Signals บนโทรศัพท์ของคุณเพื่อปลดล็อกคุณสมบัติทั้งหมด แตะเพื่อเปิด Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">เริ่มการติดตั้งบนโทรศัพท์ของคุณแล้ว</string>
+    <string name="dialog_success_open_on_phone">Light Signals ถูกเปิดบนโทรศัพท์ของคุณ คุณสามารถใช้สมาร์ทวอทช์เพื่อควบคุมได้</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">การติดตั้งบนโทรศัพท์ล้มเหลว กรุณาลองใหม่ภายหลัง</string>
+    <string name="dialog_fail_no_connected_phones">ไม่พบโทรศัพท์ที่เชื่อมต่อ</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">เชื่อมต่อแอป Light Signals บนสมาร์ทวอทช์และโทรศัพท์ของคุณเพื่อควบคุมไฟฉาย</string>
+
+    <!-- Sound selector -->
+    <string name="sound_settings">การตั้งค่าเสียง</string>
+    <string name="no_sound">ไม่มี</string>
+    <string name="sound">เสียง</string>
+
+    <!-- Indicator -->
+    <string name="circular_indicator_text">กำลังเริ่มบนโทรศัพท์</string>
+
+    <!-- Common buttons -->
+    <string name="_cancel">ยกเลิก</string>
+</resources>

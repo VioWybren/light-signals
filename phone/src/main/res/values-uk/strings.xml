@@ -1,0 +1,64 @@
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<resources>
+    <!-- values-uk/strings.xml -->
+    <!--Permission dialogs-->
+    <string name="dialog_title_pre_explain">Потрібні дозволи</string>
+    <string name="dialog_message_pre_explain_base">Чому нам потрібні ці дозволи:\n\n</string>
+    <string name="dialog_message_pre_explain_camera">• Камера — використовується лише для увімкнення ліхтарика. Light Signals не робить фото і не знімає відео.\n</string>
+    <string name="dialog_message_pre_explain_notification">• Сповіщення — дозволяє додатку показувати попередження та забезпечує швидкий старт у фоновому режимі.\n</string>
+
+    <string name="dialog_title_rationale_dialog">Потрібні дозволи</string>
+    <string name="confirm_button_rationale_dialog">Запитати повторно</string>
+    <string name="dialog_message_rationale_dialog_base">Щоб продовжити, додатку потрібні:\n</string>
+    <string name="dialog_message_rationale_dialog_camera">• Камера — щоб увімкнути ліхтарик\n</string>
+    <string name="dialog_message_rationale_dialog_notification">• Сповіщення — щоб показувати сповіщення та швидко відкриватися з фонового режиму</string>
+
+    <string name="dialog_title_setting_dialog">Увімкніть дозволи в налаштуваннях</string>
+    <string name="confirm_button_setting_dialog">Відкрити налаштування</string>
+    <string name="dialog_message_setting_dialog_base">Один або кілька дозволів було остаточно відхилено. Відкрийте налаштування додатку, щоб увімкнути їх:\n</string>
+    <string name="dialog_message_setting_dialog_camera">• Камера (ліхтарик)\n</string>
+    <string name="dialog_message_setting_dialog_notification">• Сповіщення\n</string>
+
+    <string name="_ok">OK</string>
+    <string name="_cancel">Скасувати</string>
+    <string name="_continue">Продовжити</string>
+    <string name="_later">Пізніше</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_title_wear_api_unavailable">Функції Wear недоступні</string>
+    <string name="dialog_message_wear_api_unavailable">Цей пристрій не підтримує функції для роботи з носимими (wearable) пристроями</string>
+
+    <string name="dialog_title_connect_to_watch">Підключитися до годинника</string>
+    <string name="dialog_message_connect_to_watch">Бажаєте підключити телефонний додаток до супутнього додатка Light Signals на вашому годиннику?</string>
+
+    <string name="dialog_title_install_on_watch">Встановити Light Signals на годинник</string>
+    <string name="dialog_message_install_on_watch">Додаток не інстальовано на годиннику який підключено. Бажаєте встановити його?</string>
+
+    <!-- Snackbars -->
+    <string name="snackbar_app_installed_on_watch_success">Інсталяцію на годиннику розпочато</string>
+    <string name="snackbar_installation_on_watch_failed">Не вдалося встановити на годиннику. Спробуйте пізніше</string>
+    <string name="snackbar_app_failed_to_launch_on_watch">Не вдалося запустити додаток на годиннику</string>
+    <string name="snackbar_app_launched_on_watch">Запущено на годиннику. Керуйте додатком з годинника</string>
+    <string name="snackbar_no_connected_watches">Немає годинників що підключені</string>
+
+    <!-- Notification strings -->
+    <string name="notification_title">Відкрити Light Signals</string>
+    <string name="notification_text">Використовуйте ліхтар або екран для відображення сигналів. Натисніть, щоб відкрити</string>
+
+    <!-- Notification channel -->
+    <string name="notification_channel_name">Канал повідомлень Light Signals</string>
+    <string name="notification_channel_description">Швидкий доступ до сигналів ліхтаря та екрана</string>
+
+    <!-- Menu items -->
+    <string name="menu_item_synchronize_with_watch">Синхронізувати з годинником</string>
+
+    <!-- Sound selector -->
+    <string name="no_sound">Немає</string>
+    <string name="sound_1">Звук 1</string>
+    <string name="sound_2">Звук 2</string>
+    <string name="sound_3">Звук 3</string>
+
+    <!--  Indicator  -->
+    <string name="circular_indicator_text">Запуск на годиннику</string>
+
+</resources>

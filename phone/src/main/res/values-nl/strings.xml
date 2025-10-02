@@ -1,0 +1,64 @@
+<!--<?xml version="1.0" encoding="utf-8"?>&lt;!&ndash; values-nl/strings.xml &ndash;&gt;-->
+<resources>
+
+    <!--Permission dialogs-->
+    <string name="dialog_title_pre_explain">Vereiste machtigingen</string>
+    <string name="dialog_message_pre_explain_base">Waarom we deze machtigingen nodig hebben:\n\n</string>
+    <string name="dialog_message_pre_explain_camera">• Camera — wordt alleen gebruikt om de zaklamp te bedienen. Light Signals maakt geen foto’s of video’s.\n</string>
+    <string name="dialog_message_pre_explain_notification">• Meldingen — stellen de app in staat meldingen te tonen en snel toegang te bieden terwijl deze op de achtergrond draait.\n</string>
+
+    <string name="dialog_title_rationale_dialog">Vereiste machtigingen</string>
+    <string name="confirm_button_rationale_dialog">Opnieuw aanvragen</string>
+    <string name="dialog_message_rationale_dialog_base">Om door te gaan heeft de app het volgende nodig:\n</string>
+    <string name="dialog_message_rationale_dialog_camera">• Camera — om de zaklamp te bedienen.</string>
+    <string name="dialog_message_rationale_dialog_notification">• Meldingen — om achtergrondmeldingen en snelle acties te tonen.\n</string>
+
+    <string name="dialog_title_setting_dialog">Schakel machtigingen in via Instellingen</string>
+    <string name="confirm_button_setting_dialog">Instellingen openen</string>
+    <string name="dialog_message_setting_dialog_base">Een of meer machtigingen zijn permanent geweigerd. Open de app-instellingen om ze in te schakelen:\n</string>
+    <string name="dialog_message_setting_dialog_camera">• Camera (zaklamp)\n</string>
+    <string name="dialog_message_setting_dialog_notification">• Meldingen\n</string>
+
+    <string name="_ok">OK</string>
+    <string name="_cancel">Annuleren</string>
+    <string name="_continue">Doorgaan</string>
+    <string name="_later">Later</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_title_wear_api_unavailable">Wear-functies niet beschikbaar</string>
+    <string name="dialog_message_wear_api_unavailable">Dit apparaat ondersteunt geen functies voor wearables</string>
+
+    <string name="dialog_title_connect_to_watch">Verbinden met horloge</string>
+    <string name="dialog_message_connect_to_watch">Wilt u de telefoon-app verbinden met de Light Signals companion-app op uw horloge?</string>
+
+    <string name="dialog_title_install_on_watch">Light Signals installeren op het horloge</string>
+    <string name="dialog_message_install_on_watch">De app is niet geïnstalleerd op het verbonden horloge. Wilt u deze installeren?</string>
+
+    <!-- Snackbars -->
+    <string name="snackbar_app_installed_on_watch_success">Installatie op het horloge is gestart</string>
+    <string name="snackbar_installation_on_watch_failed">Installatie op het horloge is mislukt. Probeer het later opnieuw</string>
+    <string name="snackbar_app_failed_to_launch_on_watch">Het starten van de app op het horloge is mislukt</string>
+    <string name="snackbar_app_launched_on_watch">Op het horloge gestart. Bedien de app vanaf je horloge</string>
+    <string name="snackbar_no_connected_watches">Geen verbonden horloges</string>
+
+    <!-- Notification strings -->
+    <string name="notification_title">Open Light Signals</string>
+    <string name="notification_text">Gebruik de zaklamp of het scherm om signalen te tonen. Tik om te openen</string>
+
+    <!-- Notification channel -->
+    <string name="notification_channel_name">Light Signals meldingenkanaal</string>
+    <string name="notification_channel_description">Snelle toegang tot zaklamp- en schermsignalen</string>
+
+    <!-- Menu items -->
+    <string name="menu_item_synchronize_with_watch">Synchroniseren met het horloge</string>
+
+    <!-- Sound selector -->
+    <string name="no_sound">Geen</string>
+    <string name="sound_1">Geluid 1</string>
+    <string name="sound_2">Geluid 2</string>
+    <string name="sound_3">Geluid 3</string>
+
+    <!--  Indicator  -->
+    <string name="circular_indicator_text">Wordt gestart op het horloge</string>
+
+</resources>

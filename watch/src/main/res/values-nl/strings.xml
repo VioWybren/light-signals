@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- values-nl/strings.xml -->
+<resources>
+    <!-- Dialogs -->
+    <string name="dialog_title_app_unavailable_on_phone">Light Signals niet beschikbaar</string>
+    <string name="dialog_message_app_unavailable_on_phone">Je horloge kan je telefoon niet bereiken of de bijbehorende app is niet geïnstalleerd.\n• Controleer of je telefoon verbonden is\n• Als je dat nog niet hebt gedaan, installeer de Light Signals-app op je telefoon\nTik om Google Play te openen</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals niet gevonden</string>
+    <string name="dialog_message_install_on_phone">Installeer Light Signals op je telefoon om alle functies te gebruiken. Tik om Google Play te openen</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">De installatie op je telefoon is gestart</string>
+    <string name="dialog_success_open_on_phone">Light Signals is geopend op je telefoon. Gebruik je horloge om de app te bedienen</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">Installatie op de telefoon is mislukt. Probeer het later opnieuw</string>
+    <string name="dialog_fail_no_connected_phones">Geen verbonden telefoons gevonden</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Koppel de Light Signals-apps op je horloge en telefoon om de zaklamp te bedienen</string>
+
+    <!-- Sound selector -->
+    <string name="sound_settings">Geluidinstellingen</string>
+    <string name="no_sound">Geen</string>
+    <string name="sound">Geluid</string>
+
+    <!-- Indicator -->
+    <string name="circular_indicator_text">Bezig met starten op telefoon</string>
+
+    <!-- Common buttons -->
+    <string name="_cancel">Annuleren</string>
+</resources>
