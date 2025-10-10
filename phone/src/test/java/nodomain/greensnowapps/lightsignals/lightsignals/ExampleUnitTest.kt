@@ -1,4 +1,4 @@
-package lightsignalnew.example.user.lightsignalnew
+package nodomain.greensnowapps.lightsignals.lightsignals
 
 import org.junit.Test
 

@@ -1,7 +1,6 @@
-<!--<?xml version="1.0" encoding="utf-8"?>&lt;!&ndash; values-ko/strings.xml &ndash;&gt;-->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--Permission dialogs-->
     <string name="dialog_title_pre_explain">권한 필요</string>
     <string name="dialog_message_pre_explain_base">다음 권한이 필요합니다:\n\n</string>
     <string name="dialog_message_pre_explain_camera">• 카메라 — 손전등(플래시)을 켜고 끄는 데만 사용됩니다. Light Signals는 사진이나 동영상을 촬영하지 않습니다.\n</string>
@@ -24,7 +23,6 @@
     <string name="_continue">계속</string>
     <string name="_later">나중에</string>
 
-    <!-- Dialogs -->
     <string name="dialog_title_wear_api_unavailable">웨어 기능을 사용할 수 없습니다</string>
     <string name="dialog_message_wear_api_unavailable">이 기기는 웨어러블 기능을 지원하지 않습니다.</string>
 
@@ -34,31 +32,25 @@
     <string name="dialog_title_install_on_watch">시계에 Light Signals 설치</string>
     <string name="dialog_message_install_on_watch">연결된 시계에 앱이 설치되어 있지 않습니다. 설치하시겠습니까?</string>
 
-    <!-- Snackbars -->
     <string name="snackbar_app_installed_on_watch_success">시계에서 설치가 시작되었습니다</string>
     <string name="snackbar_installation_on_watch_failed">시계에서의 설치가 실패했습니다. 나중에 다시 시도해주세요.</string>
     <string name="snackbar_app_failed_to_launch_on_watch">시계에서 앱을 실행하지 못했습니다</string>
     <string name="snackbar_app_launched_on_watch">시계에서 실행되었습니다. 시계에서 앱을 제어하세요.</string>
     <string name="snackbar_no_connected_watches">연결된 시계가 없습니다</string>
 
-    <!-- Notification strings -->
     <string name="notification_title">Light Signals 열기</string>
     <string name="notification_text">손전등이나 화면을 사용해 신호를 표시합니다. 탭하여 열기.</string>
 
-    <!-- Notification channel -->
     <string name="notification_channel_name">Light Signals 알림 채널</string>
     <string name="notification_channel_description">손전등 및 화면 신호에 대한 빠른 접근</string>
 
-    <!-- Menu items -->
     <string name="menu_item_synchronize_with_watch">시계와 동기화</string>
 
-    <!-- Sound selector -->
     <string name="no_sound">없음</string>
     <string name="sound_1">사운드 1</string>
     <string name="sound_2">사운드 2</string>
     <string name="sound_3">사운드 3</string>
 
-    <!--  Indicator  -->
     <string name="circular_indicator_text">시계에서 실행 중</string>
 
 </resources>

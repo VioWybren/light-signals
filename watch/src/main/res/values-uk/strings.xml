@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-uk/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals недоступний</string>
     <string name="dialog_message_app_unavailable_on_phone">Ваш годинник не може зв\'язатися з телефоном або супровідний додаток не встановлено.\n• Перевірте, чи підключено телефон\n• Якщо ще не встановлено, інсталюйте додаток Light Signals на телефон\nТоркніться, щоб відкрити Google Play</string>
 
@@ -15,15 +15,12 @@
     <string name="dialog_fail_no_connected_phones">Не знайдено телефонів, що підключені</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">З\'єднайте додатки Light Signals на годиннику і телефоні, щоб керувати ліхтариком</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">Налаштування звуку</string>
     <string name="no_sound">Немає</string>
     <string name="sound">Звук</string>
 
-    <!-- Indicator -->
     <string name="circular_indicator_text">Запуск на телефоні</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">Скасувати</string>
 
 </resources>

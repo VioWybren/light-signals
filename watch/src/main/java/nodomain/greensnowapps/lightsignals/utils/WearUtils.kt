@@ -45,7 +45,6 @@ object WearUtils {
                 b = progress % 256
             }
             else -> {
-                // default value when out of bounds
                 r = 0
                 g = 0
                 b = 0

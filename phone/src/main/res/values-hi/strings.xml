@@ -1,7 +1,6 @@
-<!--<?xml version="1.0" encoding="utf-8"?>&lt;!&ndash; values-hi/strings.xml &ndash;&gt;-->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--Permission dialogs-->
     <string name="dialog_title_pre_explain">अनुमतियाँ आवश्यक</string>
     <string name="dialog_message_pre_explain_base">हमें इन अनुमतियों की आवश्यकता है:\n\n</string>
     <string name="dialog_message_pre_explain_camera">• कैमरा — केवल टॉर्च (फ्लैश) को चालू/बंद करने के लिए उपयोग किया जाता है। Light Signals फ़ोटो या वीडियो नहीं लेता।\n</string>
@@ -24,7 +23,6 @@
     <string name="_continue">जारी रखें</string>
     <string name="_later">बाद में</string>
 
-    <!-- Dialogs -->
     <string name="dialog_title_wear_api_unavailable">Wear सुविधाएँ उपलब्ध नहीं</string>
     <string name="dialog_message_wear_api_unavailable">इस डिवाइस में पहनने योग्य सुविधाओं के लिए समर्थन नहीं है।</string>
 
@@ -34,25 +32,20 @@
     <string name="dialog_title_install_on_watch">घड़ी पर Light Signals इंस्टॉल करें</string>
     <string name="dialog_message_install_on_watch">कनेक्ट की गई घड़ी पर यह ऐप इंस्टॉल नहीं है। क्या आप इसे इंस्टॉल करना चाहेंगे?</string>
 
-    <!-- Snackbars -->
     <string name="snackbar_app_installed_on_watch_success">घड़ी पर इंस्टॉलेशन शुरू कर दिया गया है</string>
     <string name="snackbar_installation_on_watch_failed">घड़ी पर इंस्टॉलेशन विफल हुआ। कृपया बाद में पुनः प्रयास करें।</string>
     <string name="snackbar_app_failed_to_launch_on_watch">घड़ी पर ऐप लॉन्च करने में विफल रहा</string>
     <string name="snackbar_app_launched_on_watch">घड़ी पर लॉन्च हो गया। आप अपनी घड़ी से ऐप नियंत्रित कर सकते हैं।</string>
     <string name="snackbar_no_connected_watches">कोई कनेक्टेड घड़ियाँ नहीं</string>
 
-    <!-- Notification strings -->
     <string name="notification_title">Light Signals खोलें</string>
     <string name="notification_text">टॉर्च या स्क्रीन का उपयोग करके संकेत दिखाएँ। खोलने के लिए टैप करें।</string>
 
-    <!-- Notification channel -->
     <string name="notification_channel_name">Light Signals सूचनाएँ</string>
     <string name="notification_channel_description">टॉर्च और स्क्रीन संकेतों के त्वरित एक्सेस</string>
 
-    <!-- Menu items -->
     <string name="menu_item_synchronize_with_watch">घड़ी के साथ सिंक करें</string>
 
-    <!-- Sound selector -->
     <string name="no_sound">कोई नहीं</string>
     <string name="sound_1">साउंड 1</string>
     <string name="sound_2">साउंड 2</string>

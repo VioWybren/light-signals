@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="dialog_title_app_unavailable_on_phone">Το Light Signals δεν είναι διαθέσιμο</string>
+    <string name="dialog_message_app_unavailable_on_phone">Το ρολόι σας δεν μπορεί να επικοινωνήσει με το τηλέφωνό σας ή η εφαρμογή συνοδός δεν είναι εγκατεστημένη\n• Ελέγξτε ότι το τηλέφωνό σας είναι συνδεδεμένο\n• Εάν δεν το έχετε ήδη κάνει, εγκαταστήστε την εφαρμογή Light Signals για το τηλέφωνο\nΠατήστε για να ανοίξετε το Google Play</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals δεν βρέθηκε</string>
+    <string name="dialog_message_install_on_phone">Εγκαταστήστε το Light Signals στο τηλέφωνό σας για να ξεκλειδώσετε όλες τις λειτουργίες. Πατήστε για να ανοίξετε το Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">Η εγκατάσταση έχει ξεκινήσει στο τηλέφωνό σας</string>
+    <string name="dialog_success_open_on_phone">Το Light Signals είναι ανοιχτό στο τηλέφωνό σας. Χρησιμοποιήστε το ρολόι σας για να το ελέγξετε</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">Η εγκατάσταση στο τηλέφωνο απέτυχε. Προσπαθήστε ξανά αργότερα</string>
+    <string name="dialog_fail_no_connected_phones">Δεν βρέθηκαν συνδεδεμένα τηλέφωνα</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Συνδέστε τις εφαρμογές Light Signals στο ρολόι και στο τηλέφωνό σας για να ελέγχετε το φλας</string>
+
+    <string name="sound_settings">Ρυθμίσεις ήχου</string>
+    <string name="no_sound">Καμία</string>
+    <string name="sound">Ήχος</string>
+
+    <string name="circular_indicator_text">Εκκίνηση στο τηλέφωνο</string>
+
+    <string name="_cancel">Ακύρωση</string>
+
+</resources>

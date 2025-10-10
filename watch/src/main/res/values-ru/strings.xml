@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-ru/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals недоступен</string>
     <string name="dialog_message_app_unavailable_on_phone">Ваши часы не могут связаться с телефоном или сопутствующее приложение не установлено.\n• Проверьте подключение телефона\n• Если вы ещё не установили, установите Light Signals на телефон\nНажмите, чтобы открыть Google Play</string>
 
@@ -15,12 +15,10 @@
     <string name="dialog_fail_no_connected_phones">Подключенные телефоны не найдены</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">Свяжите приложения Light Signals на часах и телефоне, чтобы управлять фонариком</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">Настройки звука</string>
     <string name="no_sound">Нет</string>
     <string name="sound">Звук</string>
 
-    <!-- Indicator -->
     <string name="circular_indicator_text">Запуск на телефоне</string>
 
     <!-- Common buttons -->

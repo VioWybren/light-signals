@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-pt/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals indisponível</string>
     <string name="dialog_message_app_unavailable_on_phone">Seu relógio não consegue alcançar o telefone ou o app companheiro não está instalado.\n• Verifique se o telefone está conectado\n• Se ainda não o fez, instale o app Light Signals no telefone\nToque para abrir o Google Play</string>
 
@@ -15,14 +15,12 @@
     <string name="dialog_fail_no_connected_phones">Nenhum telefone conectado foi encontrado</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">Vincule os apps Light Signals no relógio e no telefone para controlar a lanterna</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">Configurações de som</string>
     <string name="no_sound">Nenhum</string>
     <string name="sound">Som</string>
 
-    <!-- Indicator -->
     <string name="circular_indicator_text">Iniciando no telefone</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">Cancelar</string>
+
 </resources>

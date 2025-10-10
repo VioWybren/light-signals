@@ -13,16 +13,6 @@ import javax.inject.Inject
 @HiltAndroidApp
 class WearLightSignalsApplication : Application() {
 
-    //    @Inject lateinit var appLifecycleObserver: AppLifecycleObserver
-
-    //    override fun onCreate() {
-//        super.onCreate()
-//        // Attach AppLifecycleObserver to ProcessLifecycleOwner
-//        ProcessLifecycleOwner.get().lifecycle.addObserver(appLifecycleObserver)
-//    }
-    @Inject
-    lateinit var wearPhoneOperations: WearPhoneOperations
-
     @Inject
     lateinit var wearControlRepository: WearControlRepository
 
@@ -45,8 +35,6 @@ class WearLightSignalsApplication : Application() {
             override fun onActivityStopped(activity: Activity) {
                 started--
                 if (started <= 0) {
-                    // no visible activities -> stop the singleton
-                    wearPhoneOperations.clearAll()
                     wearControlRepository.clearAll()
                     wearSyncStateRepository.clear()
                 }

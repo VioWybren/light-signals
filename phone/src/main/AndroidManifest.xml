@@ -2,32 +2,35 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Needed to call startForegroundService() on Android 9+ -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <!-- New in API 34+: lets you start a camera‐type foreground service -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+        tools:ignore="SystemPermissionTypo" />
+
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-permission android:name="com.google.android.gms.permission.WEARABLE_DATA_SYNC" />
     <uses-permission android:name="com.google.android.gms.permission.BIND_WEARABLE_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-
     <application
         android:name=".PhoneLightSignalsApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
+        tools:replace="android:allowBackup,android:fullBackupContent,android:dataExtractionRules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LightSignalNew"
-        tools:targetApi="31">
+        android:theme="@style/Theme.LightSignalNew" >
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -45,28 +48,26 @@
         </activity>
 
         <service
-            android:name=".model.FlashService"
+            android:name=".model.FlashLightService"
             android:exported="false"
-            android:foregroundServiceType="camera"/>
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Light Signals is intended for quickly signaling through the phone's screen or the device's flashlight.
+                 It is crucial for the application to activate instantly and remain functional even when the phone screen is turned off,
+                 especially in situations such as when a user is a pedestrian crossing a street or needs to send an SOS signal with the
+                 flashlight.
 
-        <service
-            android:name=".model.WearCommandListenerService"
-            android:exported="true"
-            tools:ignore="ExportedService"
-            >
-            <intent-filter>
-                <!--                <action android:name="com.google.android.gms.wearable.BIND_LISTENER"-->
-                <!--                    tools:ignore="WearableBindListener" />-->
-                <!-- listeners receive events that match the action and data filters -->
-                <!--                <action android:name="com. google. android. gms. wearable. DATA_CHANGED" />-->
-                <!--                <action android:name="com. google. android. gms. wearable. MESSAGE_RECEIVED" />-->
-                <!--                <action android:name="com. google. android. gms. wearable. REQUEST_RECEIVED" />-->
-                <!--                <action android:name="com. google. android. gms. wearable. CAPABILITY_CHANGED" />-->
-                <!--                <action android:name="com. google. android. gms. wearable. CHANNEL_EVENT" />-->
-                <!--                <data android:scheme="wear" android:host="*" android:pathPrefix="/prefix" />-->
-                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
-                <data android:scheme="wear" android:host="*" android:pathPrefix="/command" />
-            </intent-filter>
+                 Therefore, it logically follows that the use of a foreground service becomes necessary. The FlashLightService is a specialUse
+                 type service used for these purposes.
+
+                 It should be noted, however, that users can only use the service after granting permission. Permission dialogs appear during
+                 runtime after providing rationale.
+
+                 There are two permissions required: camera and notification (after Android 14) permissions. The application does not utilize
+                 the phone camera in any capacity. However, it requires permission to access the camera for its flashlight feature and start
+                 foreground service.The service uses a notification to display its background work,
+                 thus notification permission is also necessary." />
         </service>
 
     </application>

@@ -1,6 +1,5 @@
 package nodomain.greensnowapps.lightsignals.model
 
-import android.util.Log
 import androidx.core.net.toUri
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
@@ -12,8 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-
-private const val TAG = "WearSyncStateRepository"
 
 private const val DATA_PATH = "/control_state"
 private const val KEY_BLINK = "blinkEnabled"
@@ -30,7 +27,6 @@ class WearSyncStateRepository @Inject constructor(
     private val dataClient: DataClient
 ) : DataClient.OnDataChangedListener {
 
-    // Exposed as StateFlow or LiveData for UI
     private val _stateFlow = MutableStateFlow(WearControlState())
     val stateFlow: StateFlow<WearControlState> = _stateFlow
 
@@ -44,7 +40,6 @@ class WearSyncStateRepository @Inject constructor(
     }
 
     private fun fetchCurrentDataItem() {
-        // Query existing DataItem
         val uri = "wear://*/$DATA_PATH".toUri()
         dataClient.getDataItems(uri).addOnSuccessListener { buffer ->
             buffer.use {
@@ -83,7 +78,6 @@ class WearSyncStateRepository @Inject constructor(
         _stateFlow.value = newState
     }
 
-    // Call this when any field changes; you can debounce externally if needed.
     suspend fun sendState(update: WearControlState) {
         val putReq = PutDataMapRequest.create(DATA_PATH).run {
             dataMap.apply {
@@ -100,9 +94,8 @@ class WearSyncStateRepository @Inject constructor(
             asPutDataRequest().setUrgent()
         }
         try {
-            dataClient.putDataItem(putReq).await() // requires kotlinx-coroutines-play-services
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to send state", e)
+            dataClient.putDataItem(putReq).await()
+        } catch (_: Exception) {
         }
     }
 }

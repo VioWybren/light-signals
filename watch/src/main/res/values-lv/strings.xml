@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-lv/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals nav pieejams</string>
     <string name="dialog_message_app_unavailable_on_phone">Jūsu pulkstenis nevar sasniegt tālruni vai pavadprogrammatūra nav instalēta.\n• Pārbaudiet, vai tālrunis ir savienots\n• Ja vēl neesat izdarījis, instalējiet Light Signals tālrunī\nPieskarieties, lai atvērtu Google Play</string>
 
@@ -15,14 +15,12 @@
     <string name="dialog_fail_no_connected_phones">Savienoti tālruņi nav atrasti</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">Savienojiet Light Signals lietotnes pulkstenī un tālrunī, lai kontrolētu zibspuldzi</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">Skaņas iestatījumi</string>
     <string name="no_sound">Nav</string>
     <string name="sound">Skaņa</string>
 
-    <!-- Indicator -->
     <string name="circular_indicator_text">Tiek palaists tālrunī</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">Atcelt</string>
+
 </resources>

@@ -1,7 +1,7 @@
 <resources>
+
     <string name="app_name" translatable="false">Light Signals</string>
 
-    <!--  Dialogs-->
     <string name="dialog_title_app_unavailable_on_phone">"Light Signals Unavailable"</string>
     <string name="dialog_message_app_unavailable_on_phone">"Your watch can’t reach your phone, or the companion app isn’t installed\n"
                 "• Check that your phone is connected\n"
@@ -18,15 +18,12 @@
     <string name="dialog_fail_no_connected_phones">No connected phones found</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">Link the Light Signals apps on your watch and phone to control the flashlight</string>
 
-    <!--  Sound selector  -->
     <string name="sound_settings">Sound Settings</string>
     <string name="no_sound">None</string>
     <string name="sound">Sound</string>
 
-    <!--  Indicator  -->
     <string name="circular_indicator_text">Launching on phone</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">Cancel</string>
 
 </resources>

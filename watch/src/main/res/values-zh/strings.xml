@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-zh/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals 无法使用</string>
     <string name="dialog_message_app_unavailable_on_phone">您的手表无法连接到手机，或未安装配套应用。\n• 请检查手机是否已连接\n• 如果尚未安装，请在手机上安装 Light Signals 应用\n点击以打开 Google Play</string>
 
@@ -15,14 +15,12 @@
     <string name="dialog_fail_no_connected_phones">未找到已连接的手机</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">将手表和手机上的 Light Signals 应用关联以控制手电筒</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">声音设置</string>
     <string name="no_sound">无</string>
     <string name="sound">声音</string>
 
-    <!-- Indicator -->
     <string name="circular_indicator_text">正在手机上启动</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">取消</string>
+
 </resources>

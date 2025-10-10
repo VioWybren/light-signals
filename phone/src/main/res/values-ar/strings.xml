@@ -1,7 +1,6 @@
-<!--<?xml version="1.0" encoding="utf-8"?>&lt;!&ndash; values-ar/strings.xml &ndash;&gt;-->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--Permission dialogs-->
     <string name="dialog_title_pre_explain">الأذونات المطلوبة</string>
     <string name="dialog_message_pre_explain_base">لماذا نحتاج هذه الأذونات:\n\n</string>
     <string name="dialog_message_pre_explain_camera">• الكاميرا — تُستخدم فقط لتشغيل المصباح اليدوي. Light Signals لا يلتقط صورًا أو يسجل فيديو.\n</string>
@@ -24,7 +23,6 @@
     <string name="_continue">متابعة</string>
     <string name="_later">لاحقًا</string>
 
-     <!-- Dialogs -->
     <string name="dialog_title_wear_api_unavailable">ميزات Wear غير متاحة</string>
     <string name="dialog_message_wear_api_unavailable">هذا الجهاز لا يدعم ميزات الأجهزة القابلة للارتداء.</string>
 
@@ -34,31 +32,25 @@
     <string name="dialog_title_install_on_watch">تثبيت Light Signals على الساعة</string>
     <string name="dialog_message_install_on_watch">التطبيق غير مثبت على الساعة المتصلة. هل تريد تثبيته؟</string>
 
-    <!-- Snackbars -->
     <string name="snackbar_app_installed_on_watch_success">تم بدء التثبيت على الساعة</string>
     <string name="snackbar_installation_on_watch_failed">فشل التثبيت على الساعة. الرجاء المحاولة لاحقًا.</string>
     <string name="snackbar_app_failed_to_launch_on_watch">فشل تشغيل التطبيق على الساعة</string>
     <string name="snackbar_app_launched_on_watch">تم التشغيل على الساعة. تحكّم في التطبيق من ساعتك.</string>
     <string name="snackbar_no_connected_watches">لا توجد ساعات متصلة</string>
 
-    <!-- Notification strings -->
     <string name="notification_title">افتح Light Signals</string>
     <string name="notification_text">استخدم المصباح أو الشاشة لعرض الإشارات. انقر للفتح.</string>
 
-    <!-- Notification channel -->
     <string name="notification_channel_name">قناة إشعارات Light Signals</string>
     <string name="notification_channel_description">وصول سريع إلى إشارات المصباح والشاشة</string>
 
-    <!-- Menu items -->
     <string name="menu_item_synchronize_with_watch">مزامنة مع الساعة</string>
 
-    <!-- Sound selector -->
     <string name="no_sound">لا شيء</string>
     <string name="sound_1">الصوت 1</string>
     <string name="sound_2">الصوت 2</string>
     <string name="sound_3">الصوت 3</string>
 
-    <!--  Indicator  -->
     <string name="circular_indicator_text">يتم التشغيل على الساعة</string>
 
 </resources>

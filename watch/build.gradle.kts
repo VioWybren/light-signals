@@ -75,13 +75,10 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:1.9.2")
 
     // Compose for Wear OS dependencies
-//    implementation("androidx.wear.compose:compose-material3:1.5.0-beta06")
     implementation("androidx.wear.compose:compose-material3:1.5.2")
     // Foundation is additive, so you can use the mobile version in your Wear OS app.
-//    implementation("androidx.wear.compose:compose-foundation:1.5.0-beta06")
     implementation("androidx.wear.compose:compose-foundation:1.5.2")
     // Wear OS preview annotations
-//    implementation("androidx.wear.compose:compose-ui-tooling:1.5.0-beta06")
     implementation("androidx.wear.compose:compose-ui-tooling:1.5.2")
 
     implementation("androidx.compose.material:material-icons-extended:1.7.8")

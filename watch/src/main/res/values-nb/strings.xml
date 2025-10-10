@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="app_name" translatable="false">Light Signals</string>
+
+    <string name="dialog_title_app_unavailable_on_phone">Light Signals utilgjengelig</string>
+    <string name="dialog_message_app_unavailable_on_phone">Klokken kan ikke nå telefonen din, eller følgesvenn-appen er ikke installert\n• Sjekk at telefonen din er tilkoblet\n• Hvis du ikke allerede har gjort det, installer Light Signals-appen på telefonen\nTrykk for å åpne Google Play</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals ikke funnet</string>
+    <string name="dialog_message_install_on_phone">Installer Light Signals på telefonen for å låse opp alle funksjoner. Trykk for å åpne Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">Installasjonen har startet på telefonen din</string>
+    <string name="dialog_success_open_on_phone">Light Signals er åpen på telefonen din. Bruk klokken for å styre den</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">Installasjonen på telefonen mislyktes. Prøv igjen senere</string>
+    <string name="dialog_fail_no_connected_phones">Ingen tilkoblede telefoner funnet</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Koble Light Signals-appene på klokken og telefonen for å styre lommelykten</string>
+
+    <string name="sound_settings">Lydinnstillinger</string>
+    <string name="no_sound">Ingen</string>
+    <string name="sound">Lyd</string>
+
+    <string name="circular_indicator_text">Starter på telefonen</string>
+
+    <string name="_cancel">Avbryt</string>
+
+</resources>

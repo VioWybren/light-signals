@@ -8,10 +8,8 @@ import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.MusicOff
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-//import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -25,12 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-//import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneSoundViewModel
 import nodomain.greensnowapps.lightsignals.R
+import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneSoundViewModel
 
-//@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PhoneSoundMenuButton(
     toggleBtnWidth: Dp,
@@ -51,65 +47,15 @@ fun PhoneSoundMenuButton(
             checkedBtn = expanded,
             onCheckedChange = { expanded = it },
             icon = if (active == 0) Icons.Filled.MusicOff else Icons.Filled.MusicNote,
-//            modifier = Modifier.size(ButtonDefaults.iconSizeFor(iconSize))
             modifier = Modifier.size(iconSize)
         )
     }
 
-//    Box(
-//        modifier = Modifier
-//    ) {
-//        ToggleButton(
-//            checked = expanded,
-//            onCheckedChange = {
-//                expanded = it
-//            },
-//            colors = ToggleButtonDefaults.toggleButtonColors(
-//                containerColor = Color(COLOR_UNCHECKED_BUTTON),
-//                contentColor = Color.White,
-//                checkedContainerColor = Color(COLOR_CHECKED_BUTTON),
-//                checkedContentColor = Color.White
-//            ),
-//            contentPadding = PaddingValues(horizontal = 2.dp, vertical = 2.dp),
-//            modifier = Modifier
-//                .width(toggleBtnWidth)
-//                .height(toggleBtnHeight),
-//            shapes = ToggleButtonDefaults.shapes(
-//                shape = CircleShape,
-//                pressedShape = CircleShape,
-//                checkedShape = CircleShape
-//            ),
-//            border = BorderStroke(width = 1.dp, color = Color.White),
-////            colors = ToggleButtonDefaults.toggleButtonColors(
-////                containerColor = Color(COLOR_UNCHECKED_BUTTON),
-////                contentColor = Color.White,
-////                checkedContainerColor = Color(COLOR_CHECKED_BUTTON),
-////                checkedContentColor = Color.White
-////            ),
-////            shapes = ToggleButtonDefaults.shapes(
-////                shape = CircleShape,
-////                pressedShape = CircleShape,
-////                checkedShape = CircleShape
-////            ) ,
-////            border = BorderStroke(width = 1.dp, color = Color.White),
-////            modifier = Modifier
-////                .size(btnSize)
-//        ) {
-//            Icon(
-//                if (active == 0) Icons.Filled.MusicOff else Icons.Filled.MusicNote,
-//                contentDescription = "Localized description",
-////                modifier = Modifier.size(btnIconSize)
-//                        modifier = Modifier.size(ButtonDefaults.iconSizeFor(ButtonDefaults.LargeContainerHeight))
-//
-//            )
-//        }
-
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
-        modifier = Modifier.width(160.dp)  // menu width
+        modifier = Modifier.width(160.dp)
     ) {
-        // Off entry
         DropdownMenuItem(
             text = { Text(stringResource(R.string.no_sound)) },
             leadingIcon = {
@@ -124,7 +70,6 @@ fun PhoneSoundMenuButton(
             }
         )
         HorizontalDivider()
-        // Sound 1
         DropdownMenuItem(
             text = { Text(stringResource(R.string.sound_1)) },
             leadingIcon = {
@@ -138,7 +83,6 @@ fun PhoneSoundMenuButton(
                 expanded = false
             }
         )
-        // Sound 2
         DropdownMenuItem(
             text = { Text(stringResource(R.string.sound_2)) },
             leadingIcon = {
@@ -152,7 +96,6 @@ fun PhoneSoundMenuButton(
                 expanded = false
             }
         )
-        // Sound 3
         DropdownMenuItem(
             text = { Text(stringResource(R.string.sound_3)) },
             leadingIcon = {
@@ -168,4 +111,3 @@ fun PhoneSoundMenuButton(
         )
     }
 }
-//}

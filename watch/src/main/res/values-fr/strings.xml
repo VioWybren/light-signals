@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-fr/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals non disponible</string>
     <string name="dialog_message_app_unavailable_on_phone">Votre montre ne peut pas joindre votre téléphone ou l’application compagnon n’est pas installée.\n• Vérifiez que votre téléphone est connecté\n• Si ce n’est pas déjà fait, installez l’application Light Signals sur votre téléphone\nAppuyez pour ouvrir le Play Store</string>
 
@@ -15,14 +15,12 @@
     <string name="dialog_fail_no_connected_phones">Aucun téléphone connecté trouvé</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">Reliez les applications Light Signals sur votre montre et votre téléphone pour contrôler la lampe torche</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">Paramètres son</string>
     <string name="no_sound">Aucun</string>
     <string name="sound">Son</string>
 
-    <!-- Indicator -->
     <string name="circular_indicator_text">Lancement sur le téléphone</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">Annuler</string>
+
 </resources>

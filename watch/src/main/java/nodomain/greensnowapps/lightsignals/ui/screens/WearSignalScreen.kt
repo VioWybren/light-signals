@@ -1,6 +1,5 @@
 package nodomain.greensnowapps.lightsignals.ui.screens
 
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
@@ -23,7 +22,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
-
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,21 +32,16 @@ import nodomain.greensnowapps.lightsignals.WearConstants
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearMainViewModel
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearSoundViewModel
 
-private const val TAG = "WearSignalScreen"
 
 @Composable
 fun WearSignalScreen(
     viewModel: WearMainViewModel,
-    soundViewModel: WearSoundViewModel,  //don't delete !! need for sound
+    soundViewModel: WearSoundViewModel,
     onBack: () -> Unit
 ) {
-    //  Collect the flows
-    val color by viewModel.activeColor.collectAsState()     // the current button’s color
-    Log.d(TAG,"color = $color")
-    val blinkOn by viewModel.blinkOn.collectAsState(false)   // true when blinking is enabled
-    Log.d(TAG,"blinkOn= $blinkOn")
-    val delayMs by viewModel.blinkDelay.collectAsState()     // interval in ms
-    Log.d(TAG,"delayMs = $delayMs ")
+
+    val color by viewModel.activeColor.collectAsState()
+    val blinkOn by viewModel.blinkOn.collectAsState(false)
     val sosOn by viewModel.sosOn.collectAsState()
     val flashOn by viewModel.flashOn.collectAsState()
 
@@ -75,18 +68,14 @@ fun WearSignalScreen(
         WearConstants.SOS_ON_SIGNAL_SCREEN
     }
     val focusRequester: FocusRequester = remember { FocusRequester() }
-    var brightness by remember { mutableFloatStateOf(1f) } // 1 = max, 0 = min
-    // Get the host Activity safely
+    var brightness by remember { mutableFloatStateOf(1f) }
+
     val activity = LocalActivity.current
 
     LaunchedEffect(Unit) {
-        // 1) Ask the window to stay on
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        // 2) And immediately grab focus for this Box
-//        focusRequester.requestFocus()
     }
 
-    // Whenever brightness changes, push it to the Window
     LaunchedEffect(brightness) {
         activity?.window?.attributes =
             activity.window.attributes
@@ -98,19 +87,15 @@ fun WearSignalScreen(
             TimeText()
         },
     ) {
-        // Render full‐screen box that shows `color` when visible, or black when not
         Box(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = background)
                 .onRotaryScrollEvent { event ->
-                    Log.d(TAG,"event: $event")
                     val offset: Float = event.verticalScrollPixels
-                    Log.d(TAG,"offset: $offset")
                     brightness = (brightness + offset * 0.005f)
                         .coerceIn(0f, 1f)
-                    Log.d(TAG,"brightness $brightness")
                     true
                 }
                 .requestFocusOnHierarchyActive()
@@ -123,8 +108,8 @@ fun WearSignalScreen(
                 color = Color.Gray,
                 fontSize = 12.sp,
                 modifier = Modifier
-                    .align(Alignment.TopCenter)      // Center horizontally at the top
-                    .padding(top = 30.dp),           // Or use .offset(y = 30.dp)
+                    .align(Alignment.TopCenter)
+                    .padding(top = 30.dp),
                 textAlign = TextAlign.Center,
                 style = typography.bodyLarge
             )

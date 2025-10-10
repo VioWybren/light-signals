@@ -1,7 +1,6 @@
-<!--<?xml version="1.0" encoding="utf-8"?>-->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- values-ru/strings.xml -->
-    <!--Permission dialogs-->
+
     <string name="dialog_title_pre_explain">Требуются разрешения</string>
     <string name="dialog_message_pre_explain_base">Почему нам нужны эти разрешения:\n\n</string>
     <string name="dialog_message_pre_explain_camera">• Камера — используется только для включения фонарика. Light Signals не делает фото и не записывает видео.\n</string>
@@ -24,7 +23,6 @@
     <string name="_continue">Продолжить</string>
     <string name="_later">Позже</string>
 
-    <!-- Dialogs -->
     <string name="dialog_title_wear_api_unavailable">Функции Wear недоступны</string>
     <string name="dialog_message_wear_api_unavailable">Это устройство не поддерживает функции для носимых (wearable) устройств</string>
 
@@ -34,31 +32,25 @@
     <string name="dialog_title_install_on_watch">Установить Light Signals на часы</string>
     <string name="dialog_message_install_on_watch">Приложение не инсталлировано на подключённых часах. Хотите установить его?</string>
 
-    <!-- Snackbars -->
     <string name="snackbar_app_installed_on_watch_success">Инсталляция на часах запущена</string>
     <string name="snackbar_installation_on_watch_failed">Установка на часы не удалась. Пожалуйста, попробуйте позже</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Не удалось запустить приложение на часах</string>
     <string name="snackbar_app_launched_on_watch">Запущено на часах. Управляйте приложением с часов</string>
     <string name="snackbar_no_connected_watches">Нет подключённых часов</string>
 
-    <!-- Notification strings -->
     <string name="notification_title">Открыть Light Signals</string>
     <string name="notification_text">Используйте фонарик или экран для сигналов. Нажмите, чтобы открыть</string>
 
-    <!-- Notification channel -->
     <string name="notification_channel_name">Канал уведомлений Light Signals</string>
     <string name="notification_channel_description">Быстрый доступ к сигналам фонарика и экрана</string>
 
-    <!-- Menu items -->
     <string name="menu_item_synchronize_with_watch">Синхронизировать с часами</string>
 
-    <!-- Sound selector -->
     <string name="no_sound">Без звука</string>
     <string name="sound_1">Звук 1</string>
     <string name="sound_2">Звук 2</string>
     <string name="sound_3">Звук 3</string>
 
-    <!--  Indicator  -->
     <string name="circular_indicator_text">Запускается на часах</string>
 
 </resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="dialog_title_app_unavailable_on_phone">Aplikace Light Signals není dostupná</string>
+    <string name="dialog_message_app_unavailable_on_phone">Vaše hodinky se nemohou připojit k telefonu nebo není nainstalována doprovodná aplikace\n• Zkontrolujte, že je telefon připojen\n• Pokud jste tak ještě neučinili, nainstalujte aplikaci Light Signals pro telefon\nKlepnutím otevřete Google Play</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals nenalezen</string>
+    <string name="dialog_message_install_on_phone">Nainstalujte Light Signals do svého telefonu, abyste odemkli všechny funkce. Klepnutím otevřete Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">Instalace byla na vašem telefonu zahájena</string>
+    <string name="dialog_success_open_on_phone">Light Signals je otevřená na vašem telefonu. Použijte hodinky k jejímu ovládání</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">Instalace do telefonu selhala. Zkuste to prosím později</string>
+    <string name="dialog_fail_no_connected_phones">Žádné připojené telefony nebyly nalezeny</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Pro ovládání svítilny propojte aplikaci Light Signals na hodinkách a v telefonu</string>
+
+    <string name="sound_settings">Nastavení zvuku</string>
+    <string name="no_sound">Žádný</string>
+    <string name="sound">Zvuk</string>
+
+    <string name="circular_indicator_text">Spouští se na telefonu</string>
+
+    <string name="_cancel">Zrušit</string>
+
+</resources>

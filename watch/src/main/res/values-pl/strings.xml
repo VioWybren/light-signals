@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-pl/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals niedostępny</string>
     <string name="dialog_message_app_unavailable_on_phone">Twój zegarek nie może połączyć się z telefonem lub aplikacja towarzysząca nie jest zainstalowana.\n• Sprawdź, czy telefon jest podłączony\n• Jeśli jeszcze tego nie zrobiłeś, zainstaluj aplikację Light Signals na telefonie\nDotknij, aby otworzyć Google Play</string>
 
@@ -15,14 +15,12 @@
     <string name="dialog_fail_no_connected_phones">Nie znaleziono podłączonych telefonów</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">Połącz aplikacje Light Signals na zegarku i telefonie, aby sterować latarką</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">Ustawienia dźwięku</string>
     <string name="no_sound">Brak</string>
     <string name="sound">Dźwięk</string>
 
-    <!-- Indicator -->
     <string name="circular_indicator_text">Uruchamianie na telefonie</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">Anuluj</string>
+
 </resources>

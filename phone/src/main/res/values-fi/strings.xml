@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="_ok">OK</string>
+    <string name="_cancel">Peruuta</string>
+    <string name="_continue">Jatka</string>
+    <string name="_later">Myöhemmin</string>
+
+    <string name="dialog_title_pre_explain">Tarvittavat luvat</string>
+    <string name="dialog_message_pre_explain_base">Miksi tarvitsemme näitä lupia:\n\n</string>
+    <string name="dialog_message_pre_explain_camera">• Kamera — käytetään vain taskulampun kytkemiseen. Light Signals ei ota kuvia eikä tallenna videoita.\n</string>
+    <string name="dialog_message_pre_explain_notification">• Ilmoitukset — sallivat sovelluksen näyttää hälytyksiä ja tarjota nopean pääsyn taustalla toimiessaan</string>
+    <string name="dialog_title_rationale_dialog">Tarvittavat luvat</string>
+    <string name="confirm_button_rationale_dialog">Pyydä uudelleen</string>
+    <string name="dialog_message_rationale_dialog_base">Jatkaaksesi sovellus tarvitsee:\n\n</string>
+    <string name="dialog_message_rationale_dialog_camera">• Kamera — taskulampun kytkemistä varten \n</string>
+    <string name="dialog_message_rationale_dialog_notification">• Ilmoitukset — näyttää taustahälytyksiä ja tarjota pikatoimintoja</string>
+    <string name="dialog_title_setting_dialog">Ota luvat käyttöön asetuksissa</string>
+    <string name="confirm_button_setting_dialog">Avaa asetukset</string>
+    <string name="dialog_message_setting_dialog_base">Yksi tai useampi lupa on evätty pysyvästi. Avaa sovelluksen asetukset ottaaksesi ne käyttöön:\n\n</string>
+    <string name="dialog_message_setting_dialog_camera">• Kamera (taskulamppu)\n</string>
+    <string name="dialog_message_setting_dialog_notification">• Ilmoitukset\n</string>
+
+    <string name="dialog_title_wear_api_unavailable">Wear-ominaisuudet eivät ole käytettävissä</string>
+    <string name="dialog_message_wear_api_unavailable">Tämä laite ei tue puettavia ominaisuuksia</string>
+
+    <string name="dialog_title_connect_to_watch">Yhdistä kelloon</string>
+    <string name="dialog_message_connect_to_watch">Haluatko yhdistää puhelinsovelluksen Light Signals -kumppanisovellukseen kellossasi?</string>
+
+    <string name="dialog_title_install_on_watch">Asenna Light Signals kelloon</string>
+    <string name="dialog_message_install_on_watch">Sovellusta ei ole asennettu yhdistettyyn kelloosi. Haluatko asentaa sen?</string>
+
+    <string name="snackbar_app_installed_on_watch_success">Asennus on aloitettu kellossa</string>
+    <string name="snackbar_installation_on_watch_failed">Asennus kellossa epäonnistui. Yritä myöhemmin uudelleen</string>
+    <string name="snackbar_app_failed_to_launch_on_watch">Sovelluksen käynnistäminen kellossa epäonnistui</string>
+    <string name="snackbar_app_launched_on_watch">Käynnistetty kellossa. Ohjaa sovellusta kellostasi</string>
+    <string name="snackbar_no_connected_watches">Yhtään yhdistettyä kelloa ei löytynyt</string>
+
+    <string name="notification_title">Avaa Light Signals</string>
+    <string name="notification_text">Käytä taskulamppua tai näyttöä näyttämään merkkejä. Napauta avataksesi.</string>
+
+    <string name="notification_channel_name">Light Signals -ilmoituskanava</string>
+    <string name="notification_channel_description">Nopea pääsy taskulampulle ja näytön merkeille</string>
+
+    <string name="menu_item_synchronize_with_watch">Synkronoi kellon kanssa</string>
+
+    <string name="no_sound">Ei</string>
+    <string name="sound_1">Ääni 1</string>
+    <string name="sound_2">Ääni 2</string>
+    <string name="sound_3">Ääni 3</string>
+
+    <string name="circular_indicator_text">Käynnistetään kellossa</string>
+
+</resources>

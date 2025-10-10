@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nodomain.greensnowapps.lightsignals.WearConstants
 
-// A composable for each round color button with a blinking effect if active.
 @Composable
 fun WearColorButton(
     sosOn: Boolean,
@@ -25,7 +24,7 @@ fun WearColorButton(
     color: Color,
     isActive: Boolean,
     blinkOn: Boolean,
-    blinkActive: Boolean, // color is on
+    blinkActive: Boolean,
     onClick: () -> Unit
 ) {
 

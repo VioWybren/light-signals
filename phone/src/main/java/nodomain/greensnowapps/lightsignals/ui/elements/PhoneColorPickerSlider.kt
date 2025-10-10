@@ -19,10 +19,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-/**
- * A composable that displays a slider with a background gradient.
- * When the slider moves, it computes a special color and calls onColorChanged.
- */
 private const val MAX_PROGRESS = 255 * 7
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,7 +29,6 @@ fun PhoneColorPickerSlider(
     onValueChangeFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Define the gradient colors
     val gradientColors = listOf(
         Color.Black,
         Color.Blue,
@@ -52,7 +47,6 @@ fun PhoneColorPickerSlider(
         valueRange = 0f..MAX_PROGRESS.toFloat(),
         modifier = Modifier
             .fillMaxWidth()
-//            .background(Color.Green) //test
             .padding(start = 10.dp, end = 10.dp),
         colors = SliderDefaults.colors(thumbColor = Color.Red),
         thumb = {
@@ -75,8 +69,8 @@ fun PhoneColorPickerSlider(
                     .fillMaxWidth()
                     .height(15.dp)
                     .background(
-                       brush =  Brush.horizontalGradient(gradientColors),
-                       shape= RoundedCornerShape(5.dp)
+                        brush = Brush.horizontalGradient(gradientColors),
+                        shape = RoundedCornerShape(5.dp)
                     )
                     .border(
                         width = 1.dp,

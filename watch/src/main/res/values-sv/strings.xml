@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="app_name" translatable="false">Light Signals</string>
+
+    <string name="dialog_title_app_unavailable_on_phone">Light Signals är inte tillgängligt</string>
+    <string name="dialog_message_app_unavailable_on_phone">Din klocka kan inte nå din telefon eller följeslagsappen är inte installerad\n• Kontrollera att din telefon är ansluten\n• Om du inte redan gjort det, installera Light Signals-appen på din telefon\nTryck för att öppna Google Play</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals hittades inte</string>
+    <string name="dialog_message_install_on_phone">Installera Light Signals på din telefon för att låsa upp alla funktioner. Tryck för att öppna Google Play</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">Installationen har startat på din telefon</string>
+    <string name="dialog_success_open_on_phone">Light Signals är öppet på din telefon. Använd din klocka för att styra appen</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">Installationen på din telefon misslyckades. Försök igen senare</string>
+    <string name="dialog_fail_no_connected_phones">Inga anslutna telefoner hittades</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Koppla samman Light Signals-apparna på din klocka och telefon för att styra ficklampan</string>
+
+    <string name="sound_settings">Ljudinställningar</string>
+    <string name="no_sound">Ingen</string>
+    <string name="sound">Ljud</string>
+
+    <string name="circular_indicator_text">Startar på telefon</string>
+
+    <string name="_cancel">Avbryt</string>
+
+</resources>

@@ -15,12 +15,10 @@ import kotlinx.coroutines.SupervisorJob
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-// 1. Define a qualifier for your Application‑wide CoroutineScope (optional but recommended)
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class ApplicationScope
 
-// 2. A Module to supply the registry, scope, and helper
 @Module
 @InstallIn(SingletonComponent::class)
 object DataLayerModule {
@@ -39,8 +37,6 @@ object DataLayerModule {
         @ApplicationScope appScope: CoroutineScope
     ): WearDataLayerRegistry =
         WearDataLayerRegistry.fromContext(application = context, coroutineScope = appScope)
-    // register your serializers here, e.g.
-    // .apply { registerSerializer(MyProtoSerializer) }
 
     @OptIn(ExperimentalHorologistApi::class)
     @Provides
@@ -48,9 +44,8 @@ object DataLayerModule {
     fun providePhoneDataLayerAppHelper(
         @ApplicationContext context: Context,
         registry: WearDataLayerRegistry,
-        @ApplicationScope appScope: CoroutineScope
     ): PhoneDataLayerAppHelper = PhoneDataLayerAppHelper(
-        context       = context,
-        registry      = registry,
+        context = context,
+        registry = registry,
     )
 }

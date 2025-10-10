@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- values-it/strings.xml -->
 <resources>
 
-    <!--Permission dialogs-->
     <string name="dialog_title_pre_explain">Autorizzazioni richieste</string>
     <string name="dialog_message_pre_explain_base">Perché abbiamo bisogno di questi permessi:\n\n</string>
     <string name="dialog_message_pre_explain_camera">• Fotocamera — usata solo per attivare la torcia. Light Signals non scatta foto né registra video.\n</string>
@@ -26,7 +24,6 @@
     <string name="_continue">Continua</string>
     <string name="_later">Più tardi</string>
 
-    <!-- Dialogs -->
     <string name="dialog_title_wear_api_unavailable">Funzioni Wear non disponibili</string>
     <string name="dialog_message_wear_api_unavailable">Questo dispositivo non supporta le funzionalità per dispositivi indossabili</string>
 
@@ -36,31 +33,25 @@
     <string name="dialog_title_install_on_watch">Installa Light Signals sull\'orologio</string>
     <string name="dialog_message_install_on_watch">L\'app non è installata sull\'orologio collegato. Vuoi installarla?</string>
 
-    <!-- Snackbars -->
     <string name="snackbar_app_installed_on_watch_success">L\'installazione sull\'orologio è stata avviata</string>
     <string name="snackbar_installation_on_watch_failed">L\'installazione sull\'orologio è fallita. Riprova più tardi</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Impossibile avviare l\'app sull\'orologio</string>
     <string name="snackbar_app_launched_on_watch">Avviata sull\'orologio. Controlla l\'app dal tuo orologio</string>
     <string name="snackbar_no_connected_watches">Nessun orologio connesso</string>
 
-    <!-- Notification strings -->
     <string name="notification_title">Apri Light Signals</string>
     <string name="notification_text">Usa la torcia o lo schermo per mostrare segnali. Tocca per aprire</string>
 
-    <!-- Notification channel -->
     <string name="notification_channel_name">Canale notifiche Light Signals</string>
     <string name="notification_channel_description">Accesso rapido ai segnali tramite torcia e schermo</string>
 
-    <!-- Menu items -->
     <string name="menu_item_synchronize_with_watch">Sincronizza con l\'orologio</string>
 
-    <!-- Sound selector -->
     <string name="no_sound">Nessuno</string>
     <string name="sound_1">Suono 1</string>
     <string name="sound_2">Suono 2</string>
     <string name="sound_3">Suono 3</string>
 
-    <!--  Indicator  -->
     <string name="circular_indicator_text">Avvio sullo smartwatch</string>
 
 </resources>

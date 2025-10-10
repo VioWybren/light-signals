@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-tr/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals kullanılamıyor</string>
     <string name="dialog_message_app_unavailable_on_phone">Saatiniz telefona ulaşamıyor veya eşlik eden uygulama yüklü değil.\n• Telefon bağlantınızı kontrol edin\n• Henüz yapmadıysanız, telefonunuza Light Signals uygulamasını yükleyin\nAçmak için dokunun (Google Play)</string>
 
@@ -15,14 +15,12 @@
     <string name="dialog_fail_no_connected_phones">Bağlı telefon bulunamadı</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">El fenerini kontrol etmek için saatinizdeki ve telefonunuzdaki Light Signals uygulamalarını bağlayın</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">Ses Ayarları</string>
     <string name="no_sound">Yok</string>
     <string name="sound">Ses</string>
 
-    <!-- Indicator -->
     <string name="circular_indicator_text">Telefonda başlatılıyor</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">İptal</string>
+
 </resources>

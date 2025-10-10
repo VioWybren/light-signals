@@ -8,11 +8,11 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.graphics.Color
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
@@ -40,15 +40,9 @@ import nodomain.greensnowapps.lightsignals.SOS_UNIT_MS
 import nodomain.greensnowapps.lightsignals.utils.PermissionUtils
 import javax.inject.Inject
 
-/**
- * FlashService: started once when flashOn becomes true;
- * collects PhoneControlRepository flows to update torch and notification.
- */
-
-private const val TAG = "FlashService"
 
 @AndroidEntryPoint
-class FlashService : Service() {
+class FlashLightService : Service() {
     @Inject
     lateinit var cameraManager: CameraManager
 
@@ -70,47 +64,35 @@ class FlashService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG,"onCreate()")
         notificationTitle = getString(R.string.notification_title)
         notificationText = getString(R.string.notification_text)
 
-        // Check notification permission: required to call startForeground safely
         if (!PermissionUtils.hasPostNotificationsPermission(this)) {
-            Log.w(TAG,"Notifications permission missing; stopping service")
-            // Can't post notifications — we cannot run as a foreground service
-            // Inform UI to ask lightsignals to enable permissions (via broadcast)
             notifyUiPermissionsMissing()
             stopSelf()
             return
         }
 
-        // If you also need to toggle torch (camera API), check camera permission too
         if (!PermissionUtils.hasCameraPermission(this)) {
-            Log.w(TAG,"Camera permission missing; torch functionality disabled")
-            // perform degraded behavior, inform UI, or stop action that needs camera
             notifyUiPermissionsMissing()
             stopSelf()
             return
         } else {
-            // safe to access camera or CameraManager for torch
             enableCamera()
         }
         notificationManager = NotificationManagerCompat.from(this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            ServiceCompat.startForeground(this, NOTIF_ID, addNotification(), FOREGROUND_SERVICE_TYPE_CAMERA)
+            ServiceCompat.startForeground(this, NOTIF_ID, addNotification(),
+                FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
         } else {
             this.startForeground(NOTIF_ID, addNotification())
         }
 
-        // Collect hardware blink flow
         serviceScope.launch {
             phoneCtrl.blinkOn.collect { blink ->
-                Log.d(TAG,"collect blink: $blink")
                 blinkJob?.cancel()
                 if (!blink) {
-//                    if (blink) {
-//                } else {
                     stopBlinkFlash()
                     if (phoneCtrl.flashOn.value) {
                         switchFlashOn(true)
@@ -118,10 +100,8 @@ class FlashService : Service() {
                 }
             }
         }
-        // Collect flashOn flow to turn torch off when turned off
         serviceScope.launch {
             phoneCtrl.flashOn.collect { on ->
-                Log.d(TAG,"collect flashOn: $on")
                 if (on) {
                     switchFlashOn(true)
                 } else {
@@ -136,17 +116,14 @@ class FlashService : Service() {
                 .distinctUntilChanged()
                 .filter { it }
                 .collect {
-                    // kick off the loop above
                     startBlinkFlash()
                 }
         }
 
         serviceScope.launch {
             phoneCtrl.flashOn.combine(phoneCtrl.sosOn) { a, b -> a && b }
-                .distinctUntilChanged()   // only when result flips
+                .distinctUntilChanged()
                 .collect {
-                    // runs whenever A && B transitions to true
-                    Log.d(TAG,"collect sosOn: true")
                     if (it) setSos(true) else setSos(false)
                 }
         }
@@ -155,59 +132,39 @@ class FlashService : Service() {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Log.d(TAG,"onStartCommand")
-
-        // Check notification permission: required to call startForeground safely
         if (!PermissionUtils.hasPostNotificationsPermission(this)) {
-            // Can't post notifications — we cannot run as a foreground service
-            // Inform UI to ask lightsignals to enable permissions (via broadcast)
-            Log.w(TAG,"Notifications permission missing; stopping service")
-            notifyUiPermissionsMissing()
+                 notifyUiPermissionsMissing()
             stopSelf()
             return START_NOT_STICKY
         }
 
-        // If you also need to toggle torch (camera API), check camera permission too
         if (!PermissionUtils.hasCameraPermission(this)) {
-            Log.w(TAG,"Camera permission missing; torch functionality disabled")
-            // perform degraded behavior, inform UI, or stop action that needs camera
             notifyUiPermissionsMissing()
             stopSelf()
             return START_NOT_STICKY
         } else {
-            // safe to access camera or CameraManager for torch
             enableCamera()
         }
-        Log.d(TAG,"notificationManager = $notificationManager")
         return START_NOT_STICKY
     }
 
     private fun startBlinkFlash() {
-        Log.d(TAG,"startBlinkFlash() ")
-        // cancel any previous blink
         blinkJob?.cancel()
         blinkJob = serviceScope.launch {
-            // as long as flashOn && blinkOn
-            while (isActive && phoneCtrl.flashOn.value && phoneCtrl.blinkOn.value) {
-                // turn it on
+              while (isActive && phoneCtrl.flashOn.value && phoneCtrl.blinkOn.value) {
                 switchFlashOn(true)
-                // wait *current* delay
                 delay(phoneCtrl.blinkDelay.value)
-                // turn it off
                 switchFlashOn(false)
-                // wait *current* delay
                 delay(phoneCtrl.blinkDelay.value)
             }
         }
     }
 
     private fun stopBlinkFlash() {
-        Log.d(TAG,"stopBlinkFlash() ")
         blinkJob?.cancel()
     }
 
     private fun switchFlashOn(status: Boolean) {
-//        Log.d(TAG,"switchFlashOn($status)")
         cameraId?.let { cameraManager.setTorchMode(it, status) }
         if (status && phoneCtrl.activeSound.value != 0 &&
             (phoneCtrl.flashOn.value && (phoneCtrl.blinkOn.value || phoneCtrl.sosOn.value))
@@ -217,7 +174,6 @@ class FlashService : Service() {
     }
 
     private fun setSos(on: Boolean) {
-        Log.d(TAG,"setSos($on)")
         if (on) {
             stopBlinkFlash()
             startTorchSos()
@@ -227,13 +183,10 @@ class FlashService : Service() {
     }
 
     private fun stopTorchSos() {
-        Log.d(TAG,"stopTorchSos()")
         sosJob?.cancel()
-//        switchFlashOn(false)
     }
 
     private fun startTorchSos() {
-        Log.d(TAG,"startTorchSos()")
         sosJob?.cancel()
         sosJob = CoroutineScope(Dispatchers.Default).launch {
             val dot = SOS_UNIT_MS
@@ -261,7 +214,6 @@ class FlashService : Service() {
     }
 
     private fun enableCamera() {
-        // Find a camera with flash
         cameraId = cameraManager.cameraIdList.firstOrNull {
             cameraManager.getCameraCharacteristics(it)
                 .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
@@ -269,7 +221,6 @@ class FlashService : Service() {
     }
 
     private fun notifyUiPermissionsMissing() {
-        // Send a broadcast
         val intent = Intent(ACTION_PERMISSIONS_MISSING)
         intent.putExtra(EXTRA_MISSING_CAMERA, !PermissionUtils.hasCameraPermission(this))
         intent.putExtra(
@@ -283,7 +234,6 @@ class FlashService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG,"onDestroy()")
         blinkJob?.cancel()
         sosJob?.cancel()
         switchFlashOn(false)
@@ -293,7 +243,6 @@ class FlashService : Service() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
-
 
     private fun addNotification(): Notification {
         val notificationIntent = Intent(this, PhoneMainActivity::class.java)

@@ -12,13 +12,9 @@ data class PhoneControlState(
     val activeSound: Int = 0,
     val color: Float = 0xFFFFFFFF.toFloat(),
     val screenIndex: Int = 0,
-    val activeColorButton: Int = 0 //  0 = Red Button, 1 = Middle Button, 2 = Green Button,  3= Flash Button,
+    val activeColorButton: Int = 0
 ) {
     companion object {
-        /**
-         * Load all defaults from DataStore and return
-         * a fully-populated PhoneControlState.
-         */
         suspend fun fromDataStore(dataStore: DataStore<Preferences>): PhoneControlState {
             val prefs = dataStore.data.first()
             val initialSosEnabled: Boolean

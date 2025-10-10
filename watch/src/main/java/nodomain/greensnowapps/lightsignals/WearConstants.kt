@@ -37,5 +37,4 @@ object WearConstants {
 
     const val DEFAULT_VOLUME = 0.5f
 
-
 }

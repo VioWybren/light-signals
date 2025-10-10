@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-ko/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals 사용 불가</string>
     <string name="dialog_message_app_unavailable_on_phone">시계가 휴대전화에 연결할 수 없거나 동반 앱이 설치되어 있지 않습니다.\n• 휴대전화 연결 상태를 확인하세요\n• 아직 설치하지 않았다면 휴대전화에 Light Signals 앱을 설치하세요\n탭하여 Google Play를 엽니다</string>
 
@@ -15,14 +15,12 @@
     <string name="dialog_fail_no_connected_phones">연결된 휴대전화가 없습니다</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">손전등을 제어하려면 시계와 휴대전화에 설치된 Light Signals 앱을 연결하세요</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">사운드 설정</string>
     <string name="no_sound">없음</string>
     <string name="sound">사운드</string>
 
-    <!-- Indicator -->
     <string name="circular_indicator_text">휴대전화에서 실행 중</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">취소</string>
+
 </resources>

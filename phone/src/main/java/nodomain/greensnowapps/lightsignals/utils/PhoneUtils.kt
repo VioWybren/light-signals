@@ -5,9 +5,7 @@ import androidx.compose.ui.graphics.Color
 object PhoneUtils {
 
     private const val FULL = 255
-    /**
-     * Computes a "special" color based on the current progress.
-     */
+
     fun computeSpecialColor(progress: Int): Color {
         var r = 0
         var g = 0
@@ -45,7 +43,6 @@ object PhoneUtils {
                 b = progress % 256
             }
             else -> {
-                // default value when out of bounds
                 r = 0
                 g = 0
                 b = 0

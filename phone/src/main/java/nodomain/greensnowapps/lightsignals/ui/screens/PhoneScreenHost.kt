@@ -1,6 +1,5 @@
 package nodomain.greensnowapps.lightsignals.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,29 +31,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-//import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.launch
-import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 import nodomain.greensnowapps.lightsignals.R
-
-private const val TAG = "PhoneScreenHost"
+import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 
 @Composable
 fun PhoneScreenHost(
     onToggleClick: () -> Unit,
 
-// Pre-explain
     showPreExplain: Boolean,
     preExplainMessage: String,
     onPreExplainContinue: () -> Unit,
     onDismissPreExplain: () -> Unit,
-// Rationale dialog
+
     showRationale: Boolean,
     rationaleMessage: String,
     onRequestAgain: () -> Unit,
     onDismissRationale: () -> Unit,
-// Settings dialog
+
     showSettings: Boolean,
     settingsMessage: String,
     onOpenSettings: () -> Unit,
@@ -63,59 +58,30 @@ fun PhoneScreenHost(
     val mainVm: PhoneMainViewModel = hiltViewModel()
     val screenIndex by mainVm.screenIndex.collectAsState()
 
-    // Create a PagerState with the initial page matching screenIndex
-    // Remember a pagerState for 2 pages
     val pagerState = rememberPagerState(
         initialPage = screenIndex,
         pageCount = { 2 }
     )
 
-    // Whenever pager swipe changes page, update VM’s screenIndex
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
             .collect { page ->
-                Log.d(TAG,"pagerState.currentPage(${page}) ")
                 mainVm.updateScreenIndex(page)
             }
     }
 
-    // Whenever screenIndex in VM changes, animate pager to that page
     LaunchedEffect(screenIndex) {
-        Log.d(TAG,"LaunchedEffect($screenIndex) ")
         if (pagerState.currentPage != screenIndex) {
             pagerState.animateScrollToPage(screenIndex)
         }
     }
 
-//    val view = LocalView.current
-//    DisposableEffect(view) {
-//        val activity = view.context as? Activity
-//        val window = activity?.window
-//        if (window != null) {
-//            // let the app draw behind system bars
-//            WindowCompat.setDecorFitsSystemWindows(window, false)
-//            val controller = WindowInsetsControllerCompat(window, view)
-//            // hide nav bar (and status bar if you want)
-//            controller.hide(WindowInsetsCompat.Type.navigationBars())
-//            // allow lightsignals to swipe to reveal transiently
-//            controller.systemBarsBehavior =
-//                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-//
-//            onDispose {
-//                // show nav bar again and restore default behavior
-//                controller.show(WindowInsetsCompat.Type.navigationBars())
-//                WindowCompat.setDecorFitsSystemWindows(window, true)
-//            }
-//        } else {
-//            onDispose { }
-//        }
-//    }
 
     val scrollScope = rememberCoroutineScope()
-    // The pager itself
+
     HorizontalPager(
         state = pagerState,
-        beyondViewportPageCount = 1,    // <— keep one page on each side alive; very important !!
+        beyondViewportPageCount = 1,
         modifier = Modifier
             .fillMaxWidth()
     ) { page ->
@@ -124,8 +90,9 @@ fun PhoneScreenHost(
             1 -> PhoneSignalScreen(mainVm, onBack = { scrollScope.launch { pagerState.animateScrollToPage(0) } })
         }
     }
+
     val statusBarHeightDp = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    // Indicator
+
     Column(
         Modifier
             .padding(top = (statusBarHeightDp + 30.dp))
@@ -153,7 +120,6 @@ fun PhoneScreenHost(
         }
     }
 
-    // PRE-EXPLAIN dialog overlays the UI before we call system dialog
     if (showPreExplain) {
         AlertDialog(
             onDismissRequest = onDismissPreExplain,
@@ -164,7 +130,6 @@ fun PhoneScreenHost(
         )
     }
 
-    // RATIONALE dialog overlays the UI
     if (showRationale) {
         AlertDialog(
             onDismissRequest = onDismissRationale,
@@ -183,7 +148,6 @@ fun PhoneScreenHost(
         )
     }
 
-    // SETTINGS dialog overlays the UI
     if (showSettings) {
         AlertDialog(
             onDismissRequest = onDismissSettings,

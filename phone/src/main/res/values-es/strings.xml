@@ -1,7 +1,7 @@
-<!--<?xml version="1.0" encoding="utf-8"?>-->
+<?xml version="1.0" encoding="utf-8"?>
+
 <resources>
-    <!-- values-es/strings.xml -->
-    <!--Permission dialogs-->
+
     <string name="dialog_title_pre_explain">Permisos necesarios</string>
     <string name="dialog_message_pre_explain_base">Por qué necesitamos estos permisos:\n\n</string>
     <string name="dialog_message_pre_explain_camera">• Cámara — se usa solo para activar la linterna. Light Signals no toma fotos ni graba vídeo.\n</string>
@@ -24,7 +24,6 @@
     <string name="_continue">Continuar</string>
     <string name="_later">Más tarde</string>
 
-    <!-- Dialogs -->
     <string name="dialog_title_wear_api_unavailable">Funciones Wear no disponibles</string>
     <string name="dialog_message_wear_api_unavailable">Este dispositivo no es compatible con funciones para wearables.</string>
 
@@ -34,31 +33,25 @@
     <string name="dialog_title_install_on_watch">Instalar Light Signals en el reloj</string>
     <string name="dialog_message_install_on_watch">La app no está instalada en el reloj conectado. ¿Desea instalarla?</string>
 
-    <!-- Snackbars -->
     <string name="snackbar_app_installed_on_watch_success">La instalación en el reloj se ha iniciado</string>
     <string name="snackbar_installation_on_watch_failed">La instalación en el reloj falló. Por favor, inténtelo más tarde</string>
     <string name="snackbar_app_failed_to_launch_on_watch">No se pudo iniciar la app en el reloj</string>
     <string name="snackbar_app_launched_on_watch">Iniciado en el reloj. Controla la aplicación desde tu reloj</string>
     <string name="snackbar_no_connected_watches">No hay relojes conectados</string>
 
-    <!-- Notification strings -->
     <string name="notification_title">Abrir Light Signals</string>
     <string name="notification_text">Use la linterna o la pantalla para mostrar señales. Toque para abrir.</string>
 
-    <!-- Notification channel -->
     <string name="notification_channel_name">Canal de notificaciones Light Signals</string>
     <string name="notification_channel_description">Acceso rápido a señales por linterna y pantalla</string>
 
-    <!-- Menu items -->
     <string name="menu_item_synchronize_with_watch">Sincronizar con el reloj</string>
 
-    <!-- Sound selector -->
     <string name="no_sound">Ninguno</string>
     <string name="sound_1">Sonido 1</string>
     <string name="sound_2">Sonido 2</string>
     <string name="sound_3">Sonido 3</string>
 
-    <!--  Indicator  -->
     <string name="circular_indicator_text">Iniciando en el reloj</string>
 
 </resources>

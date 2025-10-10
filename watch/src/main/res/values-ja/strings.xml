@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-ja/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals を利用できません</string>
     <string name="dialog_message_app_unavailable_on_phone">お使いの腕時計が電話に接続できないか、コンパニオンアプリがインストールされていません。\n• 電話の接続を確認してください\n• まだインストールしていない場合は、電話に Light Signals をインストールしてください\nタップして Google Play を開きます</string>
 
@@ -15,14 +15,12 @@
     <string name="dialog_fail_no_connected_phones">接続された電話が見つかりません</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">懐中電灯を制御するには、時計と電話の Light Signals アプリを連携してください</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">サウンド設定</string>
     <string name="no_sound">なし</string>
     <string name="sound">サウンド</string>
 
-    <!-- Indicator -->
     <string name="circular_indicator_text">電話で起動中</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">キャンセル</string>
+
 </resources>

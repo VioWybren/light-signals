@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
+
     <string name="app_name" translatable="false">Light Signals</string>
 
-    <!--Dialogs buttons-->
     <string name="_ok">OK</string>
     <string name="_cancel">Cancel</string>
     <string name="_continue">Continue</string>
     <string name="_later">Later</string>
 
-    <!--Permission dialogs-->
-    <!--    Pre-explain dialog-->
     <string name="dialog_title_pre_explain">Permissions required</string>
     <string name="dialog_message_pre_explain_base">Why we need these permissions:\n\n</string>
     <string name="dialog_message_pre_explain_camera">• Camera — used only to toggle the flashlight. Light Signals does not take photos or record video.\n</string>
     <string name="dialog_message_pre_explain_notification">• Notifications — let the app show alerts and provide quick access while running in the background</string>
-    <!--    Rationale dialog-->
+
     <string name="dialog_title_rationale_dialog">Permissions required</string>
     <string name="confirm_button_rationale_dialog">Request again</string>
     <string name="dialog_message_rationale_dialog_base">To continue, the app needs:\n\n</string>
     <string name="dialog_message_rationale_dialog_camera">• Camera — to toggle the flashlight \n</string>
     <string name="dialog_message_rationale_dialog_notification">• Notifications — to show background alerts and provide quick actions</string>
-    <!--     Setting dialog-->
+
     <string name="dialog_title_setting_dialog">Enable permissions in Settings</string>
     <string name="confirm_button_setting_dialog">Open Settings</string>
     <string name="dialog_message_setting_dialog_base">One or more permissions were permanently denied. Open the app settings to enable them:\n\n</string>
     <string name="dialog_message_setting_dialog_camera">• Camera (flashlight)\n</string>
     <string name="dialog_message_setting_dialog_notification">• Notifications\n</string>
-    <!--  Dialogs  -->
+
     <string name="dialog_title_wear_api_unavailable">Wear features unavailable</string>
     <string name="dialog_message_wear_api_unavailable">This device does not support wearable features</string>
 
@@ -37,31 +35,26 @@
     <string name="dialog_title_install_on_watch">Install Light Signals on the watch</string>
     <string name="dialog_message_install_on_watch">The app is not installed on your connected watch. Would you like to install it?</string>
 
-    <!--   Snackbars   -->
     <string name="snackbar_app_installed_on_watch_success">The installation has started on the watch</string>
     <string name="snackbar_installation_on_watch_failed">Installation on the watch failed. Please try again later</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Failed to launch the app on the watch</string>
     <string name="snackbar_app_launched_on_watch">Launched on watch. Control the app from your watch</string>
     <string name="snackbar_no_connected_watches">No connected watches found</string>
 
-    <!-- Notification strings -->
+
     <string name="notification_title">Open Light Signals</string>
     <string name="notification_text">Use the flashlight or screen to show signals. Tap to open.</string>
 
-    <!-- Notification channel -->
     <string name="notification_channel_name">Light Signals notification channel</string>
     <string name="notification_channel_description">Quick access to flashlight and screen signals</string>
 
-    <!--Menu items-->
     <string name="menu_item_synchronize_with_watch">Synchronize with the watch</string>
 
-    <!--   Sound selector/sound menu  -->
     <string name="no_sound">None</string>
     <string name="sound_1">Sound 1</string>
     <string name="sound_2">Sound 2</string>
     <string name="sound_3">Sound 3</string>
 
-    <!--  Indicator  -->
     <string name="circular_indicator_text">Launching on watch</string>
 
 </resources>

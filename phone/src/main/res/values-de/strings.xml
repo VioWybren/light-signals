@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><!-- values-de/strings.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 
 <resources>
 
-    <!--Permission dialogs-->
     <string name="dialog_title_pre_explain">Berechtigungen erforderlich</string>
     <string name="dialog_message_pre_explain_base">Warum wir diese Berechtigungen benötigen:\n\n</string>
     <string name="dialog_message_pre_explain_camera">• Kamera — wird nur zum Ein- und Ausschalten der Taschenlampe verwendet. Light Signals macht keine Fotos oder Videos.\n</string>
@@ -25,7 +24,7 @@
     <string name="_continue">Weiter</string>
     <string name="_later">Später</string>
 
-    <!-- Dialogs -->
+
     <string name="dialog_title_wear_api_unavailable">Wear-Funktionen nicht verfügbar</string>
     <string name="dialog_message_wear_api_unavailable">Dieses Gerät unterstützt keine Wearable-Funktionen.</string>
 
@@ -35,31 +34,28 @@
     <string name="dialog_title_install_on_watch">Light Signals auf der Uhr installieren</string>
     <string name="dialog_message_install_on_watch">Die App ist auf der verbundenen Uhr nicht installiert. Möchten Sie sie installieren?</string>
 
-    <!-- Snackbars -->
+
     <string name="snackbar_app_installed_on_watch_success">Die Installation auf der Uhr wurde gestartet</string>
     <string name="snackbar_installation_on_watch_failed">Die Installation auf der Uhr ist fehlgeschlagen. Bitte versuchen Sie es später erneut</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Die App konnte auf der Uhr nicht gestartet werden</string>
     <string name="snackbar_app_launched_on_watch">Auf der Uhr gestartet. Steuere die App von deiner Uhr aus</string>
     <string name="snackbar_no_connected_watches">Keine verbundenen Uhren</string>
 
-    <!-- Notification strings -->
+
     <string name="notification_title">Light Signals öffnen</string>
     <string name="notification_text">Verwenden Sie die Taschenlampe oder den Bildschirm, um Signale anzuzeigen. Tippen zum Öffnen.</string>
 
-    <!-- Notification channel -->
+
     <string name="notification_channel_name">Light Signals Benachrichtigungen</string>
     <string name="notification_channel_description">Schneller Zugriff auf Taschenlampen- und Bildschirm-Signale</string>
 
-    <!-- Menu items -->
     <string name="menu_item_synchronize_with_watch">Mit der Uhr synchronisieren</string>
 
-    <!-- Sound selector -->
     <string name="no_sound">Keine</string>
     <string name="sound_1">Ton 1</string>
     <string name="sound_2">Ton 2</string>
     <string name="sound_3">Ton 3</string>
 
-    <!--  Indicator  -->
     <string name="circular_indicator_text">Start auf der Uhr</string>
 
 </resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name" translatable="false">Light Signals</string>
+
+    <string name="dialog_title_app_unavailable_on_phone">Light Signals ei saatavilla</string>
+    <string name="dialog_message_app_unavailable_on_phone">Kellosi ei tavoita puhelintasi tai kumppanisovellusta ei ole asennettu\n• Tarkista, että puhelimesi on yhdistetty\n• Jos et ole vielä, asenna Light Signals -puhelinsovellus\nNapauta avataksesi Google Play -kaupan</string>
+
+    <string name="dialog_title_install_on_phone">Light Signals ei löytynyt</string>
+    <string name="dialog_message_install_on_phone">Asenna Light Signals puhelimeesi käyttöönottoa varten ja saadaksesi kaikki ominaisuudet. Napauta avataksesi Google Play -kaupan</string>
+
+    <string name="dialog_success_installation_has_been_started_on_phone">Asennus on aloitettu puhelimessasi</string>
+    <string name="dialog_success_open_on_phone">Light Signals on avattu puhelimessasi. Käytä kelloa ohjaamiseen</string>
+
+    <string name="dialog_fail_installation_on_phone_failed">Asennus puhelimeen epäonnistui. Yritä myöhemmin uudelleen</string>
+    <string name="dialog_fail_no_connected_phones">Yhtään yhdistettyä puhelinta ei löytynyt</string>
+    <string name="dialog_fail_connect_app_on_phone_for_torch">Yhdistä Light Signals -sovellukset kellossasi ja puhelimessasi ohjataksesi taskulamppua</string>
+
+    <string name="sound_settings">Ääniasetukset</string>
+    <string name="no_sound">Ei ääntä</string>
+    <string name="sound">Ääni</string>
+
+    <string name="circular_indicator_text">Käynnistetään puhelimella</string>
+
+    <string name="_cancel">Peruuta</string>
+
+</resources>

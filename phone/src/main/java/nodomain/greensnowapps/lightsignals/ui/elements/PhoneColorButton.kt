@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import nodomain.greensnowapps.lightsignals.EMPTY_STRING
 import nodomain.greensnowapps.lightsignals.SOS_TEXT
 
-// A composable for each round color button with a blinking effect if active.
 @Composable
 fun PhoneColorButton(
     sosOn: Boolean,
@@ -27,7 +26,7 @@ fun PhoneColorButton(
     color: Color,
     isActive: Boolean,
     blinkOn: Boolean,
-    blinkActive: Boolean, // color is on
+    blinkActive: Boolean,
     onClick: () -> Unit,
     size: Dp = 130.dp
 ) {

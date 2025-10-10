@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- values-hi/strings.xml -->
+
 <resources>
-    <!-- Dialogs -->
+
     <string name="dialog_title_app_unavailable_on_phone">Light Signals उपलब्ध नहीं</string>
     <string name="dialog_message_app_unavailable_on_phone">आपकी घड़ी आपके फोन से कनेक्ट नहीं हो पा रही है या साथी ऐप इंस्टॉल नहीं है।\n• जांचें कि आपका फोन जुड़ा हुआ है\n• यदि आपने अभी तक नहीं किया है, तो अपने फोन पर Light Signals इंस्टॉल करें\nGoogle Play खोलने के लिए टैप करें</string>
 
@@ -15,14 +15,12 @@
     <string name="dialog_fail_no_connected_phones">कोई जुड़ा हुआ फोन नहीं मिला</string>
     <string name="dialog_fail_connect_app_on_phone_for_torch">टॉर्च नियंत्रित करने के लिए अपनी घड़ी और फोन पर Light Signals ऐप्स को लिंक करें</string>
 
-    <!-- Sound selector -->
     <string name="sound_settings">साउंड सेटिंग्स</string>
     <string name="no_sound">कोई नहीं</string>
     <string name="sound">ध्वनि</string>
 
-    <!-- Indicator -->
-    <string name="circular_indicator_text">फोन पर लॉन्च हो रहा है</string>
+     <string name="circular_indicator_text">फोन पर लॉन्च हो रहा है</string>
 
-    <!-- Common buttons -->
     <string name="_cancel">रद्द करें</string>
+
 </resources>

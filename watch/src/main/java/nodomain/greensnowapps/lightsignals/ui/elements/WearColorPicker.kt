@@ -21,10 +21,6 @@ import androidx.compose.ui.unit.dp
 
 private const val MAX_PROGRESS = 255 * 7
 
-/**
- * An improved ColorPickerSlider: draws a horizontal gradient and provides callbacks for updates.
- */
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WearColorPicker(
@@ -33,7 +29,7 @@ fun WearColorPicker(
     onValueChangeFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Define the gradient colors similar to your original GradientDrawable.
+
     val gradientColors = listOf(
         Color.Black,
         Color.Blue,
