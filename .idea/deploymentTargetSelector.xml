@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="watch">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-10-09T14:23:50.733327900Z">
+        <DropdownSelection timestamp="2025-10-11T20:44:08.897876400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=GANPCV00824658A" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CT21DV44H" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -31,10 +31,10 @@
       </SelectionState>
       <SelectionState runConfigName="phone">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-10-09T14:12:05.388974400Z">
+        <DropdownSelection timestamp="2025-10-11T20:44:15.577589600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=RFAX910F33R" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CT21DV44H" />
             </handle>
           </Target>
         </DropdownSelection>

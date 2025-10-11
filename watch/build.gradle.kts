@@ -17,15 +17,19 @@ android {
         applicationId = "nodomain.greensnowapps.lightsignals"
         minSdk = 30
         targetSdk = 35
-        versionCode = 353000
-        versionName = "3.0"
+        versionCode = 353010
+        versionName = "3.01"
         // Kotlin versions starts from  versionCode = 353000
         //35 = targetSdk, 300 = version, 0 - watch
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // Enables code-related app optimization. For release - true, debug - false
+            isMinifyEnabled = true
+//            // Enables resource shrinking. For release - true, debug - false
+            isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
