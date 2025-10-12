@@ -36,8 +36,8 @@ class PhoneMainActivity : ComponentActivity() {
     private val viewModel: PhoneMainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             LightSignalNewTheme {
