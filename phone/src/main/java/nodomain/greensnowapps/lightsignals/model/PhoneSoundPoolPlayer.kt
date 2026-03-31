@@ -6,7 +6,7 @@ import android.media.SoundPool
 import android.os.SystemClock
 import dagger.hilt.android.qualifiers.ApplicationContext
 import nodomain.greensnowapps.lightsignals.R
-import okio.AsyncTimeout.Companion.lock
+//import okio.AsyncTimeout.Companion.lock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,6 +16,8 @@ private const val MAX_STREAMS = 3
 class PhoneSoundPoolPlayer @Inject constructor(
     @param: ApplicationContext private val context: Context
 ) {
+    private val lock = Any()
+
     private val soundResMap = mapOf(
         1 to R.raw.beep_1,
         2 to R.raw.beep_2,

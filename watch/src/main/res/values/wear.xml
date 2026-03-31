@@ -3,7 +3,9 @@
 
     tools:keep="@array/android_wear_capabilities">
 
-    <string-array name="android_wear_capabilities">
+    <string-array name="android_wear_capabilities"
+        translatable="false"
+        tools:ignore="UnusedResources">
         <item>data_layer_app_helper_device_watch</item>
         <item>horologist_watch</item>
     </string-array>

@@ -7,12 +7,13 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.graphics.Color
+import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
@@ -59,7 +60,7 @@ class FlashLightService : Service() {
     private var cameraId: String? = null
     private var blinkJob: Job? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-
+    private var torchEnabled = false
     private var sosJob: Job? = null
 
     override fun onCreate() {
@@ -165,11 +166,30 @@ class FlashLightService : Service() {
     }
 
     private fun switchFlashOn(status: Boolean) {
-        cameraId?.let { cameraManager.setTorchMode(it, status) }
-        if (status && phoneCtrl.activeSound.value != 0 &&
-            (phoneCtrl.flashOn.value && (phoneCtrl.blinkOn.value || phoneCtrl.sosOn.value))
-        ) {
-            soundPlayer.playOnce(phoneCtrl.activeSound.value)
+        if (torchEnabled == status) return
+
+        val id = cameraId ?: run {
+            enableCamera()
+            cameraId ?: return
+        }
+
+        try {
+            cameraManager.setTorchMode(id, status)
+            torchEnabled = status
+
+            if (status &&
+                phoneCtrl.activeSound.value != 0 &&
+                phoneCtrl.flashOn.value &&
+                (phoneCtrl.blinkOn.value || phoneCtrl.sosOn.value)
+            ) {
+                soundPlayer.playOnce(phoneCtrl.activeSound.value)
+            }
+        } catch (e: CameraAccessException) {
+            Log.e("FlashLightService", "Torch failed", e)
+        } catch (e: SecurityException) {
+            Log.e("FlashLightService", "Missing camera permission", e)
+        } catch (e: Exception) {
+            Log.e("FlashLightService", "Unexpected torch error", e)
         }
     }
 
@@ -214,9 +234,10 @@ class FlashLightService : Service() {
     }
 
     private fun enableCamera() {
-        cameraId = cameraManager.cameraIdList.firstOrNull {
-            cameraManager.getCameraCharacteristics(it)
-                .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
+        cameraId = cameraManager.cameraIdList.firstOrNull { id ->
+            val chars = cameraManager.getCameraCharacteristics(id)
+            chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true &&
+                    chars.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
         }
     }
 
@@ -246,18 +267,12 @@ class FlashLightService : Service() {
 
     private fun addNotification(): Notification {
         val notificationIntent = Intent(this, PhoneMainActivity::class.java)
-        val pendingIntent: PendingIntent?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                notificationIntent,
-                PendingIntent.FLAG_IMMUTABLE
-            )
-        } else {
-            pendingIntent =
-                PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_MUTABLE)
-        }
+        val pendingIntent: PendingIntent? = PendingIntent.getActivity(
+            this,
+            0,
+            notificationIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             val notificationBuilder: NotificationCompat.Builder =

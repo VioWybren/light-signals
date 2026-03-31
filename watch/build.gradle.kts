@@ -17,8 +17,8 @@ android {
         applicationId = "nodomain.greensnowapps.lightsignals"
         minSdk = 30
         targetSdk = 35
-        versionCode = 353020
-        versionName = "3.02"
+        versionCode = 353030
+        versionName = "3.03"
         // Kotlin versions starts from  versionCode = 353000
         //35 = targetSdk, 300 = version, 0 - watch
     }
@@ -74,31 +74,31 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 
-    implementation ("androidx.compose.ui:ui:1.9.2")
-    implementation("androidx.compose.ui:ui-android:1.9.2")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.9.2")
+    implementation ("androidx.compose.ui:ui:1.10.6")
+    implementation("androidx.compose.ui:ui-android:1.10.6")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.10.6")
 
     // Compose for Wear OS dependencies
-    implementation("androidx.wear.compose:compose-material3:1.5.2")
+    implementation("androidx.wear.compose:compose-material3:1.6.0")
     // Foundation is additive, so you can use the mobile version in your Wear OS app.
-    implementation("androidx.wear.compose:compose-foundation:1.5.2")
+    implementation("androidx.wear.compose:compose-foundation:1.6.0")
     // Wear OS preview annotations
-    implementation("androidx.wear.compose:compose-ui-tooling:1.5.2")
+    implementation("androidx.wear.compose:compose-ui-tooling:1.6.0")
 
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.1.1")
 
     //Datastore
-    implementation ("androidx.datastore:datastore-preferences:1.1.7")
+    implementation ("androidx.datastore:datastore-preferences:1.2.1")
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.57.2")
-    ksp("com.google.dagger:hilt-android-compiler:2.57.2")
+    implementation("com.google.dagger:hilt-android:2.59.2")
+    ksp("com.google.dagger:hilt-android-compiler:2.59.2")
     // Hilt support for Compose
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
-    val lifecycleVersion = "2.9.3"
+    val lifecycleVersion = "2.10.0"
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose-android:$lifecycleVersion")
     // optional - ProcessLifecycleOwner provides a lifecycle for the whole application process
@@ -111,7 +111,7 @@ dependencies {
     implementation("com.google.android.horologist:horologist-datalayer-watch:0.7.15")
     implementation("com.google.android.horologist:horologist-datalayer:0.7.15")
 
-    implementation("androidx.core:core-splashscreen:1.2.0-rc01")
+    implementation("androidx.core:core-splashscreen:1.2.0")
 
 //
 //    // If you are using Compose Navigation, use the Wear OS version (NOT THE MOBILE VERSION).
