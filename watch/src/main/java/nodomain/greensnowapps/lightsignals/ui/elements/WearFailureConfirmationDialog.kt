@@ -1,13 +1,17 @@
 package nodomain.greensnowapps.lightsignals.ui.elements
 
-import androidx.compose.material3.MaterialTheme
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PhonelinkErase
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.wear.compose.material3.ConfirmationDialog
-import androidx.wear.compose.material3.ConfirmationDialogColors
-import androidx.wear.compose.material3.ConfirmationDialogDefaults
+import androidx.compose.ui.text.style.TextAlign
+import androidx.wear.compose.material3.AlertDialog
+import androidx.wear.compose.material3.AlertDialogDefaults
+import androidx.wear.compose.material3.AlertDialogDefaults.ConfirmIcon
 import androidx.wear.compose.material3.Text
+
 
 @Composable
 fun WearFailureConfirmationDialog(
@@ -16,27 +20,18 @@ fun WearFailureConfirmationDialog(
     onDismiss: () -> Unit
 ) {
 
-    ConfirmationDialog(
+    AlertDialog(
         visible = showDialog,
-        onDismissRequest = {
-            onDismiss()
-        },
-        text = {
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = Int.MAX_VALUE,
-                overflow = TextOverflow.Visible
+        onDismissRequest = { onDismiss() },
+        title = {},
+        text = { Text(text = message, style = androidx.wear.compose.material3.MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center) },
+        icon = { Icon(Icons.Outlined.PhonelinkErase, "IconLinkErase", tint = Color(0xffff6f00)) },
+        confirmButton = {
+            AlertDialogDefaults.ConfirmButton(
+                onClick = onDismiss,
+                content = ConfirmIcon
             )
         },
-        durationMillis = 5000L,
-        content = {
-            ConfirmationDialogDefaults.FailureIcon()
-        },
-        colors = ConfirmationDialogColors(
-            iconColor = Color.Yellow,
-            iconContainerColor = Color.Transparent,
-            textColor = Color.White
-        )
+        dismissButton = {},
     )
 }

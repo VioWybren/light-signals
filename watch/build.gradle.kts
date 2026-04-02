@@ -16,8 +16,8 @@ android {
     defaultConfig {
         applicationId = "nodomain.greensnowapps.lightsignals"
         minSdk = 30
-        targetSdk = 35
-        versionCode = 353030
+        targetSdk = 36
+        versionCode = 363030
         versionName = "3.03"
         // Kotlin versions starts from  versionCode = 353000
         //35 = targetSdk, 300 = version, 0 - watch
