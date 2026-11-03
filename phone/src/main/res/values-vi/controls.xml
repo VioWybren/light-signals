@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">Đèn pin</string>
+    <string name="red_signal">Tín hiệu đỏ</string>
+    <string name="custom_color_signal">Tín hiệu màu tùy chỉnh</string>
+    <string name="green_signal">Tín hiệu xanh lá</string>
+    <string name="blink_signal">Tín hiệu nhấp nháy</string>
+    <string name="sos_signal">Tín hiệu SOS</string>
+    <string name="sound_selection">Âm thanh tín hiệu</string>
+    <string name="signal_interval">Khoảng thời gian tín hiệu</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">Trình đơn</string>
+    <string name="dialog_message_optional_notifications">• Thông báo (không bắt buộc) — hiển thị thông báo đèn pin trong bảng thông báo. Đèn pin vẫn hoạt động nếu bạn từ chối quyền này.</string>
+</resources>

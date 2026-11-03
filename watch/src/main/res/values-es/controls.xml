@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Conectar al teléfono</string>
+    <string name="control_phone_flashlight">Linterna del teléfono</string>
+    <string name="control_red_light">Señal roja</string>
+    <string name="control_custom_light">Señal de color personalizado</string>
+    <string name="control_green_light">Señal verde</string>
+    <string name="control_blinking">Señal intermitente</string>
+    <string name="control_sos">Señal SOS</string>
+    <string name="sound_number">Sonido %1$d</string>
+    <string name="control_increase_frequency">Aumentar la frecuencia de parpadeo</string>
+    <string name="control_decrease_frequency">Reducir la frecuencia de parpadeo</string>
+    <string name="control_increase_volume">Subir el volumen</string>
+    <string name="control_decrease_volume">Bajar el volumen</string>
+</resources>

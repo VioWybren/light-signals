@@ -1,5 +1,6 @@
 package nodomain.greensnowapps.lightsignals.ui.elements
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import nodomain.greensnowapps.lightsignals.COLOR_CHECKED_BUTTON
@@ -23,6 +25,7 @@ fun LSToggleButton(
     checkedBtn: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     icon: ImageVector,
+    @StringRes contentDescriptionRes: Int,
     modifier: Modifier
 )
 {
@@ -43,7 +46,7 @@ fun LSToggleButton(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = "Localized description",
+            contentDescription = stringResource(contentDescriptionRes),
             modifier = modifier
         )
     }

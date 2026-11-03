@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">Taskulamppu</string>
+    <string name="red_signal">Punainen signaali</string>
+    <string name="custom_color_signal">Mukautetun värinen signaali</string>
+    <string name="green_signal">Vihreä signaali</string>
+    <string name="blink_signal">Vilkkuva signaali</string>
+    <string name="sos_signal">SOS-signaali</string>
+    <string name="sound_selection">Signaalin ääni</string>
+    <string name="signal_interval">Signaalin aikaväli</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">Valikko</string>
+    <string name="dialog_message_optional_notifications">• Ilmoitukset (valinnainen) — näyttävät taskulampun ilmoituksen ilmoituspaneelissa. Taskulamppu toimii myös ilman tätä lupaa.</string>
+</resources>

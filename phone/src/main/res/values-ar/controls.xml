@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">مصباح يدوي</string>
+    <string name="red_signal">إشارة حمراء</string>
+    <string name="custom_color_signal">إشارة بلون مخصص</string>
+    <string name="green_signal">إشارة خضراء</string>
+    <string name="blink_signal">إشارة وامضة</string>
+    <string name="sos_signal">إشارة استغاثة SOS</string>
+    <string name="sound_selection">صوت الإشارة</string>
+    <string name="signal_interval">الفاصل الزمني للإشارة</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">القائمة</string>
+    <string name="dialog_message_optional_notifications">• الإشعارات (اختيارية) — عرض إشعار المصباح في لوحة الإشعارات. يعمل المصباح أيضًا إذا رفضت الإذن.</string>
+</resources>

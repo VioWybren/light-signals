@@ -47,7 +47,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -112,12 +113,13 @@ fun PhoneMainScreen(
 ) {
 
     val phoneTorchViewModel: PhoneTorchViewModel = hiltViewModel()
-    val hasTorch by phoneTorchViewModel.hasTorch.collectAsState()
+    val hasTorch by phoneTorchViewModel.hasTorch.collectAsStateWithLifecycle()
 
 
     val context = LocalContext.current
+    val resources = LocalResources.current
 
-    val persistedFrequencyProgress by viewModel.progressFrequency.collectAsState()
+    val persistedFrequencyProgress by viewModel.progressFrequency.collectAsStateWithLifecycle()
 
     var sliderPositionFrequency by remember { mutableFloatStateOf(persistedFrequencyProgress) }
 
@@ -131,7 +133,7 @@ fun PhoneMainScreen(
         viewModel.updateBlinkDelay(blinkDelay)
     }
 
-    val persistedColorProgress by viewModel.progressColor.collectAsState()
+    val persistedColorProgress by viewModel.progressColor.collectAsStateWithLifecycle()
     var sliderPositionColor by remember { mutableFloatStateOf(persistedColorProgress) }
 
     LaunchedEffect(persistedColorProgress) {
@@ -142,13 +144,13 @@ fun PhoneMainScreen(
         PhoneUtils.computeSpecialColor(sliderPositionColor.toInt())
     }
 
-    val activeButton by viewModel.activeButton.collectAsState()
-    val flashOn by viewModel.flashOn.collectAsState()
-    val blinkOn by viewModel.blinkOn.collectAsState()
-    val colorBlinkActive by viewModel.colorBlinkActive.collectAsState()
-    val sosOn by viewModel.sosOn.collectAsState()
-    val controlMessage by viewModel.controlMessageFlow.collectAsState("")
-    val isLaunchingOnWear by viewModel.isLaunchingOnWear.collectAsState()
+    val activeButton by viewModel.activeButton.collectAsStateWithLifecycle()
+    val flashOn by viewModel.flashOn.collectAsStateWithLifecycle()
+    val blinkOn by viewModel.blinkOn.collectAsStateWithLifecycle()
+    val colorBlinkActive by viewModel.colorBlinkActive.collectAsStateWithLifecycle()
+    val sosOn by viewModel.sosOn.collectAsStateWithLifecycle()
+    val controlMessage by viewModel.controlMessageFlow.collectAsStateWithLifecycle(initialValue = "")
+    val isLaunchingOnWear by viewModel.isLaunchingOnWear.collectAsStateWithLifecycle()
 
     var checkedFlash by remember { mutableStateOf(flashOn) }
     LaunchedEffect(flashOn) { checkedFlash = flashOn }
@@ -214,12 +216,12 @@ fun PhoneMainScreen(
                 APP_IS_NOT_INSTALLED_ON_WATCH -> {
                     showInstallOnWatchDialog = true
                 }
-                INSTALLATION_ON_WATCH_STARTED -> showSnack(context.getString(R.string.snackbar_app_installed_on_watch_success))
-                INSTALLATION_ON_WATCH_FAILED -> showSnack(context.getString(R.string.snackbar_installation_on_watch_failed))
-                APP_FAILED_TO_LAUNCH_ON_WATCH -> showSnack(context.getString(R.string.snackbar_app_failed_to_launch_on_watch))
-                APP_LAUNCHED_ON_WATCH -> showSnack(context.getString(R.string.snackbar_app_launched_on_watch))
+                INSTALLATION_ON_WATCH_STARTED -> showSnack(resources.getString(R.string.snackbar_app_installed_on_watch_success))
+                INSTALLATION_ON_WATCH_FAILED -> showSnack(resources.getString(R.string.snackbar_installation_on_watch_failed))
+                APP_FAILED_TO_LAUNCH_ON_WATCH -> showSnack(resources.getString(R.string.snackbar_app_failed_to_launch_on_watch))
+                APP_LAUNCHED_ON_WATCH -> showSnack(resources.getString(R.string.snackbar_app_launched_on_watch))
                 WEARABLE_API_UNAVAILABLE -> showWearApiNotAvailableDialog = true
-                NO_CONNECTED_WATCHES -> showSnack(context.getString(R.string.snackbar_no_connected_watches))
+                NO_CONNECTED_WATCHES -> showSnack(resources.getString(R.string.snackbar_no_connected_watches))
                 else -> showSnack(inputCommand)
             }
         }
@@ -241,6 +243,7 @@ fun PhoneMainScreen(
 
     val activity = context as ComponentActivity
     val iconSize = 30.dp
+    val intervalDescription = stringResource(R.string.signal_interval)
 
     Scaffold(
         topBar = {
@@ -258,7 +261,7 @@ fun PhoneMainScreen(
                     IconButton(onClick = { expanded = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Menu",
+                            contentDescription = stringResource(R.string.menu),
                             tint = Color.White
                         )
                     }
@@ -268,7 +271,7 @@ fun PhoneMainScreen(
                             leadingIcon = {
                                 Icon(
                                     Icons.Outlined.Watch,
-                                    contentDescription = "Watch icon"
+                                    contentDescription = null
                                 )
                             },
                             onClick = {
@@ -422,6 +425,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.RED,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.red_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.RED) }
                                     )
@@ -432,6 +436,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.MIDDLE,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.custom_color_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.MIDDLE) }
                                     )
@@ -442,6 +447,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.GREEN,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.green_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.GREEN) }
                                     )
@@ -459,6 +465,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.RED,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.red_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.RED) }
                                     )
@@ -469,6 +476,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.MIDDLE,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.custom_color_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.MIDDLE) }
                                     )
@@ -479,6 +487,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.GREEN,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.green_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.GREEN) }
                                     )
@@ -520,7 +529,7 @@ fun PhoneMainScreen(
                     valueRange = MIN_SLIDER_PROGRESS..MAX_SLIDER_PROGRESS,
                     steps = 8,
                     modifier = Modifier
-                        .semantics { contentDescription = "Localized Description" },
+                        .semantics { contentDescription = intervalDescription },
                     colors = SliderDefaults.colors(
                         thumbColor = Color.Cyan,
                         activeTickColor = Color.Green
@@ -541,7 +550,7 @@ fun PhoneMainScreen(
                                 )
                                 {
                                     Text(
-                                        text = "${sliderPositionFrequency.roundToInt()} ms",
+                                        text = stringResource(R.string.interval_milliseconds, sliderPositionFrequency.roundToInt()),
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                 }

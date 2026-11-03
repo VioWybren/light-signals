@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">Фонарик</string>
+    <string name="red_signal">Красный сигнал</string>
+    <string name="custom_color_signal">Сигнал выбранного цвета</string>
+    <string name="green_signal">Зелёный сигнал</string>
+    <string name="blink_signal">Мигающий сигнал</string>
+    <string name="sos_signal">Сигнал SOS</string>
+    <string name="sound_selection">Звук сигнала</string>
+    <string name="signal_interval">Интервал сигнала</string>
+    <string name="interval_milliseconds">%1$d мс</string>
+    <string name="menu">Меню</string>
+    <string name="dialog_message_optional_notifications">• Уведомления (необязательно) — показывают уведомление фонарика на панели уведомлений. Фонарик работает и без этого разрешения.</string>
+</resources>

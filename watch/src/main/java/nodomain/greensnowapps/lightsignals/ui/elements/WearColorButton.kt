@@ -12,10 +12,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nodomain.greensnowapps.lightsignals.WearConstants
+import nodomain.greensnowapps.lightsignals.R
 
 @Composable
 fun WearColorButton(
@@ -25,6 +30,7 @@ fun WearColorButton(
     isActive: Boolean,
     blinkOn: Boolean,
     blinkActive: Boolean,
+    label: String,
     onClick: () -> Unit
 ) {
 
@@ -53,10 +59,14 @@ fun WearColorButton(
             .clip(CircleShape)
             .background(backGround)
             .border(2.dp, if (isActive) Color.White else color, CircleShape)
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
+            .semantics {
+                contentDescription = label
+                selected = isActive
+            }
     ) {
         Text(
-            text = (if (sosOn && isActive) WearConstants.SOS_TEXT else WearConstants.EMPTY_STRING),
+            text = if (sosOn && isActive) stringResource(R.string.sos_text) else "",
             fontSize = 8.sp,
             modifier = Modifier
                 .align(Alignment.Center),

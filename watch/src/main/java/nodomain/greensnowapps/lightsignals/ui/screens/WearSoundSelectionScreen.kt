@@ -1,7 +1,6 @@
 package nodomain.greensnowapps.lightsignals.ui.screens
 
 
-import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,17 +12,15 @@ import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Chip
@@ -40,7 +37,6 @@ import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearSoundViewModel
 
 
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun WearSoundSelectionScreen(
     wearSoundViewModel: WearSoundViewModel = hiltViewModel<WearSoundViewModel>(),
@@ -48,17 +44,12 @@ fun WearSoundSelectionScreen(
     onHideSoundSelector: () -> Unit,
 ) {
 
-    val context = LocalContext.current
-
     val listOfSounds: List<Int> = listOf(0, 1, 2, 3)
 
-    val active by wearSoundViewModel.activeSound.collectAsState()
-    val volume by wearSoundViewModel.volumeFlow.collectAsState()
+    val active by wearSoundViewModel.activeSound.collectAsStateWithLifecycle()
+    val volume by wearSoundViewModel.volumeFlow.collectAsStateWithLifecycle()
 
     val listState = rememberScalingLazyListState()
-
-    val vignetteState = mutableStateOf(VignettePosition.TopAndBottom)
-    val showVignette = mutableStateOf(true)
 
     BackHandler(enabled = true) {
         onHideSoundSelector()
@@ -69,9 +60,7 @@ fun WearSoundSelectionScreen(
             PositionIndicator(scalingLazyListState = listState, modifier = Modifier)
         },
         vignette = {
-            if (showVignette.value) {
-                Vignette(vignettePosition = vignetteState.value)
-            }
+            Vignette(vignettePosition = VignettePosition.TopAndBottom)
         },
         timeText = { TimeText() },
     ) {
@@ -87,9 +76,9 @@ fun WearSoundSelectionScreen(
                 InlineSlider(
                     modifier = Modifier.height(30.dp),
                     value = volume,
-                    onValueChange = { wearSoundViewModel.setVolume(context, it) },
-                    increaseIcon = { Icon(Icons.AutoMirrored.Rounded.VolumeUp, "Increase", tint = Color.White) },
-                    decreaseIcon = { Icon(Icons.AutoMirrored.Rounded.VolumeDown, "Decrease", tint = Color.White) },
+                    onValueChange = wearSoundViewModel::setVolume,
+                    increaseIcon = { Icon(Icons.AutoMirrored.Rounded.VolumeUp, stringResource(R.string.control_increase_volume), tint = Color.White) },
+                    decreaseIcon = { Icon(Icons.AutoMirrored.Rounded.VolumeDown, stringResource(R.string.control_decrease_volume), tint = Color.White) },
                     valueRange = 0f..1f,
                     steps = 9,
                     segmented = false,
@@ -107,7 +96,7 @@ fun WearSoundSelectionScreen(
                     },
                     label = {
                         Text(
-                            text = if (soundNumber == 0) stringResource(R.string.no_sound) else "${stringResource(R.string.sound)} $soundNumber",
+                            text = if (soundNumber == 0) stringResource(R.string.no_sound) else stringResource(R.string.sound_number, soundNumber),
                             color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis
                         )
                     },

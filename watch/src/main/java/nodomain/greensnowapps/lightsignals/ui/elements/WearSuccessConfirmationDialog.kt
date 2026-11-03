@@ -1,6 +1,6 @@
 package nodomain.greensnowapps.lightsignals.ui.elements
 
-import androidx.compose.material3.MaterialTheme
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">फ़ोन से कनेक्ट करें</string>
+    <string name="control_phone_flashlight">फ़ोन की टॉर्च</string>
+    <string name="control_red_light">लाल सिग्नल</string>
+    <string name="control_custom_light">पसंद के रंग का सिग्नल</string>
+    <string name="control_green_light">हरा सिग्नल</string>
+    <string name="control_blinking">टिमटिमाता सिग्नल</string>
+    <string name="control_sos">SOS सिग्नल</string>
+    <string name="sound_number">आवाज़ %1$d</string>
+    <string name="control_increase_frequency">टिमटिमाने की आवृत्ति बढ़ाएँ</string>
+    <string name="control_decrease_frequency">टिमटिमाने की आवृत्ति घटाएँ</string>
+    <string name="control_increase_volume">आवाज़ बढ़ाएँ</string>
+    <string name="control_decrease_volume">आवाज़ घटाएँ</string>
+</resources>

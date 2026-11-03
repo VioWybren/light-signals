@@ -1,6 +1,7 @@
 package nodomain.greensnowapps.lightsignals.model
 
 import android.content.Context
+import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ApiException
@@ -13,7 +14,10 @@ import com.google.android.horologist.data.apphelper.AppHelperNodeStatus
 import com.google.android.horologist.data.apphelper.appInstalled
 import com.google.android.horologist.datalayer.phone.PhoneDataLayerAppHelper
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -41,6 +45,7 @@ class PhoneWearOperations
     @param: ApplicationContext private val context: Context,
     private val phoneDataLayerAppHelper: PhoneDataLayerAppHelper
 ) {
+    private val operationMutex = Mutex()
     private val capabilityClient = Wearable.getCapabilityClient(context)
 
     private val _controlMessageFlow = MutableSharedFlow<String>()
@@ -50,7 +55,7 @@ class PhoneWearOperations
     val isLaunchingOnWear: StateFlow<Boolean> = _isLaunchingOnWear.asStateFlow()
 
     @OptIn(ExperimentalHorologistApi::class)
-    suspend fun startWearOperations(command: String) {
+    suspend fun startWearOperations(command: String) = operationMutex.withLock {
         if (phoneDataLayerAppHelper.isAvailable()) {
             performWearOperations(command)
         } else {
@@ -100,8 +105,7 @@ class PhoneWearOperations
         }
 
         return try {
-            val capabilities =
-                capabilityClient.getAllCapabilities(CapabilityClient.FILTER_REACHABLE).await()
+            capabilityClient.getAllCapabilities(CapabilityClient.FILTER_REACHABLE).await()
             true
         } catch (e: ApiException) {
 
@@ -110,7 +114,9 @@ class PhoneWearOperations
                 CommonStatusCodes.API_NOT_CONNECTED -> return false
                 else -> return false
             }
-        } catch (_: Throwable) {
+        } catch (error: CancellationException) {
+            throw error
+        } catch (_: Exception) {
             false
         }
     }
@@ -120,22 +126,21 @@ class PhoneWearOperations
         phoneDataLayerAppHelper: PhoneDataLayerAppHelper,
         targetNode: AppHelperNodeStatus,
     ): String {
-        val strResult = withContext(Dispatchers.IO) {
-            try {
-                _isLaunchingOnWear.value = true
-                val launchResult = phoneDataLayerAppHelper.startRemoteOwnApp(targetNode.id)
-                if (launchResult == APP_HELPER_RESULT_SUCCESS) {
-                    APP_LAUNCHED_ON_WATCH
-                } else {
-                    APP_FAILED_TO_LAUNCH_ON_WATCH
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                APP_FAILED_TO_LAUNCH_ON_WATCH
+        _isLaunchingOnWear.value = true
+        return try {
+            withContext(Dispatchers.IO) {
+                val result = phoneDataLayerAppHelper.startRemoteOwnApp(targetNode.id)
+                if (result == APP_HELPER_RESULT_SUCCESS) APP_LAUNCHED_ON_WATCH
+                else APP_FAILED_TO_LAUNCH_ON_WATCH
             }
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Log.w("PhoneWearOperations", "Unable to launch watch app", error)
+            APP_FAILED_TO_LAUNCH_ON_WATCH
+        } finally {
+            _isLaunchingOnWear.value = false
         }
-        _isLaunchingOnWear.value = false
-        return strResult
     }
 
     @OptIn(ExperimentalHorologistApi::class)
@@ -143,7 +148,8 @@ class PhoneWearOperations
         phoneDataLayerAppHelper: PhoneDataLayerAppHelper,
         targetNode: AppHelperNodeStatus?
     ): String {
-        val resultOfInstall = phoneDataLayerAppHelper.installOnNode(targetNode?.id.toString())
+        val node = targetNode ?: return INSTALLATION_ON_WATCH_FAILED
+        val resultOfInstall = phoneDataLayerAppHelper.installOnNode(node.id)
         return if (resultOfInstall == APP_HELPER_RESULT_SUCCESS) {
             INSTALLATION_ON_WATCH_STARTED
         } else {

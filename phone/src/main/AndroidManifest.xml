@@ -64,10 +64,9 @@
                  It should be noted, however, that users can only use the service after granting permission. Permission dialogs appear during
                  runtime after providing rationale.
 
-                 There are two permissions required: camera and notification (after Android 14) permissions. The application does not utilize
-                 the phone camera in any capacity. However, it requires permission to access the camera for its flashlight feature and start
-                 foreground service.The service uses a notification to display its background work,
-                 thus notification permission is also necessary." />
+                 Camera permission is required only to control the flashlight; the application does not take photos or record video.
+                 The service always supplies a foreground notification. On Android 13 and later, notification permission is optional
+                 and controls whether that notification is displayed in the notification drawer." />
         </service>
 
     </application>

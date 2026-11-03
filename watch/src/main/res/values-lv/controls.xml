@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Savienot ar tālruni</string>
+    <string name="control_phone_flashlight">Tālruņa lukturītis</string>
+    <string name="control_red_light">Sarkans signāls</string>
+    <string name="control_custom_light">Pielāgotas krāsas signāls</string>
+    <string name="control_green_light">Zaļš signāls</string>
+    <string name="control_blinking">Mirgojošs signāls</string>
+    <string name="control_sos">SOS signāls</string>
+    <string name="sound_number">Skaņa %1$d</string>
+    <string name="control_increase_frequency">Palielināt mirgošanas biežumu</string>
+    <string name="control_decrease_frequency">Samazināt mirgošanas biežumu</string>
+    <string name="control_increase_volume">Palielināt skaļumu</string>
+    <string name="control_decrease_volume">Samazināt skaļumu</string>
+</resources>

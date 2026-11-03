@@ -29,8 +29,6 @@ import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel.Companion.Active
 import nodomain.greensnowapps.lightsignals.utils.PermissionUtils
 
-lateinit var appContext: Context
-
 @AndroidEntryPoint
 class PhoneMainActivity : ComponentActivity() {
     private val viewModel: PhoneMainViewModel by viewModels()
@@ -72,16 +70,15 @@ class PhoneMainActivity : ComponentActivity() {
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        appContext = this.applicationContext
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         registerReceiver(
             this,
             broadcastReceiver,
             IntentFilter(ACTION_PERMISSIONS_MISSING),
-            ContextCompat.RECEIVER_EXPORTED
+            ContextCompat.RECEIVER_NOT_EXPORTED
         )
     }
 
@@ -93,9 +90,9 @@ class PhoneMainActivity : ComponentActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
         unregisterReceiver(broadcastReceiver)
+        super.onStop()
     }
 
     private val showRationale = mutableStateOf(false)
@@ -122,30 +119,27 @@ class PhoneMainActivity : ComponentActivity() {
         val cameraOk = PermissionUtils.hasCameraPermission(this)
         val notifOk = PermissionUtils.hasPostNotificationsPermission(this)
 
-        if (cameraOk && notifOk) {
+        if (cameraOk) {
             viewModel.select(Active.FLASH)
         } else {
             viewModel.switchFlash(false)
         }
 
-        if (!cameraOk || !notifOk) {
+        if (!cameraOk) {
             preExplainMessage.value = buildPreExplainMessage(cameraOk, notifOk)
             showPreExplain.value = true
-        } else {
-            Active.FLASH
         }
     }
 
     private fun handlePermResults(results: Map<String, Boolean>) {
         val camOk = results[Manifest.permission.CAMERA] == true
-        val notifOk = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            results[Manifest.permission.POST_NOTIFICATIONS] == true else true
-
-        if (camOk && notifOk) viewModel.select(Active.FLASH) else viewModel.switchFlash(
+        if (camOk) viewModel.select(Active.FLASH) else viewModel.switchFlash(
             false
         )
 
-        val denied = results.filterValues { !it }.keys.toList()
+        val denied = results.filter { (permission, granted) ->
+            permission == Manifest.permission.CAMERA && !granted
+        }.keys.toList()
         if (denied.isEmpty()) return
 
         val shouldShowRationaleList = denied.filter { perm ->
@@ -172,20 +166,18 @@ class PhoneMainActivity : ComponentActivity() {
     }
 
     private fun buildPreExplainMessage(cameraOk: Boolean, notifOk: Boolean) = buildString {
-        append(appContext.getString(R.string.dialog_message_pre_explain_base))
-        if (!cameraOk) append(appContext.getString(R.string.dialog_message_pre_explain_camera))
-        if (!notifOk) append(appContext.getString(R.string.dialog_message_pre_explain_notification))
+        append(getString(R.string.dialog_message_pre_explain_base))
+        if (!cameraOk) append(getString(R.string.dialog_message_pre_explain_camera))
+        if (!notifOk) append(getString(R.string.dialog_message_optional_notifications))
     }
 
     private fun buildRationaleMessage(perms: List<String>) = buildString {
-        append(appContext.getString(R.string.dialog_message_rationale_dialog_base))
-        if (perms.contains(Manifest.permission.CAMERA)) append(appContext.getString(R.string.dialog_message_rationale_dialog_camera))
-        if (perms.contains(Manifest.permission.POST_NOTIFICATIONS)) append(appContext.getString(R.string.dialog_message_rationale_dialog_notification))
+        append(getString(R.string.dialog_message_rationale_dialog_base))
+        if (perms.contains(Manifest.permission.CAMERA)) append(getString(R.string.dialog_message_rationale_dialog_camera))
     }
 
     private fun buildSettingsMessage(perms: List<String>) = buildString {
-        append(appContext.getString(R.string.dialog_message_setting_dialog_base))
-        if (perms.contains(Manifest.permission.CAMERA)) append(appContext.getString(R.string.dialog_message_setting_dialog_camera))
-        if (perms.contains(Manifest.permission.POST_NOTIFICATIONS)) append(appContext.getString(R.string.dialog_message_setting_dialog_notification))
+        append(getString(R.string.dialog_message_setting_dialog_base))
+        if (perms.contains(Manifest.permission.CAMERA)) append(getString(R.string.dialog_message_setting_dialog_camera))
     }
 }

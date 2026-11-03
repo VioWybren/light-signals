@@ -17,9 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import nodomain.greensnowapps.lightsignals.R
+import nodomain.greensnowapps.lightsignals.utils.WearUtils
 
-private const val MAX_PROGRESS = 255 * 7
+private const val MAX_PROGRESS = WearUtils.MAX_COLOR_PROGRESS
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +34,7 @@ fun WearColorPicker(
     onValueChangeFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colorLabel = stringResource(R.string.control_custom_light)
 
     val gradientColors = listOf(
         Color.Black,
@@ -47,6 +53,7 @@ fun WearColorPicker(
         onValueChangeFinished = onValueChangeFinished,
         valueRange = 0f..MAX_PROGRESS.toFloat(),
         modifier = Modifier
+            .semantics { contentDescription = colorLabel }
             .fillMaxWidth()
             .padding(start = 0.dp, end = 0.dp, top = 0.dp, bottom = 0.dp),
         thumb = {

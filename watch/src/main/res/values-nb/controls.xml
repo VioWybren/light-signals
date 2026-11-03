@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Koble til telefon</string>
+    <string name="control_phone_flashlight">Telefonens lommelykt</string>
+    <string name="control_red_light">Rødt signal</string>
+    <string name="control_custom_light">Signal med egendefinert farge</string>
+    <string name="control_green_light">Grønt signal</string>
+    <string name="control_blinking">Blinkende signal</string>
+    <string name="control_sos">SOS-signal</string>
+    <string name="sound_number">Lyd %1$d</string>
+    <string name="control_increase_frequency">Øk blinkefrekvensen</string>
+    <string name="control_decrease_frequency">Reduser blinkefrekvensen</string>
+    <string name="control_increase_volume">Øk volumet</string>
+    <string name="control_decrease_volume">Reduser volumet</string>
+</resources>

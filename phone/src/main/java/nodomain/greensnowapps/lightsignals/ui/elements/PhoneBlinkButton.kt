@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 
 @Composable
@@ -35,6 +36,7 @@ fun PhoneBlinkButton(
         checkedBtn = checkedBtn,
         onCheckedChange = { blinkHandling(sosOn, checkedBtn) },
         icon = if (checkedBtn) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+        contentDescriptionRes = R.string.blink_signal,
         modifier = Modifier.size(iconSize)
     )
 }

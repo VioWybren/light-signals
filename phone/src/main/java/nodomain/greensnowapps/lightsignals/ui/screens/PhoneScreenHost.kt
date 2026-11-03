@@ -17,11 +17,12 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
@@ -56,7 +57,14 @@ fun PhoneScreenHost(
     onDismissSettings: () -> Unit,
 ) {
     val mainVm: PhoneMainViewModel = hiltViewModel()
-    val screenIndex by mainVm.screenIndex.collectAsState()
+    val isReady by mainVm.isReady.collectAsStateWithLifecycle()
+    if (!isReady) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+    val screenIndex by mainVm.screenIndex.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(
         initialPage = screenIndex,

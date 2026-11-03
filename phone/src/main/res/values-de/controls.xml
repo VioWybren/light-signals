@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">Taschenlampe</string>
+    <string name="red_signal">Rotes Signal</string>
+    <string name="custom_color_signal">Signal mit eigener Farbe</string>
+    <string name="green_signal">Grünes Signal</string>
+    <string name="blink_signal">Blinksignal</string>
+    <string name="sos_signal">SOS-Signal</string>
+    <string name="sound_selection">Signalton</string>
+    <string name="signal_interval">Signalintervall</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">Menü</string>
+    <string name="dialog_message_optional_notifications">• Benachrichtigungen (optional) — zeigen die Taschenlampenbenachrichtigung in der Benachrichtigungsleiste an. Die Taschenlampe funktioniert auch ohne diese Berechtigung.</string>
+</resources>

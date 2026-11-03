@@ -3,36 +3,30 @@ package nodomain.greensnowapps.lightsignals.model
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
-import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import nodomain.greensnowapps.lightsignals.ACTION_PERMISSIONS_MISSING
+import nodomain.greensnowapps.lightsignals.DEFAULT_COLOR_PROGRESS
 import nodomain.greensnowapps.lightsignals.EXTRA_MISSING_CAMERA
-import nodomain.greensnowapps.lightsignals.EXTRA_MISSING_NOTIFICATIONS
 import nodomain.greensnowapps.lightsignals.PREFERENCE_ACTIVE_SCREEN
 import nodomain.greensnowapps.lightsignals.PREFERENCE_ACTIVE_SOUND
 import nodomain.greensnowapps.lightsignals.PREFERENCE_BLINK_DELAY
@@ -48,7 +42,7 @@ import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel.Comp
 import nodomain.greensnowapps.lightsignals.utils.PermissionUtils
 import javax.inject.Inject
 import javax.inject.Singleton
-
+import java.io.IOException
 
 internal val KEY_FLASH_ON = booleanPreferencesKey(PREFERENCE_FLASH_ON)
 internal val KEY_BLINK_DELAY = longPreferencesKey(PREFERENCE_BLINK_DELAY)
@@ -57,378 +51,234 @@ internal val KEY_ACTIVE_SOUND = intPreferencesKey(PREFERENCE_ACTIVE_SOUND)
 internal val KEY_SOS_ON = booleanPreferencesKey(PREFERENCE_SOS_ON)
 internal val KEY_COLOR_PROGRESS = floatPreferencesKey(PREFERENCE_PROGRESS_COLOR_PICKER)
 internal val KEY_FREQUENCY_PROGRESS = floatPreferencesKey(PREFERENCE_PROGRESS_FREQUENCY_PICKER)
-
 internal val KEY_PREF_ACTIVE_COLOR_BUTTON = intPreferencesKey(PREFERENCE_PREF_ACTIVE_COLOR_BUTTON)
 internal val KEY_ACTIVE_SCREEN = intPreferencesKey(PREFERENCE_ACTIVE_SCREEN)
 internal val KEY_SIGNAL_SCREEN_COLOR = intPreferencesKey(PREFERENCE_SIGNAL_SCREEN_COLOR)
 
 @Singleton
-class PhoneControlRepository @OptIn(ExperimentalHorologistApi::class)
-@Inject constructor(
-    @param: ApplicationContext private val context: Context,
+class PhoneControlRepository internal constructor(
     private val dataStore: DataStore<Preferences>,
-    private val phoneSyncStateRepository: PhoneSyncStateRepository,
-    private val soundPool: PhoneSoundPoolPlayer,
+    private val remoteStates: StateFlow<PhoneControlState?>,
+    private val startTorchService: () -> Boolean,
+    private val stopTorchService: () -> Unit,
+    private val repoScope: CoroutineScope,
+    private val preferenceScope: CoroutineScope,
+    private val onPreferenceError: (IOException) -> Unit = {
+        Log.w("PhoneControlRepository", "Unable to access saved settings", it)
+    }
 ) {
+    @Inject constructor(
+        @ApplicationContext context: Context,
+        dataStore: DataStore<Preferences>,
+        phoneSyncStateRepository: PhoneSyncStateRepository
+    ) : this(
+        dataStore,
+        phoneSyncStateRepository.stateFlow,
+        { tryStartService(context) },
+        { context.stopService(Intent(context, FlashLightService::class.java)); Unit },
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate),
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    )
 
-    private enum class CallOrigin {
-        APP_START,
-        RUNTIME
-    }
-
-    private val initialScreenIndex: Int = runBlocking(Dispatchers.IO) {
-        dataStore.data.first()[KEY_ACTIVE_SCREEN] ?: 0
-    }
-
-    private var initialActiveBtnIndex: Int = runBlocking(Dispatchers.IO) {
-        dataStore.data.first()[KEY_PREF_ACTIVE_COLOR_BUTTON] ?: 0
-    }
-
+    // UI commands, restoration, remote commands and signal jobs all mutate state on Main.
+    private var sessionJob: Job? = null
+    private var signalJob: Job? = null
+    private val _initialized = MutableStateFlow(false)
+    val initialized: StateFlow<Boolean> = _initialized.asStateFlow()
     private val _flashOn = MutableStateFlow(false)
     private val _colorBlinkActive = MutableStateFlow(false)
     private val _blinkDelay = MutableStateFlow(500L)
     private val _sosOn = MutableStateFlow(false)
     private val _blinkOn = MutableStateFlow(false)
     private val _activeSound = MutableStateFlow(0)
-    private val _screenIndex = MutableStateFlow(initialScreenIndex)
+    private val _screenIndex = MutableStateFlow(0)
+    private val _activeButton = MutableStateFlow(Active.RED)
 
-    val flashOn: StateFlow<Boolean> = _flashOn.asStateFlow()
-    val colorBlinkActive: StateFlow<Boolean> = _colorBlinkActive.asStateFlow()
-    val blinkDelay: StateFlow<Long> = _blinkDelay.asStateFlow()
-    val sosOn: StateFlow<Boolean> = _sosOn.asStateFlow()
-    val blinkOn: StateFlow<Boolean> = _blinkOn.asStateFlow()
-    val activeSound: StateFlow<Int> = _activeSound
-    val screenIndex: StateFlow<Int> = _screenIndex.asStateFlow()
-
-    private lateinit var repoScope: CoroutineScope
-    private var colorJob: Job? = null
-    private var sosJob: Job? = null
-
-    private val _activeButton = MutableStateFlow(
-        Active.entries.getOrNull(initialActiveBtnIndex) ?: Active.RED
-    )
-
-    val activeButton: StateFlow<Active> = _activeButton.asStateFlow()
+    val flashOn = _flashOn.asStateFlow()
+    val colorBlinkActive = _colorBlinkActive.asStateFlow()
+    val blinkDelay = _blinkDelay.asStateFlow()
+    val sosOn = _sosOn.asStateFlow()
+    val blinkOn = _blinkOn.asStateFlow()
+    val activeSound = _activeSound.asStateFlow()
+    val screenIndex = _screenIndex.asStateFlow()
+    val activeButton = _activeButton.asStateFlow()
 
     fun initFromPrefs() {
-        repoScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        if (sessionJob?.isActive == true) return
+        sessionJob = repoScope.launch {
+            val saved = PhoneControlState.fromPreferences(dataStore.safePreferences(onPreferenceError).first())
+            _blinkDelay.value = saved.frequency
+            _blinkOn.value = saved.blinkEnabled && !saved.sosEnabled
+            _sosOn.value = saved.sosEnabled
+            _activeSound.value = saved.activeSound
+            _screenIndex.value = saved.screenIndex
+            _activeButton.value = Active.entries[saved.activeColorButton]
+            // A previous session's torch is never restarted without a new command.
+            _flashOn.value = false
+            refreshScreenSignal()
+            _initialized.value = true
 
-        repoScope.launch {
-            dataStore.data
-                .catch { emit(emptyPreferences()) }
-                .take(1)
-                .collect { prefs ->
-
-                    val pcs = PhoneControlState.Companion.fromDataStore(dataStore)
-
-                    _blinkOn.value = pcs.blinkEnabled
-                    _flashOn.value = pcs.torchOn
-                    _blinkDelay.value = pcs.frequency
-                    _activeSound.value = pcs.activeSound
-                    _activeButton.value = Active.entries.getOrNull(pcs.activeColorButton) ?: Active.RED
-                    _screenIndex.value = pcs.screenIndex
-                    updateSos(pcs.sosEnabled)
-
-                    getWearState()
-                    initBlink()
-                    tryStartServiceIfPermissionsGranted(CallOrigin.APP_START)
-                }
-        }
-        initSound()
-    }
-
-    private fun getWearState() {
-        repoScope.launch {
-            phoneSyncStateRepository.stateFlow
-                .filterNotNull()
-                .collect { controlState ->
-                    _blinkOn.value = controlState.blinkEnabled
-                    setActiveSound(controlState.activeSound)
-                    _screenIndex.value = controlState.screenIndex
-                    updateSos(controlState.sosEnabled)
-                    updateColorProgress(controlState.color)
-                    updateFlash(controlState.torchOn)
-                    updateFrequencyProgress(controlState.frequency.toFloat())
-                    updateActiveButton(Active.entries[controlState.activeColorButton])
-                }
-        }
-    }
-
-    private fun updateSos(newSos: Boolean) {
-        _sosOn.value != newSos
-        switchSOS(newSos)
-    }
-
-    private suspend fun updateFlash(newFlash: Boolean) {
-        if (_flashOn.value != newFlash) {
-            if (newFlash) select(Active.FLASH)
-            else select(_activeButton.value)
-        }
-    }
-
-    suspend fun updateColorProgress(newColorProgress: Float) {
-        dataStore.edit { preferences ->
-            preferences[KEY_COLOR_PROGRESS] = newColorProgress
-        }
-    }
-
-    suspend fun updateFrequencyProgress(newFrequencyProgress: Float) {
-        dataStore.edit { preferences ->
-            preferences[KEY_FREQUENCY_PROGRESS] = newFrequencyProgress
-        }
-    }
-
-    private suspend fun updateActiveButton(newActiveButton: Active) {
-        dataStore.edit { preferences ->
-            preferences[KEY_PREF_ACTIVE_COLOR_BUTTON] = newActiveButton.ordinal
-        }
-        _activeButton.value = newActiveButton
-    }
-
-    fun updateScreenIndex(newScreenIndex: Int) {
-        _screenIndex.value = newScreenIndex
-        writePref(KEY_ACTIVE_SCREEN, newScreenIndex)
-    }
-
-    private fun initSound() {
-        if (colorBlinkActive.value && activeSound.value != 0) {
-            soundPool.playOnce(activeSound.value)
-        }
-    }
-
-    private fun initBlink() {
-        repoScope.launch {
-            blinkOn.collect {
-                setBlinking(_blinkOn.value, _blinkDelay.value)
+            remoteStates.filterNotNull().collect { incoming ->
+                applyRemoteState(incoming)
             }
         }
     }
 
-    suspend fun select(button: Active) {
+    private fun applyRemoteState(incoming: PhoneControlState) {
+        val state = incoming.validated()
+        _activeButton.value = Active.entries[state.activeColorButton]
+        _activeSound.value = state.activeSound
+        _screenIndex.value = state.screenIndex
+        _blinkDelay.value = state.frequency
+        _sosOn.value = state.sosEnabled
+        _blinkOn.value = state.blinkEnabled && !state.sosEnabled
+        setFlash(state.torchOn)
+        preferenceScope.launch { dataStore.editSafely(onPreferenceError) { prefs ->
+            prefs[KEY_ACTIVE_SOUND] = state.activeSound
+            prefs[KEY_ACTIVE_SCREEN] = state.screenIndex
+            prefs[KEY_PREF_ACTIVE_COLOR_BUTTON] = state.activeColorButton
+            prefs[KEY_COLOR_PROGRESS] = state.color
+            prefs[KEY_FREQUENCY_PROGRESS] = state.frequency.toFloat()
+            prefs[KEY_BLINK_DELAY] = state.frequency
+            prefs[KEY_BLINK_ON] = state.blinkEnabled && !state.sosEnabled
+            prefs[KEY_SOS_ON] = state.sosEnabled
+        } }
+    }
+
+    fun updateColorProgress(progress: Float) {
+        val value = progress.takeIf { it.isFinite() }?.coerceIn(0f, 1785f) ?: DEFAULT_COLOR_PROGRESS
+        writePref(KEY_COLOR_PROGRESS, value)
+    }
+
+    fun updateFrequencyProgress(progress: Float) {
+        val value = progress.takeIf { it.isFinite() }?.coerceIn(100f, 1000f) ?: 500f
+        writePref(KEY_FREQUENCY_PROGRESS, value)
+    }
+
+    fun updateScreenIndex(index: Int) {
+        _screenIndex.value = index.coerceIn(0, 1)
+        writePref(KEY_ACTIVE_SCREEN, _screenIndex.value)
+    }
+
+    fun select(button: Active) {
         if (button == Active.FLASH) {
-            switchFlash(true)
+            setFlash(true)
         } else {
-            updateActiveButton(button)
-            val s = sosOn.value
-            switchFlash(false)
-            if (s) {
-                switchSOS(true)
-            }
-        }
-        if (!sosOn.value) {
-            setBlinking(blinkOn.value, blinkDelay.value)
-        } else {
-            switchSOS(true)
+            _activeButton.value = button
+            writePref(KEY_PREF_ACTIVE_COLOR_BUTTON, button.ordinal)
+            setFlash(false)
         }
     }
 
-    fun switchFlash(isOn: Boolean) {
-        if (!isOn) {
-            if (sosOn.value) {
-                switchSOS(false)
-            }
-        }
-        setFlash(isOn)
-    }
-
-    fun setBlinking(blinkOn: Boolean, delayMs: Long) {
-        _blinkDelay.value = delayMs
-        writePref(KEY_BLINK_DELAY, delayMs)
-        if (blinkOn) {
-            if (_flashOn.value) {
-                _blinkOn.value = true
-                stopColorBlink()
-            } else {
-                _flashOn.value = false
-                _blinkOn.value = true
-                startColorBlink(delayMs)
-            }
-        } else {
-            _blinkOn.value = false
-            stopColorBlink()
-        }
-        writePref(KEY_BLINK_ON, blinkOn)
-    }
+    fun switchFlash(on: Boolean) = setFlash(on)
 
     fun setFlash(on: Boolean) {
+        val wasOn = _flashOn.value
         _flashOn.value = on
-        writePref(KEY_FLASH_ON, on)
+        if (on && !wasOn && !startTorchService()) _flashOn.value = false
+        writePref(KEY_FLASH_ON, _flashOn.value)
+        if (!_flashOn.value) stopTorchService()
+        refreshScreenSignal()
+    }
+
+    fun setBlinking(on: Boolean, delayMs: Long) {
+        _blinkDelay.value = delayMs.coerceIn(100L, 1000L)
+        _blinkOn.value = on
         if (on) {
-            tryStartServiceIfPermissionsGranted(CallOrigin.RUNTIME)
+            _sosOn.value = false
+            writePref(KEY_SOS_ON, false)
         }
-        if (!on) {
-            if (_blinkOn.value) {
-                setBlinking(true, _blinkDelay.value)
-            }
-        }
-    }
-
-    fun setFlashBlinkMode(on: Boolean) {
-        if (_flashOn.value) {
-            _blinkOn.value = on
-            writePref(KEY_BLINK_ON, on)
-        }
-        _flashOn.value = on
-        writePref(KEY_FLASH_ON, on)
-    }
-
-    private fun startColorBlink(delayMs: Long) {
-        setColorSOS(false)
-        _blinkOn.value = true
-        colorJob?.cancel()
-        colorJob = repoScope.launch {
-            while (isActive && _blinkOn.value) {
-                _colorBlinkActive.value = true
-                delay(delayMs)
-                _colorBlinkActive.value = false
-                delay(delayMs)
-            }
-        }
-    }
-
-    private fun stopColorBlink() {
-        colorJob?.cancel()
-        colorJob = null
-        _colorBlinkActive.value = false
+        writePref(KEY_BLINK_DELAY, _blinkDelay.value)
+        writePref(KEY_BLINK_ON, on)
+        refreshScreenSignal()
     }
 
     fun switchSOS(on: Boolean) {
-        if (_flashOn.value) {
-            setColorSOS(false)
-            setFlashSos(on)
-        } else {
-            setFlashSos(false)
-            setColorSOS(on)
-        }
-    }
-
-    private fun setColorSOS(on: Boolean) {
         _sosOn.value = on
         if (on) {
-            stopColorBlink()
             _blinkOn.value = false
             writePref(KEY_BLINK_ON, false)
-            startColorSos()
-        } else {
-            stopColorSOS()
         }
+        writePref(KEY_SOS_ON, on)
+        refreshScreenSignal()
     }
 
-    private fun stopColorSOS() {
-        sosJob?.cancel()
-        writePref(KEY_SOS_ON, false)
-    }
-
-    private fun startColorSos() {
-        writePref(KEY_SOS_ON, true)
-        sosJob?.cancel()
-        sosJob = repoScope.launch {
-            val dot = SOS_UNIT_MS
-            val dash = 3 * SOS_UNIT_MS
-            val gap = SOS_UNIT_MS
-            val letter = 3 * SOS_UNIT_MS
-            val word = 7 * SOS_UNIT_MS
-
-            suspend fun signal(duration: Long) {
-                _colorBlinkActive.value = true
-                delay(duration)
-                _colorBlinkActive.value = false
-                delay(gap)
+    private fun refreshScreenSignal() {
+        signalJob?.cancel()
+        signalJob = null
+        _colorBlinkActive.value = false
+        if (_flashOn.value) return
+        if (_sosOn.value) {
+            signalJob = repoScope.launch {
+                runSosSignal(SOS_UNIT_MS) { enabled ->
+                    _colorBlinkActive.value = enabled
+                    true
+                }
             }
-
-            while (isActive && _sosOn.value) {
-                repeat(3) { signal(dot) }
-                delay(letter - gap)
-                repeat(3) { signal(dash) }
-                delay(letter - gap)
-                repeat(3) { signal(dot) }
-                delay(word - gap)
+        } else if (_blinkOn.value) {
+            val delayMs = _blinkDelay.value
+            signalJob = repoScope.launch {
+                while (isActive) {
+                    _colorBlinkActive.value = true
+                    delay(delayMs)
+                    _colorBlinkActive.value = false
+                    delay(delayMs)
+                }
             }
         }
     }
 
-    private fun setFlashSos(on: Boolean) {
-        if (on) {
-            stopColorBlink()
-            startFlashSos()
-        } else stopFlashSos()
+    fun setActiveSound(sound: Int) {
+        _activeSound.value = sound.coerceIn(0, 3)
+        writePref(KEY_ACTIVE_SOUND, _activeSound.value)
     }
 
-    private fun startFlashSos() {
-        _sosOn.value = true
-        _blinkOn.value = false
+    fun onTorchServiceUnavailable() {
+        _flashOn.value = false
+        writePref(KEY_FLASH_ON, false)
+        refreshScreenSignal()
     }
 
-    private fun stopFlashSos() {
-        val sosF = _sosOn.value
-        _sosOn.value = false
-        if (!_blinkOn.value) {
-            _flashOn.value = false
-        }
-        if (sosF) {
-            _sosOn.value = true
-            setColorSOS(true)
-        }
-    }
-
-    fun setActiveSound(n: Int) {
-        _activeSound.value = n.coerceIn(0, 3)
-        writePref(KEY_ACTIVE_SOUND, n)
-    }
-
-    private fun notifyUiPermissionsMissing() {
-        val intent = Intent(ACTION_PERMISSIONS_MISSING)
-        intent.putExtra(EXTRA_MISSING_CAMERA, !PermissionUtils.hasCameraPermission(context))
-        intent.putExtra(
-            EXTRA_MISSING_NOTIFICATIONS,
-            !PermissionUtils.hasPostNotificationsPermission(context)
-        )
-        context.sendBroadcast(intent)
-    }
-
-    private fun tryStartServiceIfPermissionsGranted(callOrigin: CallOrigin = CallOrigin.RUNTIME): Boolean {
-        if (!PermissionUtils.hasPostNotificationsPermission(context)) {
-            if (callOrigin == CallOrigin.RUNTIME) {
-                notifyUiPermissionsMissing()
+    private companion object {
+        fun tryStartService(context: Context): Boolean {
+            if (!PermissionUtils.hasCameraPermission(context)) {
+                context.sendBroadcast(
+                    Intent(ACTION_PERMISSIONS_MISSING)
+                        .setPackage(context.packageName)
+                        .putExtra(EXTRA_MISSING_CAMERA, true)
+                )
+                return false
             }
-            return false
-        }
-        if (!PermissionUtils.hasCameraPermission(context)) {
-            if (callOrigin == CallOrigin.RUNTIME) {
-                notifyUiPermissionsMissing()
+            return try {
+                val intent = Intent(context, FlashLightService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    ContextCompat.startForegroundService(context, intent)
+                } else {
+                    context.startService(intent)
+                }
+                true
+            } catch (error: RuntimeException) {
+                Log.w("PhoneControlRepository", "Unable to start torch service", error)
+                false
             }
-            return false
-        } else {
-            return startService()
-        }
-    }
-
-    private fun startService(): Boolean {
-        try {
-            val flashLightServiceIntent = Intent(context, FlashLightService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ContextCompat.startForegroundService(context, flashLightServiceIntent)
-            } else {
-                context.startService(flashLightServiceIntent)
-            }
-            return true
-        } catch (_: Exception) {
-            return false
         }
     }
 
     fun clearAll() {
-        colorJob?.cancel()
-        sosJob?.cancel()
-        repoScope.cancel()
+        sessionJob?.cancel()
+        sessionJob = null
+        signalJob?.cancel()
+        signalJob = null
+        _colorBlinkActive.value = false
+        _initialized.value = false
+        _flashOn.value = false
+        writePref(KEY_FLASH_ON, false)
+        stopTorchService()
     }
 
     private fun <T> writePref(key: Preferences.Key<T>, value: T) {
-        repoScope.launch {
-            dataStore.edit { prefs -> prefs[key] = value }
-        }
+        preferenceScope.launch { dataStore.editSafely(onPreferenceError) { it[key] = value } }
     }
-
 }
 
 

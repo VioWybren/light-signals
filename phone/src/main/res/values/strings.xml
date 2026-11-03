@@ -57,4 +57,17 @@
 
     <string name="circular_indicator_text">Launching on watch</string>
 
+    <string name="dialog_message_optional_notifications">• Notifications (optional) — show the flashlight notification in the notification drawer. The flashlight works if you decline.</string>
+    <string name="flashlight">Flashlight</string>
+    <string name="sos_signal">SOS signal</string>
+    <string name="blink_signal">Blink signal</string>
+    <string name="sound_selection">Signal sound</string>
+    <string name="signal_interval">Signal interval</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">Menu</string>
+    <string name="red_signal">Red signal</string>
+    <string name="custom_color_signal">Custom color signal</string>
+    <string name="green_signal">Green signal</string>
+    <string name="sos_label" translatable="false">SOS</string>
+
 </resources>

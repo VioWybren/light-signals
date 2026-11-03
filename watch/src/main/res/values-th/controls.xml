@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">เชื่อมต่อกับโทรศัพท์</string>
+    <string name="control_phone_flashlight">ไฟฉายโทรศัพท์</string>
+    <string name="control_red_light">สัญญาณสีแดง</string>
+    <string name="control_custom_light">สัญญาณสีที่กำหนดเอง</string>
+    <string name="control_green_light">สัญญาณสีเขียว</string>
+    <string name="control_blinking">สัญญาณไฟกะพริบ</string>
+    <string name="control_sos">สัญญาณ SOS</string>
+    <string name="sound_number">เสียง %1$d</string>
+    <string name="control_increase_frequency">เพิ่มความถี่การกะพริบ</string>
+    <string name="control_decrease_frequency">ลดความถี่การกะพริบ</string>
+    <string name="control_increase_volume">เพิ่มระดับเสียง</string>
+    <string name="control_decrease_volume">ลดระดับเสียง</string>
+</resources>

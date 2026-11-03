@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="_ok">OK</string>
+    <string name="_cancel">Avbryt</string>
+    <string name="_continue">Fortsett</string>
+    <string name="_later">Senere</string>
+
+    <string name="dialog_title_pre_explain">Tillatelser kreves</string>
+    <string name="dialog_message_pre_explain_base">Hvorfor vi trenger disse tillatelsene:\n\n</string>
+    <string name="dialog_message_pre_explain_camera">• Kamera — brukes bare for å bytte lommelykt. Light Signals tar ikke bilder eller spiller inn videoer.\n</string>
+    <string name="dialog_message_pre_explain_notification">• Varsler — lar appen vise varsler og gi rask tilgang mens den kjører i bakgrunnen</string>
+
+    <string name="dialog_title_rationale_dialog">Tillatelser kreves</string>
+    <string name="confirm_button_rationale_dialog">Be om igjen</string>
+    <string name="dialog_message_rationale_dialog_base">For å fortsette trenger appen:\n\n</string>
+    <string name="dialog_message_rationale_dialog_camera">• Kamera — for å bytte lommelykt \n</string>
+    <string name="dialog_message_rationale_dialog_notification">• Varsler — for å vise bakgrunnsvarsler og tilby hurtigtiltak</string>
+
+    <string name="dialog_title_setting_dialog">Aktiver tillatelser i Innstillinger</string>
+    <string name="confirm_button_setting_dialog">Åpne Innstillinger</string>
+    <string name="dialog_message_setting_dialog_base">Én eller flere tillatelser ble permanent avvist. Åpne appinnstillingene for å aktivere dem:\n\n</string>
+    <string name="dialog_message_setting_dialog_camera">• Kamera (lommelykt)\n</string>
+    <string name="dialog_message_setting_dialog_notification">• Varsler\n</string>
+
+    <string name="dialog_title_wear_api_unavailable">Wear-funksjoner utilgjengelig</string>
+    <string name="dialog_message_wear_api_unavailable">Denne enheten støtter ikke funksjoner for bærbare enheter</string>
+
+    <string name="dialog_title_connect_to_watch">Koble til klokke</string>
+    <string name="dialog_message_connect_to_watch">Vil du koble telefonappen til Light Signals-følgesvennappen på klokken din?</string>
+
+    <string name="dialog_title_install_on_watch">Installer Light Signals på klokken</string>
+    <string name="dialog_message_install_on_watch">Appen er ikke installert på den tilkoblede klokken din. Vil du installere den?</string>
+
+    <string name="snackbar_app_installed_on_watch_success">Installasjonen har startet på klokken</string>
+    <string name="snackbar_installation_on_watch_failed">Installasjonen på klokken mislyktes. Prøv igjen senere</string>
+    <string name="snackbar_app_failed_to_launch_on_watch">Kunne ikke starte appen på klokken</string>
+    <string name="snackbar_app_launched_on_watch">Startet på klokken. Styr appen fra klokken din</string>
+    <string name="snackbar_no_connected_watches">Ingen tilkoblede klokker funnet</string>
+
+    <string name="notification_title">Åpne Light Signals</string>
+    <string name="notification_text">Bruk lommelykt eller skjerm for å vise signaler. Trykk for å åpne.</string>
+
+    <string name="notification_channel_name">Light Signals varslingskanal</string>
+    <string name="notification_channel_description">Hurtig tilgang til lommelykt og skjermsignaler</string>
+
+    <string name="menu_item_synchronize_with_watch">Synkroniser med klokken</string>
+
+    <string name="no_sound">Ingen</string>
+    <string name="sound_1">Lyd 1</string>
+    <string name="sound_2">Lyd 2</string>
+    <string name="sound_3">Lyd 3</string>
+
+    <string name="circular_indicator_text">Starter på klokken</string>
+
+</resources>

@@ -6,8 +6,7 @@ data class WearControlState(
     val torchOn: Boolean = false,
     val frequency: Long = 500L,
     val activeSound: Int = 0,
-    val colorBlinkEnabled: Boolean = true,
-    val color: Float = 0xFFFFFFFF.toFloat(),
+    val color: Float = nodomain.greensnowapps.lightsignals.WearConstants.DEFAULT_COLOR_PROGRESS,
     val screenIndex: Int = 0,
     val activeColorButton: Int = 2
 )

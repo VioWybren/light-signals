@@ -14,13 +14,15 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -36,7 +38,7 @@ fun PhoneSoundMenuButton(
 ) {
 
     var expanded by remember { mutableStateOf(false) }
-    val active by phoneSoundViewModel.activeSound.collectAsState()
+    val active by phoneSoundViewModel.activeSound.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier
@@ -47,6 +49,7 @@ fun PhoneSoundMenuButton(
             checkedBtn = expanded,
             onCheckedChange = { expanded = it },
             icon = if (active == 0) Icons.Filled.MusicOff else Icons.Filled.MusicNote,
+            contentDescriptionRes = R.string.sound_selection,
             modifier = Modifier.size(iconSize)
         )
     }
@@ -58,10 +61,11 @@ fun PhoneSoundMenuButton(
     ) {
         DropdownMenuItem(
             text = { Text(stringResource(R.string.no_sound)) },
+            modifier = Modifier.semantics { selected = active == 0 },
             leadingIcon = {
                 Icon(
                     imageVector = if (active == 0) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = if (active == 0) "On" else "Off"
+                    contentDescription = null
                 )
             },
             onClick = {
@@ -72,10 +76,11 @@ fun PhoneSoundMenuButton(
         HorizontalDivider()
         DropdownMenuItem(
             text = { Text(stringResource(R.string.sound_1)) },
+            modifier = Modifier.semantics { selected = active == 1 },
             leadingIcon = {
                 Icon(
                     imageVector = if (active == 1) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = if (active == 1) "On" else "Off"
+                    contentDescription = null
                 )
             },
             onClick = {
@@ -85,10 +90,11 @@ fun PhoneSoundMenuButton(
         )
         DropdownMenuItem(
             text = { Text(stringResource(R.string.sound_2)) },
+            modifier = Modifier.semantics { selected = active == 2 },
             leadingIcon = {
                 Icon(
                     imageVector = if (active == 2) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = if (active == 2) "On" else "Off"
+                    contentDescription = null
                 )
             },
             onClick = {
@@ -98,10 +104,11 @@ fun PhoneSoundMenuButton(
         )
         DropdownMenuItem(
             text = { Text(stringResource(R.string.sound_3)) },
+            modifier = Modifier.semantics { selected = active == 3 },
             leadingIcon = {
                 Icon(
                     imageVector = if (active == 3) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = if (active == 3) "On" else "Off"
+                    contentDescription = null
                 )
             },
             onClick = {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Hubungkan ke ponsel</string>
+    <string name="control_phone_flashlight">Senter ponsel</string>
+    <string name="control_red_light">Sinyal merah</string>
+    <string name="control_custom_light">Sinyal warna kustom</string>
+    <string name="control_green_light">Sinyal hijau</string>
+    <string name="control_blinking">Sinyal berkedip</string>
+    <string name="control_sos">Sinyal SOS</string>
+    <string name="sound_number">Suara %1$d</string>
+    <string name="control_increase_frequency">Naikkan frekuensi kedipan</string>
+    <string name="control_decrease_frequency">Turunkan frekuensi kedipan</string>
+    <string name="control_increase_volume">Naikkan volume</string>
+    <string name="control_decrease_volume">Turunkan volume</string>
+</resources>

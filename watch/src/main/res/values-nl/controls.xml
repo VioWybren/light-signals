@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Verbinden met telefoon</string>
+    <string name="control_phone_flashlight">Zaklamp van telefoon</string>
+    <string name="control_red_light">Rood signaal</string>
+    <string name="control_custom_light">Signaal met aangepaste kleur</string>
+    <string name="control_green_light">Groen signaal</string>
+    <string name="control_blinking">Knipperend signaal</string>
+    <string name="control_sos">SOS-signaal</string>
+    <string name="sound_number">Geluid %1$d</string>
+    <string name="control_increase_frequency">Knipperfrequentie verhogen</string>
+    <string name="control_decrease_frequency">Knipperfrequentie verlagen</string>
+    <string name="control_increase_volume">Volume verhogen</string>
+    <string name="control_decrease_volume">Volume verlagen</string>
+</resources>

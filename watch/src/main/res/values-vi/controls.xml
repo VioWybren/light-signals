@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Kết nối với điện thoại</string>
+    <string name="control_phone_flashlight">Đèn pin điện thoại</string>
+    <string name="control_red_light">Tín hiệu đỏ</string>
+    <string name="control_custom_light">Tín hiệu màu tùy chỉnh</string>
+    <string name="control_green_light">Tín hiệu xanh lá</string>
+    <string name="control_blinking">Tín hiệu nhấp nháy</string>
+    <string name="control_sos">Tín hiệu SOS</string>
+    <string name="sound_number">Âm thanh %1$d</string>
+    <string name="control_increase_frequency">Tăng tần số nhấp nháy</string>
+    <string name="control_decrease_frequency">Giảm tần số nhấp nháy</string>
+    <string name="control_increase_volume">Tăng âm lượng</string>
+    <string name="control_decrease_volume">Giảm âm lượng</string>
+</resources>

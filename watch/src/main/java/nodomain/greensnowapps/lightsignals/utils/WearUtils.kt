@@ -3,53 +3,20 @@ package nodomain.greensnowapps.lightsignals.utils
 import androidx.compose.ui.graphics.Color
 
 object WearUtils {
+    const val MAX_COLOR_PROGRESS = 255 * 7
 
-    private const val FULL = 255
-    /**
-     * Computes a "special" color based on the current progress.
-     */
     fun computeSpecialColor(progress: Int): Color {
-        var r = 0
-        var g = 0
-        var b = 0
-        when {
-            progress < 256 -> {
-                b = progress
-            }
-            progress < 256 * 2 -> {
-                g = progress % 256
-                b = 256 - progress % 256
-            }
-            progress < 256 * 3 -> {
-                g = FULL
-                b = progress % 256
-            }
-            progress < 256 * 4 -> {
-                r = progress % 256
-                g = 256 - progress % 256
-                b = 256 - progress % 256
-            }
-            progress < 256 * 5 -> {
-                r = FULL
-                g = 0
-                b = progress % 256
-            }
-            progress < 256 * 6 -> {
-                r = FULL
-                g = progress % 256
-                b = 256 - progress % 256
-            }
-            progress < 256 * 7 -> {
-                r = FULL
-                g = FULL
-                b = progress % 256
-            }
-            else -> {
-                r = 0
-                g = 0
-                b = 0
-            }
+        val p = progress.coerceIn(0, MAX_COLOR_PROGRESS)
+        val segment = minOf(p / 255, 6)
+        val t = p - segment * 255
+        return when (segment) {
+            0 -> Color(0, 0, t)
+            1 -> Color(0, t, 255 - t)
+            2 -> Color(0, 255, t)
+            3 -> Color(t, 255 - t, 255 - t)
+            4 -> Color(255, 0, t)
+            5 -> Color(255, t, 255 - t)
+            else -> Color(255, 255, t)
         }
-        return Color(r, g, b, FULL)
     }
 }

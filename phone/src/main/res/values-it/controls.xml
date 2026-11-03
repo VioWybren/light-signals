@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">Torcia</string>
+    <string name="red_signal">Segnale rosso</string>
+    <string name="custom_color_signal">Segnale di colore personalizzato</string>
+    <string name="green_signal">Segnale verde</string>
+    <string name="blink_signal">Segnale lampeggiante</string>
+    <string name="sos_signal">Segnale SOS</string>
+    <string name="sound_selection">Suono del segnale</string>
+    <string name="signal_interval">Intervallo del segnale</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">Menu</string>
+    <string name="dialog_message_optional_notifications">• Notifiche (facoltative): mostrano la notifica della torcia nel pannello delle notifiche. La torcia funziona anche se questa autorizzazione viene negata.</string>
+</resources>

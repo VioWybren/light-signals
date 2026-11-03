@@ -6,7 +6,6 @@ import android.media.SoundPool
 import android.os.SystemClock
 import dagger.hilt.android.qualifiers.ApplicationContext
 import nodomain.greensnowapps.lightsignals.R
-//import okio.AsyncTimeout.Companion.lock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,21 +13,15 @@ private const val MAX_STREAMS = 3
 
 @Singleton
 class PhoneSoundPoolPlayer @Inject constructor(
-    @param: ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
     private val lock = Any()
-
-    private val soundResMap = mapOf(
-        1 to R.raw.beep_1,
-        2 to R.raw.beep_2,
-        3 to R.raw.beep_3,
-    )
+    private val soundResMap = mapOf(1 to R.raw.beep_1, 2 to R.raw.beep_2, 3 to R.raw.beep_3)
     private val soundIdMap = mutableMapOf<Int, Int>()
     private val loadedSoundIds = mutableSetOf<Int>()
-    private val pendingPlays = mutableListOf<Int>()
-
-    private lateinit var soundPool: SoundPool
-    private var currentStreamId: Int = 0
+    private val pendingPlays = mutableSetOf<Int>()
+    private var soundPool: SoundPool? = null
+    private var currentStreamId = 0
     private var lastPlayTime = 0L
     private val minGapMs = 120L
 
@@ -36,8 +29,9 @@ class PhoneSoundPoolPlayer @Inject constructor(
         initSoundPool()
     }
 
-    fun initSoundPool() {
-        soundPool = SoundPool.Builder()
+    fun initSoundPool() = synchronized(lock) {
+        if (soundPool != null) return@synchronized
+        val pool = SoundPool.Builder()
             .setMaxStreams(MAX_STREAMS)
             .setAudioAttributes(
                 AudioAttributes.Builder()
@@ -46,71 +40,55 @@ class PhoneSoundPoolPlayer @Inject constructor(
                     .build()
             )
             .build()
-
-        soundPool.setOnLoadCompleteListener { sp, sampleId, status ->
-            if (status == 0) {
-                loadedSoundIds += sampleId
-                pendingPlays.filter { it == sampleId }.forEach { sid ->
-                    sp.play(sid, 1f, 1f, 1, /*loop=*/0, 1f)
-                    pendingPlays.remove(sid)
+        soundPool = pool
+        pool.setOnLoadCompleteListener { completedPool, sampleId, status ->
+            synchronized(lock) {
+                if (completedPool === soundPool) {
+                    val requested = pendingPlays.remove(sampleId)
+                    if (status == 0) {
+                        loadedSoundIds += sampleId
+                        if (requested) playLoaded(completedPool, sampleId)
+                    }
                 }
             }
         }
-
-        soundResMap.forEach { (key, res) ->
-            val sid = soundPool.load(context, res, /*priority=*/1)
-            soundIdMap[key] = sid
+        soundResMap.forEach { (key, resource) ->
+            soundIdMap[key] = pool.load(context, resource, 1)
         }
     }
 
-    fun playOnce(resId: Int) {
-        val currentTime = SystemClock.uptimeMillis()
-        if (currentTime - lastPlayTime < minGapMs) {
-            return
-        }
-        lastPlayTime = currentTime
-        playSound(resId)
+    fun playOnce(resId: Int) = synchronized(lock) {
+        if (resId !in soundResMap) return@synchronized
+        val now = SystemClock.uptimeMillis()
+        if (lastPlayTime != 0L && now - lastPlayTime < minGapMs) return@synchronized
+        lastPlayTime = now
+        initSoundPool()
+        val pool = soundPool ?: return@synchronized
+        val sampleId = soundIdMap[resId] ?: return@synchronized
+        if (sampleId in loadedSoundIds) playLoaded(pool, sampleId) else pendingPlays += sampleId
     }
 
-    private fun playSound(n: Int) {
-        synchronized(lock) {
-            if (soundIdMap[n] == null) {
-                initSoundPool()
-            } else {
-                val soundId = soundIdMap[n] ?: return
-                if (soundId in loadedSoundIds) {
-                    stopCurrentStream()
-                    currentStreamId = soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
-                } else {
-                    pendingPlays += soundId
-                }
-            }
-        }
+    // All callers hold lock. Sample IDs never stand in for playback stream IDs.
+    private fun playLoaded(pool: SoundPool, sampleId: Int) {
+        if (currentStreamId != 0) pool.stop(currentStreamId)
+        currentStreamId = pool.play(sampleId, 1f, 1f, 1, 0, 1f)
     }
 
-    private fun stopCurrentStream() {
-        synchronized(lock) {
-            if (currentStreamId != 0) {
-                try {
-                    soundPool.stop(currentStreamId)
-                } catch (_: Exception) {
-                }
-                currentStreamId = 0
-            }
-        }
-    }
-
-    fun stopAll() {
-        soundIdMap.values.forEach { streamID -> soundPool.stop(streamID) }
+    fun stopAll() = synchronized(lock) {
+        if (currentStreamId != 0) soundPool?.stop(currentStreamId)
+        currentStreamId = 0
         pendingPlays.clear()
     }
 
-    fun release() {
-        soundPool.release()
+    fun release() = synchronized(lock) {
+        soundPool?.setOnLoadCompleteListener(null)
+        soundPool?.release()
+        soundPool = null
+        currentStreamId = 0
+        lastPlayTime = 0L
         soundIdMap.clear()
         loadedSoundIds.clear()
         pendingPlays.clear()
     }
-
 }
 

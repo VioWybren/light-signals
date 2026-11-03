@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("nodomain.greensnowapps.lightsignals", appContext.packageName)
+        assertEquals("nodomain.greensnowapps.lightsignals.uitest", appContext.packageName)
     }
 }

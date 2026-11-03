@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Sos
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 
 @Composable
@@ -22,6 +23,7 @@ fun PhoneSosButton(
         checkedBtn = checkedSOS,
         onCheckedChange = { viewModel.toggleSos(!checkedSOS) },
         icon = if (checkedSOS) Icons.Filled.Sos else Icons.Filled.Sos,
+        contentDescriptionRes = R.string.sos_signal,
         modifier = Modifier.size(iconSize)
     )
 }

@@ -25,7 +25,7 @@ fun WearFailureConfirmationDialog(
         onDismissRequest = { onDismiss() },
         title = {},
         text = { Text(text = message, style = androidx.wear.compose.material3.MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center) },
-        icon = { Icon(Icons.Outlined.PhonelinkErase, "IconLinkErase", tint = Color(0xffff6f00)) },
+        icon = { Icon(Icons.Outlined.PhonelinkErase, contentDescription = null, tint = Color(0xffff6f00)) },
         confirmButton = {
             AlertDialogDefaults.ConfirmButton(
                 onClick = onDismiss,

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Połącz z telefonem</string>
+    <string name="control_phone_flashlight">Latarka telefonu</string>
+    <string name="control_red_light">Czerwony sygnał</string>
+    <string name="control_custom_light">Sygnał o wybranym kolorze</string>
+    <string name="control_green_light">Zielony sygnał</string>
+    <string name="control_blinking">Migający sygnał</string>
+    <string name="control_sos">Sygnał SOS</string>
+    <string name="sound_number">Dźwięk %1$d</string>
+    <string name="control_increase_frequency">Zwiększ częstotliwość migania</string>
+    <string name="control_decrease_frequency">Zmniejsz częstotliwość migania</string>
+    <string name="control_increase_volume">Zwiększ głośność</string>
+    <string name="control_decrease_volume">Zmniejsz głośność</string>
+</resources>
