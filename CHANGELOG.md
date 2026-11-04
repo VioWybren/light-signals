@@ -26,6 +26,8 @@ upcoming release; a release date should be added when it is published.
 
 ### Fixed
 
+- Increased CI Gradle/D8 heap space and limited build concurrency to address heap exhaustion
+  during watch dependency dex merging; bounded the Kotlin daemon heap separately.
 - Restored debug JVM test tasks alongside the isolated `uitest` build by configuring AGP 9
   to generate unit-test components for all build types.
 - Corrected the Bitbucket SDK platform package ID to `platforms;android-37.0` so a clean CI
