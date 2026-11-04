@@ -47,12 +47,19 @@ this pipeline does not start an emulator or connect to your personal devices.
 - The checked-in Gradle wrapper and JetBrains JDK 21 daemon criteria.
 - Android command-line tools build `15859902`, verified against Google's published SHA-256.
 - Android Platform 37 (`platforms;android-37.0`), Build Tools 37.0.0, and Platform-Tools.
-- A `2x` step, a 60-minute timeout, and at most two Gradle workers.
+- A `2x` step (8 GB of memory), a 60-minute timeout, and one Gradle worker with task parallelism disabled.
+- CI heap limits of 4 GiB for Gradle/D8 and 1.5 GiB for the Kotlin compiler daemon.
 - Caches for Gradle dependencies, wrapper distributions, downloaded JDKs, and the Android SDK.
 
 The bootstrap Temurin JDK starts Gradle; Gradle provisions the JetBrains daemon JDK required by
 `gradle/gradle-daemon-jvm.properties`. Application bytecode continues to target Java 17.
 The SDK cache is invalidated when the YAML or either module's build script changes.
+
+The pipeline overrides JVM settings on the Gradle command line. D8 runs inside the Gradle
+build JVM and can exceed the project's 2 GiB default during dependency dex merging. The
+larger CI heap and single worker reduce memory pressure when building both applications and
+their test APKs. Kotlin gets a separate limit because its daemon otherwise inherits Gradle's
+heap setting. The runner also needs memory for metaspace, native tools, test JVMs, and the OS.
 
 When updating the build image, refresh its digest. When updating the Android command-line
 tools, change the build number and checksum together. Keep the SDK packages aligned with the modules'
@@ -77,3 +84,6 @@ the complete Linux build.
 - [Official Temurin build images](https://github.com/adoptium/containers)
 - [Android command-line tools and published checksums](https://developer.android.com/studio)
 - [Google SDK repository package metadata](https://dl.google.com/android/repository/repository2-3.xml)
+- [Gradle build JVM memory](https://docs.gradle.org/current/userguide/config_gradle.html#sec:configuring_jvm_memory)
+- [Kotlin daemon JVM settings](https://kotlinlang.org/docs/gradle-compilation-and-caches.html#setting-kotlin-daemon-s-jvm-arguments)
+- [Bitbucket step resources](https://support.atlassian.com/bitbucket-cloud/docs/step-options/#Size)
