@@ -42,7 +42,7 @@ this pipeline does not start an emulator or connect to your personal devices.
 - Official Temurin JDK 21 / Ubuntu 24.04 image, pinned by its registry digest.
 - The checked-in Gradle wrapper and JetBrains JDK 21 daemon criteria.
 - Android command-line tools build `15859902`, verified against Google's published SHA-256.
-- Android Platform 37, Build Tools 37.0.0, and Platform-Tools.
+- Android Platform 37 (`platforms;android-37.0`), Build Tools 37.0.0, and Platform-Tools.
 - A `2x` step, a 60-minute timeout, and at most two Gradle workers.
 - Caches for Gradle dependencies, wrapper distributions, downloaded JDKs, and the Android SDK.
 
@@ -72,3 +72,4 @@ the complete Linux build.
 - [Bitbucket test reporting](https://support.atlassian.com/bitbucket-cloud/docs/test-reporting-in-pipelines/)
 - [Official Temurin build images](https://github.com/adoptium/containers)
 - [Android command-line tools and published checksums](https://developer.android.com/studio)
+- [Google SDK repository package metadata](https://dl.google.com/android/repository/repository2-3.xml)

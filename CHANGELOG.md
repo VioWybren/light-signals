@@ -26,6 +26,8 @@ upcoming release; a release date should be added when it is published.
 
 ### Fixed
 
+- Corrected the Bitbucket SDK platform package ID to `platforms;android-37.0` so a clean CI
+  environment can install the required Android platform.
 - Foreground-service startup crash when camera permission is missing, and flashlight operation
   being blocked by notification permission denial.
 - Competing torch jobs and stale session cleanup interfering with a newer signal session.
