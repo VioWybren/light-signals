@@ -53,8 +53,9 @@ pipelines:
               set +o pipefail
               yes | "$sdk_manager" --sdk_root="$ANDROID_HOME" --licenses > /dev/null
               set -o pipefail
+              # Use the exact repository package ID, including the base SDK's .0 suffix.
               "$sdk_manager" --sdk_root="$ANDROID_HOME" \
-                "platform-tools" "platforms;android-37" "build-tools;37.0.0"
+                "platform-tools" "platforms;android-37.0" "build-tools;37.0.0"
 
               # The checked-in daemon criteria provision JetBrains JDK 21 through Gradle.
               # bash also works when the Windows checkout has no executable bit on gradlew.
