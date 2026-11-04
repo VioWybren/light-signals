@@ -29,6 +29,10 @@ longer than runs with populated caches.
 - Both debug APKs.
 - Both isolated `uitest` apps and their Android instrumentation APKs, including Hilt/KSP generation.
 
+The root `android.onlyEnableUnitTestForTheTestedBuildType=false` setting keeps the debug JVM
+test tasks available alongside the `uitest` instrumentation build. Without it, AGP 9 generates
+unit tests only for `uitest`, and the pipeline's `testDebugUnitTest` targets do not exist.
+
 The Gradle invocation uses `--continue` to collect results from independent tasks when a task
 fails. A failed task still fails the pipeline. Test XML and available HTML reports are captured
 on success or failure; APK artifacts are captured after successful verification.

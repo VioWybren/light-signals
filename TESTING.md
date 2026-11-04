@@ -22,6 +22,12 @@ The first run may download the coroutine testing dependency. HTML reports are wr
 
 ## Test design
 
+Both modules select `uitest` for instrumented tests. AGP 9 normally generates JVM test tasks
+only for that selected build type. Root `gradle.properties` sets
+`android.onlyEnableUnitTestForTheTestedBuildType=false` so `testDebugUnitTest` remains available
+in both modules. This enables unit-test components for the other build types as well; the
+commands above run the debug JVM suites.
+
 JUnit 4 and `kotlinx-coroutines-test` run these suites on the JVM. Coroutine tests use a shared virtual scheduler and advance time explicitly. Repository scopes and platform callbacks can be replaced through internal constructors; Hilt continues to use the Android constructors. Test-owned scopes are cancelled when each test finishes.
 
 `test-support/src/main/kotlin` contains an atomic in-memory preferences fake and fixture readers. It is compiled only into the test source sets of the two modules. It does not simulate Android filesystem persistence, permission enforcement, service startup, or physical hardware.

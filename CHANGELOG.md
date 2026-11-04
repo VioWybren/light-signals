@@ -26,6 +26,8 @@ upcoming release; a release date should be added when it is published.
 
 ### Fixed
 
+- Restored debug JVM test tasks alongside the isolated `uitest` build by configuring AGP 9
+  to generate unit-test components for all build types.
 - Corrected the Bitbucket SDK platform package ID to `platforms;android-37.0` so a clean CI
   environment can install the required Android platform.
 - Foreground-service startup crash when camera permission is missing, and flashlight operation
