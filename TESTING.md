@@ -19,6 +19,9 @@ The first run may download the coroutine testing dependency. HTML reports are wr
 - Synchronization: exact DataMap field names and value types, defaults for older payloads, unknown future fields, delivery timestamps, recoverable transport failures, cancellation, and readiness/reconnect/resume gates.
 - Preference helpers: cancellation and programming errors propagate instead of becoming default values or successful writes.
 - Existing torch ownership/concurrency and gradient regression tests remain included.
+- Timed LED sessions: acquire a CPU wake lock before signaling, keep it through SOS gaps and
+  cancellation-safe torch cleanup, and release it on mode changes or failures. Steady torch
+  operation does not hold this lock.
 
 ## Test design
 
@@ -80,6 +83,8 @@ The phone suite covers:
 - Flashlight foreground-service operation with notifications denied (API 33+).
 - Foreground notification flags, channel, title, launch intent, and service shutdown.
 - Home/resume while the torch service is active, and cleanup when the Activity finishes.
+- LED blinking/SOS phases with the display off, actual partial wake lock ownership, and lock
+  release after switching to steady light, finishing the Activity, stopping, or hardware failure.
 - Screen selection/blink mode across Activity recreation.
 - Permission-broadcast receiver registration across stop/start and recreation.
 - The service's own missing-permission guard and recovery from unavailable torch hardware.
@@ -96,6 +101,29 @@ The phone tests start the real Android service and use the real notification and
 frameworks. Hilt replaces only the torch driver with a recording backend, so these tests do not
 exercise the physical LED or camera service. Watch tests restore the previous media volume.
 These tests recreate or stop Activities; they do not claim process-death or OS service-restart coverage.
+
+### Physical LED screen-off regression
+
+The screen-off tests use Android's actual power manager and service, with a recording torch
+backend. They check the service's partial wake lock in `dumpsys power` and verify that both
+on/off phases continue while the display is non-interactive. A test runner, USB charging, or
+other device activity can also keep the CPU awake, so these tests do not replace an unplugged
+physical LED check.
+
+On the affected phone:
+
+1. Start LED blinking and disconnect the charger/USB cable.
+2. Turn the display off and observe the LED for at least three minutes. Repeat at the fastest
+   and slowest blink settings, and repeat in SOS mode.
+3. Turn the display back on, switch to steady LED, then turn the LED off. Confirm that the
+   requested modes work and the foreground notification disappears after stopping.
+4. Record the phone model, Android version, and Battery Saver setting with the result.
+
+The lock is scoped to an active blinking/SOS session and released after its final LED-off write.
+The user controls the session duration, so it has no fixed wake lock timeout that could interrupt
+a longer signal. It does not keep the display on. Forced deep Doze and manufacturer battery
+restrictions are separate scenarios: Android can ignore ordinary wake locks in Doze; see
+[Android's Doze restrictions](https://developer.android.com/training/monitoring-device-state/doze-standby#restrictions).
 
 The first device run caught a service-start deadline crash on the missing-camera path. The service
 now supplies its foreground notification before an early permission exit, then shuts down without

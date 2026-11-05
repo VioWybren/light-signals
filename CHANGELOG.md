@@ -26,6 +26,8 @@ upcoming release; a release date should be added when it is published.
 
 ### Fixed
 
+- Keep the CPU awake during LED blinking/SOS with the display off, and release the partial
+  wake lock after torch cleanup on mode changes, service shutdown, cancellation, or failure.
 - Increased CI Gradle/D8 heap space and limited build concurrency to address heap exhaustion
   during watch dependency dex merging; bounded the Kotlin daemon heap separately.
 - Restored debug JVM test tasks alongside the isolated `uitest` build by configuring AGP 9

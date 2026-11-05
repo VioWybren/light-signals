@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.provider.Settings
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOn
@@ -87,11 +88,12 @@ class PhoneAndroidBehaviorTest {
     }
 
     @After fun cleanup() {
+        device.wakeUp()
         scenario?.close()
         if (!this::controls.isInitialized) return
         onMain { controls.clearAll() }
         eventually("Torch service survived test cleanup") {
-            !DeviceTestSupport.serviceRunning(serviceName) && !torchEnabled.get()
+            !DeviceTestSupport.serviceRunning(serviceName) && !torchEnabled.get() && !signalCpuLockHeld()
         }
     }
 
@@ -191,12 +193,67 @@ class PhoneAndroidBehaviorTest {
         grantPermission(Manifest.permission.CAMERA)
         grantNotifications()
         launchPhone()
+        onMain { controls.setBlinking(true, 200) }
         clickTorch()
         awaitTorchRunning()
+        eventually("Blinking did not acquire its CPU lock") { signalCpuLockHeld() }
         scenario!!.close()
         scenario = null
         awaitTorchStopped()
         assertTrue(writes.contains(false))
+    }
+
+    @Test fun blinkingContinuesWithScreenOffAndSteadyModeReleasesTheCpuLock() {
+        grantPermission(Manifest.permission.CAMERA)
+        grantNotifications()
+        launchPhone()
+        clickTorch()
+        awaitTorchRunning()
+        assertFalse("Steady torch unnecessarily holds a CPU lock", signalCpuLockHeld())
+        onMain { controls.setBlinking(true, 200) }
+        eventually("Blinking did not acquire its CPU lock") { signalCpuLockHeld() }
+        try {
+            device.sleep()
+            awaitScreenOffPhases()
+            onMain { controls.setBlinking(false, 200) }
+            eventually("Changing to steady torch did not release its CPU lock") {
+                !signalCpuLockHeld() && torchEnabled.get() && controls.flashOn.value
+            }
+            assertTrue(DeviceTestSupport.serviceRunning(serviceName, foregroundOnly = true))
+            onMain { controls.setFlash(false) }
+            awaitTorchStopped()
+        } finally {
+            device.wakeUp()
+        }
+    }
+
+    @Test fun sosContinuesWithScreenOffAndStoppingReleasesTheCpuLock() {
+        grantPermission(Manifest.permission.CAMERA)
+        grantNotifications()
+        launchPhone()
+        clickTorch()
+        awaitTorchRunning()
+        onMain { controls.switchSOS(true) }
+        eventually("SOS did not acquire its CPU lock") { signalCpuLockHeld() }
+        try {
+            device.sleep()
+            awaitScreenOffPhases()
+            onMain { controls.setFlash(false) }
+            awaitTorchStopped()
+        } finally {
+            device.wakeUp()
+        }
+    }
+
+    @Test fun failedBlinkingTorchReleasesTheCpuLockAndStopsTheService() {
+        grantPermission(Manifest.permission.CAMERA)
+        grantNotifications()
+        launchPhone()
+        onMain { controls.setBlinking(true, 200) }
+        failEnable.set(true)
+        clickTorch()
+        eventually("Blinking service never attempted to enable the torch") { writes.contains(true) }
+        awaitTorchStopped()
     }
 
     @Test fun recreationPreservesScreenSelectionAndBlinkMode() {
@@ -287,7 +344,27 @@ class PhoneAndroidBehaviorTest {
 
     private fun awaitTorchStopped() = eventually("Torch service or notification survived shutdown") {
         !controls.flashOn.value && !torchEnabled.get() && !DeviceTestSupport.serviceRunning(serviceName) &&
-            notifications.activeNotifications.none { it.id == NOTIF_ID }
+            notifications.activeNotifications.none { it.id == NOTIF_ID } && !signalCpuLockHeld()
+    }
+
+    private fun signalCpuLockHeld(): Boolean {
+        val tag = "${context.packageName}:FlashLightService"
+        return device.executeShellCommand("dumpsys power").lineSequence().any {
+            it.contains("PARTIAL_WAKE_LOCK") && it.contains(tag)
+        }
+    }
+
+    private fun awaitScreenOffPhases() {
+        val power = context.getSystemService(PowerManager::class.java)
+        eventually("Display did not turn off") { !power.isInteractive }
+        assertTrue("Service lost its CPU lock with the display off", signalCpuLockHeld())
+        val before = writes.size
+        eventually("LED phases stopped while the display was off", timeoutMillis = 10_000) {
+            val phases = writes.drop(before)
+            phases.count { it } >= 3 && phases.count { !it } >= 3
+        }
+        assertFalse("Display woke while checking LED phases", power.isInteractive)
+        assertTrue("Service released its CPU lock during an active signal", signalCpuLockHeld())
     }
 
     private fun sendPermissionBroadcast() {

@@ -1,5 +1,6 @@
 package nodomain.greensnowapps.lightsignals.model
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,6 +9,7 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.os.Build
+import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
@@ -46,6 +48,12 @@ class FlashLightService : Service() {
     private val torchOwner = Any()
     private val notificationChannelId = "light_signals_channel_id"
     private var foregroundStarted = false
+    private var signalWakeLock: PowerManager.WakeLock? = null
+    private val signalSession = TorchSignalSession(
+        acquireWakeLock = ::acquireSignalWakeLock,
+        releaseWakeLock = ::releaseSignalWakeLock,
+        switchOffTorch = { torchDriver.setEnabled(torchOwner, false) }
+    )
 
     private data class TorchMode(
         val enabled: Boolean,
@@ -106,13 +114,13 @@ class FlashLightService : Service() {
                 ) { enabled, blink, sos, delayMs ->
                     TorchMode(enabled, blink, sos, delayMs.coerceIn(100L, 1000L))
                 }.distinctUntilChanged().collectLatest { mode ->
-                    try {
+                    signalSession.run(keepCpuAwake = mode.enabled && (mode.blink || mode.sos)) {
                         when {
                             !mode.enabled -> stopSelf()
                             mode.sos -> runSos()
                             mode.blink -> {
                                 while (currentCoroutineContext().isActive) {
-                                    if (!driveTorch(true)) return@collectLatest
+                                    if (!driveTorch(true)) return@run
                                     delay(mode.delayMs)
                                     driveTorch(false)
                                     delay(mode.delayMs)
@@ -122,8 +130,6 @@ class FlashLightService : Service() {
                                 if (driveTorch(true)) awaitCancellation()
                             }
                         }
-                    } finally {
-                        withContext(NonCancellable) { torchDriver.setEnabled(torchOwner, false) }
                     }
                 }
             } catch (error: CancellationException) {
@@ -156,6 +162,21 @@ class FlashLightService : Service() {
 
     private suspend fun runSos() {
         runSosSignal(SOS_UNIT_MS, ::driveTorch)
+    }
+
+    // A signal runs until the user stops it. A fixed timeout would pause a longer signal
+    // again; TorchSignalSession releases the lock after shutdown, even on cancellation.
+    @SuppressLint("WakelockTimeout")
+    private fun acquireSignalWakeLock() {
+        val wakeLock = signalWakeLock ?: applicationContext.getSystemService(PowerManager::class.java)
+            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "$packageName:FlashLightService")
+            .apply { setReferenceCounted(false) }
+            .also { signalWakeLock = it }
+        wakeLock.acquire()
+    }
+
+    private fun releaseSignalWakeLock() {
+        signalWakeLock?.let { if (it.isHeld) it.release() }
     }
 
     private fun notifyUiPermissionsMissing() {
