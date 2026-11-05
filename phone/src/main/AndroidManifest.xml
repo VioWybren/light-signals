@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
         tools:ignore="SystemPermissionTypo" />
@@ -61,10 +60,8 @@
                  Therefore, it logically follows that the use of a foreground service becomes necessary. The FlashLightService is a specialUse
                  type service used for these purposes.
 
-                 It should be noted, however, that users can only use the service after granting permission. Permission dialogs appear during
-                 runtime after providing rationale.
-
-                 Camera permission is required only to control the flashlight; the application does not take photos or record video.
+                 The flashlight is controlled through CameraManager.setTorchMode without opening a camera device.
+                 No camera permission is requested, and the application does not take photos or record video.
                  The service always supplies a foreground notification. On Android 13 and later, notification permission is optional
                  and controls whether that notification is displayed in the notification drawer." />
         </service>

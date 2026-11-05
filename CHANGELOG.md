@@ -3,6 +3,15 @@
 Notable changes are recorded here, beginning with v4.0.0. The entry below describes the
 upcoming release; a release date should be added when it is published.
 
+## Permission-free torch experiment - Not released
+
+- Removed the phone's camera permission, runtime camera-permission gates, explanation dialogs,
+  and internal missing-permission broadcasts. LED controls use the existing CameraManager torch API.
+- Request notification permission independently of LED operation on Android 13 and later.
+- Added merged-manifest/permission assertions and real camera-service torch tests for steady light,
+  blinking, SOS, and screen-off operation. Older-device compatibility remains to be established.
+- Preserve the original v4.0.0 release candidate at Git tag `baseline/v4.0.0-camera`.
+
 ## [v4.0.0] - Unreleased
 
 ### Added

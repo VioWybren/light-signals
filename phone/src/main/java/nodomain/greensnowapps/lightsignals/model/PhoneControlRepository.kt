@@ -24,9 +24,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import nodomain.greensnowapps.lightsignals.ACTION_PERMISSIONS_MISSING
 import nodomain.greensnowapps.lightsignals.DEFAULT_COLOR_PROGRESS
-import nodomain.greensnowapps.lightsignals.EXTRA_MISSING_CAMERA
 import nodomain.greensnowapps.lightsignals.PREFERENCE_ACTIVE_SCREEN
 import nodomain.greensnowapps.lightsignals.PREFERENCE_ACTIVE_SOUND
 import nodomain.greensnowapps.lightsignals.PREFERENCE_BLINK_DELAY
@@ -39,7 +37,6 @@ import nodomain.greensnowapps.lightsignals.PREFERENCE_SIGNAL_SCREEN_COLOR
 import nodomain.greensnowapps.lightsignals.PREFERENCE_SOS_ON
 import nodomain.greensnowapps.lightsignals.SOS_UNIT_MS
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel.Companion.Active
-import nodomain.greensnowapps.lightsignals.utils.PermissionUtils
 import javax.inject.Inject
 import javax.inject.Singleton
 import java.io.IOException
@@ -241,14 +238,6 @@ class PhoneControlRepository internal constructor(
 
     private companion object {
         fun tryStartService(context: Context): Boolean {
-            if (!PermissionUtils.hasCameraPermission(context)) {
-                context.sendBroadcast(
-                    Intent(ACTION_PERMISSIONS_MISSING)
-                        .setPackage(context.packageName)
-                        .putExtra(EXTRA_MISSING_CAMERA, true)
-                )
-                return false
-            }
             return try {
                 val intent = Intent(context, FlashLightService::class.java)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

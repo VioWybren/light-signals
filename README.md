@@ -1,5 +1,9 @@
 # Light Signals
 
+This checkout contains the permission-free torch experiment. The tested, camera-permission-based
+v4.0.0 checkpoint is preserved at Git tag `baseline/v4.0.0-camera`.
+See [PERMISSION_EXPERIMENT.md](PERMISSION_EXPERIMENT.md) for scope and compatibility checks.
+
 Light Signals is an Android phone and Wear OS app for showing light signals with a screen
 or the phone's flashlight. It supports steady light, adjustable blinking, SOS patterns,
 selectable screen colors, and optional signal sounds. The watch can show signals on its own
@@ -55,9 +59,10 @@ and separate app data.
 
 ## Permissions and operation
 
-- The phone requests camera permission to operate the flashlight; it does not take photos
-  or record video. Screen signaling does not require flashlight hardware.
-- Notification permission is optional. Denying it does not disable the flashlight.
+- This experiment controls the flashlight without declaring or requesting camera permission.
+  It does not open a camera, take photos, or record video. Screen signaling does not require flashlight hardware.
+- Android 13+ notification permission is requested independently when starting the LED.
+  It is optional; denying it does not disable the flashlight or trigger repeated automatic prompts.
 - Active phone flashlight work uses a foreground service and can continue while the phone
   screen is off.
 - Watch screen signaling follows the Activity lifecycle. It stops when the app leaves the

@@ -1,5 +1,9 @@
 # Testing Light Signals
 
+This branch tests permission-free torch operation. Keep compatibility results separate from the
+camera-permission-based `baseline/v4.0.0-camera` checkpoint; see
+[PERMISSION_EXPERIMENT.md](PERMISSION_EXPERIMENT.md).
+
 Run the local JVM suites from the project directory in PowerShell:
 
 ```powershell
@@ -72,22 +76,30 @@ awake while building, installing, and testing. The job stops when the script exi
 change persistent screen-timeout settings.
 
 Android Test Orchestrator runs each case in a fresh instrumentation invocation and clears test-app
-data between cases. This resets saved settings and permission decisions so test order does not
-affect the results. The test runner also checks the isolated target package.
+data between cases. This isolates application settings and permission decisions; it does not
+reset the device's secure lock state. The test runner also checks the isolated target package.
+
+On a personal phone with a secure lock, `wakeUp()` turns the display on but does not unlock it.
+A screen-off case can therefore leave the keyguard covering subsequent UI cases. Keep the
+phone unlocked for UI cases, run screen-off cases last, and unlock between filtered runs when
+needed. Do not change PIN, fingerprint, or lock settings for these tests. Preserve initial
+failures as well as rerun results; successful filtered reruns are not a single unattended
+full-suite pass.
 
 The phone suite covers:
 
-- Missing camera permission and the app's explanation.
-- Granting camera permission through the real Android dialog.
-- Repeated camera denial, rationale, and navigation to this test app's Settings page (API 30+).
-- Flashlight foreground-service operation with notifications denied (API 33+).
+- Absence of camera permission from the installed app's merged manifest and runtime grants.
+- Starting/stopping the flashlight without a camera permission prompt.
+- Granting or denying the independent notification permission, continued LED operation after
+  denial, and respecting that denial after relaunch (API 33+).
 - Foreground notification flags, channel, title, launch intent, and service shutdown.
 - Home/resume while the torch service is active, and cleanup when the Activity finishes.
 - LED blinking/SOS phases with the display off, actual partial wake lock ownership, and lock
   release after switching to steady light, finishing the Activity, stopping, or hardware failure.
 - Screen selection/blink mode across Activity recreation.
-- Permission-broadcast receiver registration across stop/start and recreation.
-- The service's own missing-permission guard and recovery from unavailable torch hardware.
+- Recovery from unavailable torch hardware.
+- A separate hardware suite verifies actual CameraManager torch callbacks without camera
+  permission for steady LED, blinking, SOS, screen-off operation, and cleanup.
 
 The watch suite covers:
 
@@ -97,18 +109,22 @@ The watch suite covers:
 - Mode retention and owner replacement during Activity recreation.
 - Signal/session/window cleanup when finishing the Activity.
 
-The phone tests start the real Android service and use the real notification and permission
-frameworks. Hilt replaces only the torch driver with a recording backend, so these tests do not
-exercise the physical LED or camera service. Watch tests restore the previous media volume.
+`PhoneAndroidBehaviorTest` starts the real Android service and uses the real notification and
+permission frameworks. Hilt replaces its torch driver with a recording backend and supplies
+matching flash availability, so the UI cases can also run on emulators without an LED.
+`PhoneTorchHardwareTest` keeps the production Hilt bindings and checks real CameraManager torch
+callbacks. Its cases require a physical device with a rear LED; emulators and devices without
+that hardware are skipped, not counted as hardware compatibility proof.
+Watch tests restore the previous media volume.
 These tests recreate or stop Activities; they do not claim process-death or OS service-restart coverage.
 
 ### Physical LED screen-off regression
 
-The screen-off tests use Android's actual power manager and service, with a recording torch
-backend. They check the service's partial wake lock in `dumpsys power` and verify that both
-on/off phases continue while the display is non-interactive. A test runner, USB charging, or
-other device activity can also keep the CPU awake, so these tests do not replace an unplugged
-physical LED check.
+The behavior tests check Android's actual power manager/service with a recording torch backend.
+The hardware tests also check on/off callbacks from the real camera service. Both check the
+service's partial wake lock in `dumpsys power` while the display is non-interactive. A test runner,
+USB charging, or other device activity can also keep the CPU awake, so these tests do not replace
+an unplugged physical LED check.
 
 On the affected phone:
 
@@ -125,9 +141,9 @@ a longer signal. It does not keep the display on. Forced deep Doze and manufactu
 restrictions are separate scenarios: Android can ignore ordinary wake locks in Doze; see
 [Android's Doze restrictions](https://developer.android.com/training/monitoring-device-state/doze-standby#restrictions).
 
-The first device run caught a service-start deadline crash on the missing-camera path. The service
-now supplies its foreground notification before an early permission exit, then shuts down without
-accessing the torch. The Home/resume tests explicitly refocus the existing Android task instead
+The baseline's first device run caught a service-start deadline crash on the missing-camera path.
+This experiment removes that permission path; the service still supplies its foreground
+notification before observing LED requests. The Home/resume tests explicitly refocus the existing Android task instead
 of assuming that a lifecycle state request can bring a background task to the foreground.
 
 Reports from Gradle device runs are under each module's `build/reports/androidTests/connected`

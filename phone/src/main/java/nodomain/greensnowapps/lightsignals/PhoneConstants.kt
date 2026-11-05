@@ -3,9 +3,6 @@ package nodomain.greensnowapps.lightsignals
 const val SOS_UNIT_MS = 200L
 const val NOTIF_ID = 55555777
 
-const val ACTION_PERMISSIONS_MISSING = "action_permissions_missing"
-const val EXTRA_MISSING_CAMERA = "missing_camera"
-const val EXTRA_MISSING_NOTIFICATIONS = "missing_notifications"
 
 const val APP_IS_NOT_INSTALLED_ON_WATCH = "The app isn't installed on connected watch. Do you want to install it?"
 const val NO_CONNECTED_WATCHES = "No connected watches found"
