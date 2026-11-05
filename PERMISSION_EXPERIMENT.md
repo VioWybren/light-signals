@@ -41,7 +41,8 @@ with each compatibility result.
 
 | Phone Android API | Purpose | Emulator/platform checks | Physical LED checks |
 | --- | --- | --- | --- |
-| 24 | Minimum supported Android | Passed: 11/11 selected cases in a complete emulator run | Physical Android 7 check pending |
+| 24 | Minimum supported Android | Passed: 11/11 selected cases in a complete emulator run | Not tested; Android 7 hardware unavailable |
+| 26, Android 8.0.0, Samsung SM-A520 | Older physical-device check | No automated API 26 run | Manual LED checks passed with Battery Saver enabled |
 | 28 or 29 | Older camera-service implementation | Unverified | Unverified |
 | 30 to 32 | Background service/lifecycle behavior | Unverified | Unverified |
 | 33 | Independent notification permission | Passed: 13/13 selected cases in a complete emulator run | Unverified |
@@ -74,8 +75,9 @@ service is active. Confirm that the LED, notification, and CPU wake lock are cle
   continued correctly for at least three minutes using the usual Battery Saver setting,
   without a camera-permission request. Blink-interval extremes were not reported as checked.
 
-The initial physical-device batch covered only the current phone and watch. The API 24,
-API 33, and API 34 emulator results are recorded below; physical Android 7 LED behavior remains unverified.
+The initial physical-device batch covered the current phone and watch. The API 24, API 33,
+and API 34 emulator results and subsequent Samsung SM-A520 / Android 8.0.0 manual result are
+recorded below. Physical Android 7 LED behavior remains unverified.
 Keep the permission-based baseline while the compatibility and release scope remain open.
 
 ## API 24 emulator follow-up
@@ -100,8 +102,8 @@ code and its APK are unchanged.
 
 The updated watch suite subsequently passed all five cases on the Samsung SM-L310 / API 36,
 including both Home/resume checks. Its follow-up result and the API 33/API 34 emulator results
-are recorded below. Physical Android 7 steady LED, blinking, SOS, and unplugged screen-off
-checks remain pending access to the real device.
+are recorded below. The later manual hardware check used Android 8.0.0, rather than Android 7;
+no physical Android 7 device was available.
 
 The two notification-permission cases are filtered out below API 33, and the three physical
 LED cases are filtered out on emulators. Neither exclusion is a physical compatibility result.
@@ -144,6 +146,29 @@ removed when the run finished; the tests restore the prior media volume.
 The targeted emulator batch (API 24, API 33, API 34) and updated watch suite are complete.
 These results do not establish physical LED compatibility on Android 7 or coverage of the
 other unverified rows in the matrix.
+
+## Android 8 physical LED follow-up
+
+The user corrected the initially reported Android 7 device to a Samsung SM-A520 (reported as
+`SMA520`) running Android 8.0.0 / API 26. Battery Saver was enabled. The user confirmed that
+all requested manual checks passed: steady LED, blinking, SOS, stopping, and blinking/SOS each
+continuing unplugged with the display off for at least three minutes, without a camera-permission
+request.
+
+The user transferred the current `phone/build/outputs/apk/debug/phone-debug.apk` from
+`experiment/remove-camera-permission` and explicitly confirmed that source file. This debug
+variant is labelled **Light Signals**, with package `nodomain.greensnowapps.lightsignals`,
+version name `v4.0.0`, and version code `374001`. Its packaged manifest was inspected locally
+and does not declare CAMERA. The source APK SHA-256 is:
+
+```text
+56b3631ed8f4e6d25ee92a5f56dae92b686e6c0a8d67a2fe4705bff0e87c78ed
+```
+
+These are user-reported manual observations from the confirmed APK, not an instrumentation
+run on API 26. The phone was not connected through ADB. The earlier Android 7 identification
+was corrected; physical Android 7 behavior remains untested, with API 24 coverage provided
+by the emulator result above. Blink-interval extremes were not separately reported.
 
 ## Unplugged check
 
