@@ -164,14 +164,18 @@ class PhoneAndroidBehaviorTest {
         clickTorch()
         awaitTorchRunning()
         var taskId = -1
-        scenario!!.onActivity { taskId = it.taskId }
+        lateinit var activityLifecycle: Lifecycle
+        scenario!!.onActivity {
+            taskId = it.taskId
+            activityLifecycle = it.lifecycle
+        }
         device.pressHome()
-        eventually("Phone Activity did not stop after Home") { scenario!!.state == Lifecycle.State.CREATED }
+        eventually("Phone Activity did not stop after Home") { onMain { activityLifecycle.currentState == Lifecycle.State.CREATED } }
         assertTrue(controls.flashOn.value)
         assertTrue(torchEnabled.get())
         assertTrue(DeviceTestSupport.serviceRunning(serviceName, foregroundOnly = true))
         focusTask(taskId)
-        eventually("Phone Activity did not resume") { scenario!!.state == Lifecycle.State.RESUMED }
+        eventually("Phone Activity did not resume") { onMain { activityLifecycle.currentState == Lifecycle.State.RESUMED } }
         clickTorch()
         awaitTorchStopped()
     }

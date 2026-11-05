@@ -145,6 +145,12 @@ The baseline's first device run caught a service-start deadline crash on the mis
 This experiment removes that permission path; the service still supplies its foreground
 notification before observing LED requests. The Home/resume tests explicitly refocus the existing Android task instead
 of assuming that a lifecycle state request can bring a background task to the foreground.
+The shared `focusTask` helper uses the public `ActivityManager.AppTask.moveToFront()` API,
+matching the existing task by ID with the pre-API-29 field fallback. Android 7 does not support
+the `am task focus` shell command, so that command must not be used for minimum-SDK tests.
+Home/resume polling reads the original Activity's `Lifecycle.currentState` on the main thread.
+`ActivityScenario.state` can throw while its framework monitor is in a transient `STARTED`
+stage, so it is not used as a polling predicate during asynchronous task transitions.
 
 Reports from Gradle device runs are under each module's `build/reports/androidTests/connected`
 and `build/outputs/androidTest-results/connected` directories. Tests conditioned on a newer API

@@ -3,6 +3,7 @@ package nodomain.greensnowapps.lightsignals.testing
 import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Looper
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
@@ -28,9 +29,18 @@ object DeviceTestSupport {
             PackageManager.PERMISSION_DENIED, ContextCompat.checkSelfPermission(context, permission))
     }
 
+    @Suppress("DEPRECATION")
     fun focusTask(taskId: Int) {
-        check(taskId >= 0)
-        device.executeShellCommand("am task focus $taskId")
+        require(taskId >= 0)
+        // The shell's "am task focus" command is unavailable on Android 7.
+        // Move this app's existing task instead of creating another Activity.
+        val manager = context.getSystemService(ActivityManager::class.java)
+        val task = manager.appTasks.firstOrNull {
+            val info = it.taskInfo ?: return@firstOrNull false
+            val existingId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) info.taskId else info.id
+            existingId == taskId
+        }
+        checkNotNull(task) { "Task $taskId does not belong to ${context.packageName}" }.moveToFront()
     }
 
     fun <T> onMain(action: () -> T): T {
