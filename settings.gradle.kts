@@ -23,5 +23,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Light Signals Kotlin"
+include(":core")
 include(":phone")
 include(":watch")

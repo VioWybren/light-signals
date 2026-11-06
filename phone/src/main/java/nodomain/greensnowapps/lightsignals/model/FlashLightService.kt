@@ -32,7 +32,8 @@ import kotlinx.coroutines.withContext
 import nodomain.greensnowapps.lightsignals.NOTIF_ID
 import nodomain.greensnowapps.lightsignals.PhoneMainActivity
 import nodomain.greensnowapps.lightsignals.R
-import nodomain.greensnowapps.lightsignals.SOS_UNIT_MS
+import nodomain.greensnowapps.lightsignals.core.signal.SOS_UNIT_MS
+import nodomain.greensnowapps.lightsignals.core.signal.runSosSignal
 import javax.inject.Inject
 
 @AndroidEntryPoint

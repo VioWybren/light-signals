@@ -20,7 +20,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.WearConstants
-import nodomain.greensnowapps.lightsignals.WearConstants.SOS_UNIT_MS
+import nodomain.greensnowapps.lightsignals.core.signal.SOS_UNIT_MS
+import nodomain.greensnowapps.lightsignals.core.signal.runSosSignal
 import nodomain.greensnowapps.lightsignals.utils.WearUtils
 import javax.inject.Inject
 import javax.inject.Singleton

@@ -3,6 +3,15 @@
 Notable changes are recorded here, beginning with v4.0.0. The entry below describes the
 upcoming release; a release date should be added when it is published.
 
+## Shared core refactoring - Not released
+
+- Added a Kotlin/JVM `core` module used by the phone and watch for the common SOS engine,
+  200 ms Morse unit, and control-state wire field names.
+- Moved the independent SOS timing fixture and its three tests into `core`; retained both
+  app-specific codec contract suites and their wire fixtures.
+- Updated local verification commands and the manual CI configuration to include `:core:test`.
+- Kept the existing wire values/types, Android components, preferences, and app version metadata.
+
 ## Permission-free torch experiment - Not released
 
 - Removed the phone's camera permission, runtime camera-permission gates, explanation dialogs,

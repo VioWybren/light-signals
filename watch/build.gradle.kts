@@ -72,6 +72,7 @@ configurations.named("uitestImplementation") {
 }
 
 dependencies {
+    implementation(project(":core"))
 
     implementation(libs.play.services.wearable)
     implementation(platform(libs.androidx.compose.bom))

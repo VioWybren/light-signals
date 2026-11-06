@@ -24,7 +24,7 @@ longer than runs with populated caches.
 
 ## What it checks
 
-- Both modules' JVM unit tests.
+- Shared `core` JVM tests and both Android app modules' JVM unit tests.
 - Debug lint for the phone and watch.
 - Both debug APKs.
 - Both isolated `uitest` apps and their Android instrumentation APKs, including Hilt/KSP generation.
@@ -32,6 +32,7 @@ longer than runs with populated caches.
 The root `android.onlyEnableUnitTestForTheTestedBuildType=false` setting keeps the debug JVM
 test tasks available alongside the `uitest` instrumentation build. Without it, AGP 9 generates
 unit tests only for `uitest`, and the pipeline's `testDebugUnitTest` targets do not exist.
+The Kotlin/JVM `core` module uses the standard `:core:test` task and has no Android build type.
 
 The Gradle invocation uses `--continue` to collect results from independent tasks when a task
 fails. A failed task still fails the pipeline. Test XML and available HTML reports are captured

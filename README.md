@@ -1,6 +1,6 @@
 # Light Signals
 
-This checkout contains the permission-free torch experiment. The tested, camera-permission-based
+This checkout contains the permission-free torch implementation and shared signal core. The tested, camera-permission-based
 v4.0.0 checkpoint is preserved at Git tag `baseline/v4.0.0-camera`.
 See [PERMISSION_EXPERIMENT.md](PERMISSION_EXPERIMENT.md) for scope and compatibility checks.
 
@@ -13,12 +13,14 @@ screen and control the companion phone app through the Wearable Data Layer.
 
 | Module | Device | Minimum API | Compile / target API |
 | --- | --- | --- | --- |
+| `core` | Shared Kotlin/JVM signal logic and wire names | Not an Android app | Java/Kotlin bytecode 17 |
 | `phone` | Android phone | 24 | 37 |
 | `watch` | Wear OS watch | 30 | 37 |
 
 The project uses Kotlin, Jetpack Compose, Material 3, Hilt, coroutines/StateFlow, Preferences
 DataStore, and Google Play services Wearable APIs. The watch UI uses Wear Compose components.
 Companion control requires the app on both paired devices and an available Wearable connection.
+Both app modules depend on `core`; see [ARCHITECTURE.md](ARCHITECTURE.md) for module boundaries.
 
 The checked-in build configuration uses:
 
@@ -46,7 +48,7 @@ configured toolchain and dependencies that are not already cached.
 Run these commands from the repository root in PowerShell:
 
 ```powershell
-.\gradlew.bat :phone:assembleDebug :watch:assembleDebug
+.\gradlew.bat :core:test :phone:assembleDebug :watch:assembleDebug
 ```
 
 The APKs are written to `phone/build/outputs/apk/debug/` and
@@ -72,9 +74,10 @@ and separate app data.
 
 | Path | Purpose |
 | --- | --- |
+| `core/` | Shared SOS engine, Morse unit, and synchronization wire names |
 | `phone/` | Phone UI, state, preferences, flashlight service, and synchronization receiver |
 | `watch/` | Watch UI, state, preferences, sound, and companion control |
-| `test-support/` | Shared JVM test fakes and independent SOS/synchronization contract fixtures |
+| `test-support/` | Shared JVM test fakes and independent synchronization contract fixtures |
 | `instrumentation-support/` | Shared Android test runner and device helpers |
 | `scripts/Test-Android.ps1` | Runs an isolated Android suite on a selected phone or watch |
 
@@ -84,10 +87,10 @@ source sets only.
 
 ## Testing
 
-Run both local JVM suites:
+Run all three local JVM suites:
 
 ```powershell
-.\gradlew.bat :phone:testDebugUnitTest :watch:testDebugUnitTest --stacktrace
+.\gradlew.bat :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest --stacktrace
 ```
 
 Run debug lint:
@@ -98,8 +101,8 @@ Run debug lint:
 
 See [TESTING.md](TESTING.md) for Android test APK builds, device selection, report locations,
 covered behavior, and remaining coverage. Device tests use an isolated app and Android Test
-Orchestrator. The phone suite substitutes a recording torch driver, so physical LED behavior
-needs a separate hardware check.
+Orchestrator. The phone behavior suite substitutes a recording torch driver; the separate
+hardware suite uses the real LED. Unplugged screen-off checks remain manual.
 
 ## Continuous integration
 
