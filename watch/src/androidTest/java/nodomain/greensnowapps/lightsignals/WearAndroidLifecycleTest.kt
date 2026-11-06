@@ -60,19 +60,23 @@ class WearAndroidLifecycleTest {
     @Test fun homeStopsTheForegroundSessionAndResumeStartsItAgain() {
         val window = window()
         var taskId = -1
-        scenario!!.onActivity { taskId = it.taskId }
+        lateinit var activityLifecycle: Lifecycle
+        scenario!!.onActivity {
+            taskId = it.taskId
+            activityLifecycle = it.lifecycle
+        }
         assertTrue(controls.isForeground.value)
         assertTrue(keepsScreenOn(window))
         onMain { controls.setBlinking(true, 100L) }
         eventually("Watch signal never started") { controls.colorBlinkActive.value }
         device.pressHome()
         eventually("Watch Activity did not stop after Home") {
-            scenario!!.state == Lifecycle.State.CREATED && !controls.isForeground.value
+            onMain { activityLifecycle.currentState == Lifecycle.State.CREATED } && !controls.isForeground.value
         }
         assertFalse(controls.colorBlinkActive.value)
         assertFalse(keepsScreenOn(window))
         focusTask(taskId)
-        eventually("Watch Activity did not resume") { scenario!!.state == Lifecycle.State.RESUMED }
+        eventually("Watch Activity did not resume") { onMain { activityLifecycle.currentState == Lifecycle.State.RESUMED } }
         eventually("Watch signal did not resume") { controls.isForeground.value && controls.colorBlinkActive.value }
         assertTrue(keepsScreenOn(window))
     }
@@ -91,7 +95,11 @@ class WearAndroidLifecycleTest {
     @Test fun homeRestoresBrightnessAndResumeReappliesTheSignalBrightness() {
         val window = window()
         var taskId = -1
-        scenario!!.onActivity { taskId = it.taskId }
+        lateinit var activityLifecycle: Lifecycle
+        scenario!!.onActivity {
+            taskId = it.taskId
+            activityLifecycle = it.lifecycle
+        }
         setBrightness(window, 0.37f)
         onMain { controls.updateScreenIndex(1) }
         awaitBrightness(window, 1f)
@@ -99,7 +107,7 @@ class WearAndroidLifecycleTest {
         eventually("Signal Activity did not stop") { !controls.isForeground.value }
         eventually("Brightness was not restored when stopped") { brightness(window) == 0.37f }
         focusTask(taskId)
-        eventually("Watch Activity did not resume") { scenario!!.state == Lifecycle.State.RESUMED }
+        eventually("Watch Activity did not resume") { onMain { activityLifecycle.currentState == Lifecycle.State.RESUMED } }
         awaitBrightness(window, 1f)
     }
 

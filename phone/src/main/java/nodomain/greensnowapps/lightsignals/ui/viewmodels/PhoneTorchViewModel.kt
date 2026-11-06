@@ -1,25 +1,19 @@
 package nodomain.greensnowapps.lightsignals.ui.viewmodels
 
-import android.content.Context
-import android.content.pm.PackageManager
-import android.hardware.camera2.CameraAccessException
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import nodomain.greensnowapps.lightsignals.model.PhoneTorchAvailability
 import javax.inject.Inject
 
 
 @HiltViewModel
 class PhoneTorchViewModel @Inject constructor(
-    @param: ApplicationContext private val appContext: Context
+    private val availability: PhoneTorchAvailability
 ) : ViewModel() {
 
     private val _hasTorch = MutableStateFlow<Boolean?>(null)
@@ -27,27 +21,8 @@ class PhoneTorchViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _hasTorch.value = checkHasTorch(appContext)
+            _hasTorch.value = availability.hasTorch()
         }
     }
 
-    fun getCameraManager(context: Context): CameraManager? =
-        ContextCompat.getSystemService(context, CameraManager::class.java)
-
-    private fun checkHasTorch(context: Context): Boolean {
-        val pm = context.packageManager
-        if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return true
-
-        try {
-            val cm = getCameraManager(context) ?: return false
-            for (id in cm.cameraIdList) {
-                val chars = cm.getCameraCharacteristics(id)
-                val available = chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
-                if (available) return true
-            }
-        } catch (_: CameraAccessException) {
-        } catch (_: Exception) {
-        }
-        return false
-    }
 }

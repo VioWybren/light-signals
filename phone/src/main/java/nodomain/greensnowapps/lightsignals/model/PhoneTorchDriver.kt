@@ -41,7 +41,7 @@ private class CameraTorchOutput(private val cameraManager: CameraManager) {
             false
         } catch (error: SecurityException) {
             cameraId = null
-            Log.w("PhoneTorchDriver", "Camera permission unavailable", error)
+            Log.w("PhoneTorchDriver", "Torch access was rejected", error)
             false
         } catch (error: IllegalArgumentException) {
             cameraId = null

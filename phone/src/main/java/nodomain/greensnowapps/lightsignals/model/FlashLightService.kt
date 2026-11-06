@@ -29,13 +29,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import nodomain.greensnowapps.lightsignals.ACTION_PERMISSIONS_MISSING
-import nodomain.greensnowapps.lightsignals.EXTRA_MISSING_CAMERA
 import nodomain.greensnowapps.lightsignals.NOTIF_ID
 import nodomain.greensnowapps.lightsignals.PhoneMainActivity
 import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.SOS_UNIT_MS
-import nodomain.greensnowapps.lightsignals.utils.PermissionUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -80,23 +77,11 @@ class FlashLightService : Service() {
             stopSelf()
             return
         }
-        // Satisfy startForegroundService's platform contract before an early permission exit.
-        // This special-use service can post its notification without camera permission.
-        if (!PermissionUtils.hasCameraPermission(this)) {
-            notifyUiPermissionsMissing()
-            phoneCtrl.onTorchServiceUnavailable()
-            stopSelf()
-            return
-        }
         observeTorchMode()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (!PermissionUtils.hasCameraPermission(this)) {
-            notifyUiPermissionsMissing()
-            phoneCtrl.onTorchServiceUnavailable()
-            stopSelf(startId)
-        } else if (!phoneCtrl.flashOn.value) {
+        if (!phoneCtrl.flashOn.value) {
             stopSelf(startId)
         }
         return START_NOT_STICKY
@@ -177,14 +162,6 @@ class FlashLightService : Service() {
 
     private fun releaseSignalWakeLock() {
         signalWakeLock?.let { if (it.isHeld) it.release() }
-    }
-
-    private fun notifyUiPermissionsMissing() {
-        sendBroadcast(
-            Intent(ACTION_PERMISSIONS_MISSING)
-                .setPackage(packageName)
-                .putExtra(EXTRA_MISSING_CAMERA, true)
-        )
     }
 
     override fun onBind(intent: Intent?) = null

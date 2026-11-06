@@ -1,14 +1,8 @@
 package nodomain.greensnowapps.lightsignals
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,10 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.registerReceiver
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import nodomain.greensnowapps.lightsignals.ui.screens.PhoneScreenHost
@@ -32,152 +23,48 @@ import nodomain.greensnowapps.lightsignals.utils.PermissionUtils
 @AndroidEntryPoint
 class PhoneMainActivity : ComponentActivity() {
     private val viewModel: PhoneMainViewModel by viewModels()
+    private var notificationPermissionRequested = false
+
+    // The LED request is independent of this optional permission and its result.
+    private val notificationsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        notificationPermissionRequested = savedInstanceState?.getBoolean(NOTIFICATIONS_REQUESTED) ?: false
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             LightSignalNewTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    PhoneScreenHost(
-                        onToggleClick = { tryEnableFlash() },
-
-                        showPreExplain = showPreExplain.value,
-                        preExplainMessage = preExplainMessage.value,
-                        onPreExplainContinue = {
-                            showPreExplain.value = false
-                            permsLauncher.launch(perms)
-                        },
-                        onDismissPreExplain = { showPreExplain.value = false },
-
-                        showRationale = showRationale.value,
-                        rationaleMessage = rationaleMessage.value,
-                        onRequestAgain = {
-                            showRationale.value = false
-                            permsLauncher.launch(perms)
-                        },
-                        onDismissRationale = { showRationale.value = false },
-
-                        showSettings = showSettings.value,
-                        settingsMessage = settingsMessage.value,
-                        onOpenSettings = { openAppSettings() },
-                        onDismissSettings = { showSettings.value = false }
-                    )
+                    PhoneScreenHost()
                 }
             }
         }
-
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
     }
 
-    override fun onStart() {
-        super.onStart()
-        registerReceiver(
-            this,
-            broadcastReceiver,
-            IntentFilter(ACTION_PERMISSIONS_MISSING),
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
-    }
-
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == ACTION_PERMISSIONS_MISSING) {
-                tryEnableFlash()
-            }
-        }
-    }
-
-    override fun onStop() {
-        unregisterReceiver(broadcastReceiver)
-        super.onStop()
-    }
-
-    private val showRationale = mutableStateOf(false)
-    private val rationaleMessage = mutableStateOf("")
-    private val showSettings = mutableStateOf(false)
-    private val settingsMessage = mutableStateOf("")
-    private val showPreExplain = mutableStateOf(false)
-    private val preExplainMessage = mutableStateOf("")
-
-
-    private val perms = arrayOf(
-        Manifest.permission.CAMERA,
-        *(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            arrayOf(Manifest.permission.POST_NOTIFICATIONS) else emptyArray())
-    )
-
-    private val permsLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { results ->
-        handlePermResults(results)
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(NOTIFICATIONS_REQUESTED, notificationPermissionRequested)
+        super.onSaveInstanceState(outState)
     }
 
     fun tryEnableFlash() {
-        val cameraOk = PermissionUtils.hasCameraPermission(this)
-        val notifOk = PermissionUtils.hasPostNotificationsPermission(this)
-
-        if (cameraOk) {
-            viewModel.select(Active.FLASH)
-        } else {
-            viewModel.switchFlash(false)
-        }
-
-        if (!cameraOk) {
-            preExplainMessage.value = buildPreExplainMessage(cameraOk, notifOk)
-            showPreExplain.value = true
+        viewModel.select(Active.FLASH)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !notificationPermissionRequested &&
+            !PermissionUtils.hasPostNotificationsPermission(this) &&
+            !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)
+        ) {
+            // Ask in response to the first LED request. Respect a previous denial rather
+            // than automatically showing the request again on the next app launch.
+            notificationPermissionRequested = true
+            notificationsLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
-    private fun handlePermResults(results: Map<String, Boolean>) {
-        val camOk = results[Manifest.permission.CAMERA] == true
-        if (camOk) viewModel.select(Active.FLASH) else viewModel.switchFlash(
-            false
-        )
-
-        val denied = results.filter { (permission, granted) ->
-            permission == Manifest.permission.CAMERA && !granted
-        }.keys.toList()
-        if (denied.isEmpty()) return
-
-        val shouldShowRationaleList = denied.filter { perm ->
-            ActivityCompat.shouldShowRequestPermissionRationale(this, perm)
-        }
-
-        if (shouldShowRationaleList.isNotEmpty()) {
-            rationaleMessage.value = buildRationaleMessage(shouldShowRationaleList)
-            showRationale.value = true
-        } else {
-            settingsMessage.value = buildSettingsMessage(denied)
-            showSettings.value = true
-        }
-    }
-
-
-    private fun openAppSettings() {
-        startActivity(
-            Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", packageName, null)
-            ).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
-        )
-    }
-
-    private fun buildPreExplainMessage(cameraOk: Boolean, notifOk: Boolean) = buildString {
-        append(getString(R.string.dialog_message_pre_explain_base))
-        if (!cameraOk) append(getString(R.string.dialog_message_pre_explain_camera))
-        if (!notifOk) append(getString(R.string.dialog_message_optional_notifications))
-    }
-
-    private fun buildRationaleMessage(perms: List<String>) = buildString {
-        append(getString(R.string.dialog_message_rationale_dialog_base))
-        if (perms.contains(Manifest.permission.CAMERA)) append(getString(R.string.dialog_message_rationale_dialog_camera))
-    }
-
-    private fun buildSettingsMessage(perms: List<String>) = buildString {
-        append(getString(R.string.dialog_message_setting_dialog_base))
-        if (perms.contains(Manifest.permission.CAMERA)) append(getString(R.string.dialog_message_setting_dialog_camera))
+    private companion object {
+        const val NOTIFICATIONS_REQUESTED = "notifications_requested"
     }
 }

@@ -19,7 +19,7 @@ runtime = "1.12.1"
 coroutines = "1.11.0"
 androidxTest = "1.7.0"
 orchestrator = "1.6.1"
-uiautomator = "2.4.0"
+uiautomator = "2.4.1"
 hilt = "2.60.1"
 multidex = "2.0.1"
 

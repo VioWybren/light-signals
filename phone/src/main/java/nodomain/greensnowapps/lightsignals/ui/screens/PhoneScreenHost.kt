@@ -16,10 +16,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -30,32 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.launch
-import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 
 @Composable
-fun PhoneScreenHost(
-    onToggleClick: () -> Unit,
-
-    showPreExplain: Boolean,
-    preExplainMessage: String,
-    onPreExplainContinue: () -> Unit,
-    onDismissPreExplain: () -> Unit,
-
-    showRationale: Boolean,
-    rationaleMessage: String,
-    onRequestAgain: () -> Unit,
-    onDismissRationale: () -> Unit,
-
-    showSettings: Boolean,
-    settingsMessage: String,
-    onOpenSettings: () -> Unit,
-    onDismissSettings: () -> Unit,
-) {
+fun PhoneScreenHost() {
     val mainVm: PhoneMainViewModel = hiltViewModel()
     val isReady by mainVm.isReady.collectAsStateWithLifecycle()
     if (!isReady) {
@@ -128,48 +106,4 @@ fun PhoneScreenHost(
         }
     }
 
-    if (showPreExplain) {
-        AlertDialog(
-            onDismissRequest = onDismissPreExplain,
-            title = { Text(stringResource(R.string.dialog_title_pre_explain)) },
-            text = { Text(preExplainMessage) },
-            confirmButton = { TextButton(onClick = onPreExplainContinue) { Text(stringResource(R.string._continue)) } },
-            dismissButton = { TextButton(onClick = onDismissPreExplain) { Text(stringResource(R.string._cancel)) } }
-        )
-    }
-
-    if (showRationale) {
-        AlertDialog(
-            onDismissRequest = onDismissRationale,
-            title = { Text(stringResource(R.string.dialog_title_rationale_dialog)) },
-            text = { Text(rationaleMessage) },
-            confirmButton = {
-                TextButton(onClick = {
-                    onDismissRationale()
-                    onRequestAgain()
-                }) { Text(stringResource(R.string.confirm_button_rationale_dialog)) }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismissRationale)
-                { Text(stringResource(R.string._cancel)) }
-            }
-        )
-    }
-
-    if (showSettings) {
-        AlertDialog(
-            onDismissRequest = onDismissSettings,
-            title = { Text(stringResource(R.string.dialog_title_setting_dialog)) },
-            text = { Text(settingsMessage) },
-            confirmButton = {
-                TextButton(onClick = {
-                    onDismissSettings()
-                    onOpenSettings()
-                }) { Text(stringResource(R.string.confirm_button_setting_dialog)) }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismissSettings) { Text(stringResource(R.string._later)) }
-            }
-        )
-    }
 }
