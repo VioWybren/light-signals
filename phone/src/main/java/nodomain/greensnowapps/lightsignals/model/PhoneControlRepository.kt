@@ -35,7 +35,8 @@ import nodomain.greensnowapps.lightsignals.PREFERENCE_PROGRESS_COLOR_PICKER
 import nodomain.greensnowapps.lightsignals.PREFERENCE_PROGRESS_FREQUENCY_PICKER
 import nodomain.greensnowapps.lightsignals.PREFERENCE_SIGNAL_SCREEN_COLOR
 import nodomain.greensnowapps.lightsignals.PREFERENCE_SOS_ON
-import nodomain.greensnowapps.lightsignals.SOS_UNIT_MS
+import nodomain.greensnowapps.lightsignals.core.signal.SOS_UNIT_MS
+import nodomain.greensnowapps.lightsignals.core.signal.runSosSignal
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel.Companion.Active
 import javax.inject.Inject
 import javax.inject.Singleton

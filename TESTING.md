@@ -1,17 +1,22 @@
 # Testing Light Signals
 
-This branch tests permission-free torch operation. Keep compatibility results separate from the
+The shared `core` module owns platform-independent SOS timing and wire names. Its tests run
+without Android. Both app modules retain repository, service, lifecycle, and codec coverage.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the current module boundary.
+
+This checkout also includes permission-free torch operation. Keep compatibility results separate from the
 camera-permission-based `baseline/v4.0.0-camera` checkpoint; see
 [PERMISSION_EXPERIMENT.md](PERMISSION_EXPERIMENT.md).
 
 Run the local JVM suites from the project directory in PowerShell:
 
 ```powershell
-.\gradlew.bat :phone:testDebugUnitTest :watch:testDebugUnitTest --stacktrace
+.\gradlew.bat :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest --stacktrace
 ```
 
 The first run may download the coroutine testing dependency. HTML reports are written to
-`phone/build/reports/tests/testDebugUnitTest/index.html` and
+`core/build/reports/tests/test/index.html`,
+`phone/build/reports/tests/testDebugUnitTest/index.html`, and
 `watch/build/reports/tests/testDebugUnitTest/index.html`.
 
 ## Coverage in this batch
@@ -29,7 +34,7 @@ The first run may download the coroutine testing dependency. HTML reports are wr
 
 ## Test design
 
-Both modules select `uitest` for instrumented tests. AGP 9 normally generates JVM test tasks
+Both Android app modules select `uitest` for instrumented tests. AGP 9 normally generates JVM test tasks
 only for that selected build type. Root `gradle.properties` sets
 `android.onlyEnableUnitTestForTheTestedBuildType=false` so `testDebugUnitTest` remains available
 in both modules. This enables unit-test components for the other build types as well; the
@@ -39,9 +44,12 @@ JUnit 4 and `kotlinx-coroutines-test` run these suites on the JVM. Coroutine tes
 
 `test-support/src/main/kotlin` contains an atomic in-memory preferences fake and fixture readers. It is compiled only into the test source sets of the two modules. It does not simulate Android filesystem persistence, permission enforcement, service startup, or physical hardware.
 
-`test-support/src/main/resources/contracts` contains independent reference fixtures used by both modules. The phone tests check the production decoder against them; the watch tests check the production sender/encoder. This catches an accidental key, value-type, path, or default change in either module. Keep these fixtures independent of the encoder; do not regenerate them automatically from production code.
+`test-support/src/main/resources/contracts` contains independent wire reference fixtures used by both app modules. The phone tests check the production decoder against them; the watch tests check the production sender/encoder. This catches an accidental key, value-type, path, or default change in either module. Keep these fixtures independent of the encoder; do not regenerate them automatically from production code.
 
-The SOS fixture records absolute edges for a 200 ms unit and includes the beginning of the next cycle. The signal pattern delegates cancellation cleanup to its owning repository or torch session. Repository tests verify that obsolete signal jobs cannot continue after stop or replacement; torch-controller tests cover release and ownership.
+The SOS fixture now lives at `core/src/test/resources/contracts/sos-v1.csv`. It was moved
+without changing its contents and records absolute edges for a 200 ms unit, including the
+beginning of the next cycle. The three duplicated SOS tests have been consolidated into
+`core`; app repository and torch-session tests still cover their ownership and cleanup integration. The signal pattern delegates cancellation cleanup to its owning repository or torch session. Repository tests verify that obsolete signal jobs cannot continue after stop or replacement; torch-controller tests cover release and ownership.
 
 The synchronization gate tests exercise the function used by `WearMainViewModel`. Actual Google Play services listener registration, DataEventBuffer handling, radio delivery, and paired-device compatibility still require integration tests.
 
@@ -161,7 +169,7 @@ are reported as skipped on older devices.
 Run the full Gradle checks:
 
 ```powershell
-.\gradlew.bat :phone:testDebugUnitTest :watch:testDebugUnitTest :phone:lintDebug :watch:lintDebug :phone:assembleDebug :watch:assembleDebug --stacktrace
+.\gradlew.bat :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest :phone:lintDebug :watch:lintDebug :phone:assembleDebug :watch:assembleDebug --stacktrace
 ```
 
 The next batches should add real DataStore upgrade and corruption tests, process-death/service-restart

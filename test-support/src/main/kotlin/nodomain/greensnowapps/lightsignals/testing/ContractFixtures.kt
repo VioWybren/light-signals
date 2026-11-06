@@ -45,13 +45,6 @@ object ContractFixtures {
         return WireState(properties.getProperty("path"), values)
     }
 
-    fun sosEdges(): List<Pair<Long, Boolean>> = resource("sos-v1.csv").bufferedReader().useLines { lines ->
-        lines.filter { it.isNotBlank() && !it.startsWith('#') }.map { line ->
-            val (millis, enabled) = line.split(',')
-            millis.toLong() to enabled.toBooleanStrict()
-        }.toList()
-    }
-
     private fun resource(name: String) = checkNotNull(javaClass.getResourceAsStream("/contracts/$name")) {
         "Missing shared test fixture: $name"
     }

@@ -1,6 +1,5 @@
 package nodomain.greensnowapps.lightsignals
 
-const val SOS_UNIT_MS = 200L
 const val NOTIF_ID = 55555777
 
 

@@ -2,7 +2,6 @@ package nodomain.greensnowapps.lightsignals
 
 object WearConstants {
 
-    const val SOS_UNIT_MS = 200L
 
     const val SOS_TEXT = "SOS"
     const val EMPTY_STRING = ""

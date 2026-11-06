@@ -83,7 +83,7 @@ too; they will appear in the staged diff after the next step. Press `q` to exit 
 Run the existing checks from [TESTING.md](TESTING.md):
 
 ```powershell
-.\gradlew.bat :phone:testDebugUnitTest :watch:testDebugUnitTest :phone:lintDebug :watch:lintDebug :phone:assembleDebug :watch:assembleDebug --stacktrace
+.\gradlew.bat :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest :phone:lintDebug :watch:lintDebug :phone:assembleDebug :watch:assembleDebug --stacktrace
 .\gradlew.bat :phone:assembleUitest :phone:assembleUitestAndroidTest :watch:assembleUitest :watch:assembleUitestAndroidTest --stacktrace
 ```
 

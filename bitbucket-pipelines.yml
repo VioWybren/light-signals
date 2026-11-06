@@ -65,7 +65,7 @@ pipelines:
                 "-Dorg.gradle.jvmargs=-Xmx4096m -Dfile.encoding=UTF-8" \
                 -Pkotlin.daemon.jvmargs=-Xmx1536m \
                 --max-workers=1 --no-parallel --continue \
-                :phone:testDebugUnitTest :watch:testDebugUnitTest \
+                :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest \
                 :phone:lintDebug :watch:lintDebug \
                 :phone:assembleDebug :watch:assembleDebug \
                 :phone:assembleUitest :phone:assembleUitestAndroidTest \
@@ -76,12 +76,14 @@ pipelines:
                 type: test-reports
                 capture-on: always
                 paths:
+                  - core/build/test-results/test/TEST-*.xml
                   - phone/build/test-results/testDebugUnitTest/TEST-*.xml
                   - watch/build/test-results/testDebugUnitTest/TEST-*.xml
               - name: verification-reports
                 type: scoped
                 capture-on: always
                 paths:
+                  - core/build/reports/**
                   - phone/build/reports/**
                   - watch/build/reports/**
                   - build/reports/**

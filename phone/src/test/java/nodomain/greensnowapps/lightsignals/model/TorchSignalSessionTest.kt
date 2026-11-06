@@ -2,6 +2,8 @@
 
 package nodomain.greensnowapps.lightsignals.model
 
+import nodomain.greensnowapps.lightsignals.core.signal.runSosSignal
+
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
