@@ -3,6 +3,7 @@ package nodomain.greensnowapps.lightsignals
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,6 +33,7 @@ class PhoneMainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "Light Signals ${BuildConfig.VERSION_NAME} (versionCode=${BuildConfig.VERSION_CODE})")
         notificationPermissionRequested = savedInstanceState?.getBoolean(NOTIFICATIONS_REQUESTED) ?: false
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -65,6 +67,7 @@ class PhoneMainActivity : ComponentActivity() {
     }
 
     private companion object {
+        const val TAG = "PhoneMainActivity"
         const val NOTIFICATIONS_REQUESTED = "notifications_requested"
     }
 }

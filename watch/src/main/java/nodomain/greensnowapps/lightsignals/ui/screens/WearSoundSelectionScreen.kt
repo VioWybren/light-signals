@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +32,10 @@ import androidx.wear.compose.material.SelectableChip
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import androidx.wear.compose.material3.ListHeader
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.TimeText
+import androidx.wear.compose.material3.Text as WearText
+import nodomain.greensnowapps.lightsignals.BuildConfig
 import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearSoundViewModel
 
@@ -112,6 +116,14 @@ fun WearSoundSelectionScreen(
                     label = { Text(stringResource(R.string._cancel), color = Color.LightGray) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ChipDefaults.secondaryChipColors()
+                )
+            }
+            item {
+                WearText(
+                    text = BuildConfig.VERSION_NAME,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }

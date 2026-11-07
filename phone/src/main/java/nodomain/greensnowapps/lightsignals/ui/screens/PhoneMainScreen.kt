@@ -29,6 +29,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Label
@@ -76,6 +77,7 @@ import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.APP_FAILED_TO_LAUNCH_ON_WATCH
 import nodomain.greensnowapps.lightsignals.APP_IS_NOT_INSTALLED_ON_WATCH
 import nodomain.greensnowapps.lightsignals.APP_LAUNCHED_ON_WATCH
+import nodomain.greensnowapps.lightsignals.BuildConfig
 import nodomain.greensnowapps.lightsignals.COMMAND_INSTALL_ON_WATCH
 import nodomain.greensnowapps.lightsignals.COMMAND_START_ON_WATCH
 import nodomain.greensnowapps.lightsignals.INSTALLATION_ON_WATCH_FAILED
@@ -277,6 +279,15 @@ fun PhoneMainScreen(
                                 showConnectToWatchDialog = true
                                 expanded = false
                             }
+                        )
+                        HorizontalDivider()
+                        Text(
+                            text = BuildConfig.VERSION_NAME,
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
