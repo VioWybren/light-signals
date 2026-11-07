@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">Запущено на годиннику. Керуйте додатком з годинника</string>
     <string name="snackbar_no_connected_watches">Немає годинників що підключені</string>
 
-    <string name="notification_title">Відкрити Light Signals</string>
-    <string name="notification_text">Використовуйте ліхтар або екран для відображення сигналів. Натисніть, щоб відкрити</string>
+    <string name="notification_title">Ліхтарик активний</string>
+    <string name="notification_text">Натисніть, щоб відкрити</string>
 
     <string name="notification_channel_name">Канал повідомлень Light Signals</string>
     <string name="notification_channel_description">Швидкий доступ до сигналів ліхтаря та екрана</string>

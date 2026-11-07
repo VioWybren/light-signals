@@ -22,8 +22,8 @@
     <string name="snackbar_no_connected_watches">Keine verbundenen Uhren</string>
 
 
-    <string name="notification_title">Light Signals öffnen</string>
-    <string name="notification_text">Verwenden Sie die Taschenlampe oder den Bildschirm, um Signale anzuzeigen. Tippen zum Öffnen.</string>
+    <string name="notification_title">Taschenlampe aktiv</string>
+    <string name="notification_text">Tippen zum Öffnen</string>
 
 
     <string name="notification_channel_name">Light Signals Benachrichtigungen</string>

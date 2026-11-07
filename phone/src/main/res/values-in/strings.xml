@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">Diluncurkan di jam tangan. Kendalikan aplikasi dari jam tangan Anda</string>
     <string name="snackbar_no_connected_watches">Tidak ada jam tangan yang terhubung</string>
 
-    <string name="notification_title">Buka Light Signals</string>
-    <string name="notification_text">Gunakan senter atau layar untuk menampilkan sinyal. Ketuk untuk membuka</string>
+    <string name="notification_title">Senter aktif</string>
+    <string name="notification_text">Ketuk untuk membuka</string>
 
     <string name="notification_channel_name">Saluran notifikasi Light Signals</string>
     <string name="notification_channel_description">Akses cepat ke sinyal senter dan layar</string>

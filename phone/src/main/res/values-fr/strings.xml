@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">Lancé sur la montre. Contrôlez l’application depuis votre montre</string>
     <string name="snackbar_no_connected_watches">Aucune montre connectée</string>
 
-    <string name="notification_title">Ouvrir Light Signals</string>
-    <string name="notification_text">Utilisez la lampe torche ou l’écran pour afficher des signaux. Touchez pour ouvrir.</string>
+    <string name="notification_title">Lampe torche active</string>
+    <string name="notification_text">Touchez pour ouvrir</string>
 
     <string name="notification_channel_name">Canal de notification Light Signals</string>
     <string name="notification_channel_description">Accès rapide aux signaux par lampe torche et écran</string>

@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">Saatte başlatıldı. Uygulamayı saatinizden kontrol edin</string>
     <string name="snackbar_no_connected_watches">Bağlı saat yok</string>
 
-    <string name="notification_title">Light Signals\'ı aç</string>
-    <string name="notification_text">El feneri veya ekranı kullanarak sinyal gösterin. Açmak için dokunun.</string>
+    <string name="notification_title">El feneri etkin</string>
+    <string name="notification_text">Açmak için dokunun</string>
 
     <string name="notification_channel_name">Light Signals bildirim kanalı</string>
     <string name="notification_channel_description">El feneri ve ekran sinyallerine hızlı erişim</string>

@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">Op het horloge gestart. Bedien de app vanaf je horloge</string>
     <string name="snackbar_no_connected_watches">Geen verbonden horloges</string>
 
-    <string name="notification_title">Open Light Signals</string>
-    <string name="notification_text">Gebruik de zaklamp of het scherm om signalen te tonen. Tik om te openen</string>
+    <string name="notification_title">Zaklamp actief</string>
+    <string name="notification_text">Tik om te openen</string>
 
     <string name="notification_channel_name">Light Signals meldingenkanaal</string>
     <string name="notification_channel_description">Snelle toegang tot zaklamp- en schermsignalen</string>

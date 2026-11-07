@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">घड़ी पर लॉन्च हो गया। आप अपनी घड़ी से ऐप नियंत्रित कर सकते हैं।</string>
     <string name="snackbar_no_connected_watches">कोई कनेक्टेड घड़ियाँ नहीं</string>
 
-    <string name="notification_title">Light Signals खोलें</string>
-    <string name="notification_text">टॉर्च या स्क्रीन का उपयोग करके संकेत दिखाएँ। खोलने के लिए टैप करें।</string>
+    <string name="notification_title">टॉर्च सक्रिय है</string>
+    <string name="notification_text">खोलने के लिए टैप करें</string>
 
     <string name="notification_channel_name">Light Signals सूचनाएँ</string>
     <string name="notification_channel_description">टॉर्च और स्क्रीन संकेतों के त्वरित एक्सेस</string>

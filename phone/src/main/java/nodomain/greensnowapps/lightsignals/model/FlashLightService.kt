@@ -63,14 +63,7 @@ class FlashLightService : Service() {
     override fun onCreate() {
         super.onCreate()
         try {
-            val notification = createNotification()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ServiceCompat.startForeground(
-                    this, NOTIF_ID, notification, FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-                )
-            } else {
-                startForeground(NOTIF_ID, notification)
-            }
+            postForegroundNotification()
             foregroundStarted = true
         } catch (error: RuntimeException) {
             Log.w("FlashLightService", "Unable to enter foreground", error)
@@ -79,6 +72,17 @@ class FlashLightService : Service() {
             return
         }
         observeTorchMode()
+        serviceScope.launch {
+            phoneCtrl.torchNotificationRefreshes.collect {
+                if (phoneCtrl.flashOn.value) {
+                    try {
+                        postForegroundNotification()
+                    } catch (error: RuntimeException) {
+                        Log.w("FlashLightService", "Unable to refresh foreground notification", error)
+                    }
+                }
+            }
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -175,6 +179,17 @@ class FlashLightService : Service() {
         super.onDestroy()
     }
 
+    private fun postForegroundNotification() {
+        val notification = createNotification()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            ServiceCompat.startForeground(
+                this, NOTIF_ID, notification, FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            )
+        } else {
+            startForeground(NOTIF_ID, notification)
+        }
+    }
+
     private fun createNotification(): Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = getSystemService(NotificationManager::class.java)
@@ -191,6 +206,11 @@ class FlashLightService : Service() {
         val pendingIntent = PendingIntent.getActivity(
             this, 0, Intent(this, PhoneMainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
         )
+        val smallIcon = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            R.mipmap.ic_launcher_round
+        } else {
+            R.drawable.outline_traffic_24
+        }
         return NotificationCompat.Builder(this, notificationChannelId)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setContentTitle(getString(R.string.notification_title))
@@ -198,7 +218,7 @@ class FlashLightService : Service() {
             .setStyle(
                 NotificationCompat.BigTextStyle().bigText(getString(R.string.notification_text))
             )
-            .setSmallIcon(R.drawable.outline_traffic_24)
+            .setSmallIcon(smallIcon)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setSilent(true)
             .setOngoing(true)

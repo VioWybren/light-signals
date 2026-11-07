@@ -20,8 +20,8 @@
     <string name="snackbar_app_launched_on_watch">Spuštěno na hodinkách. Ovládejte aplikaci z hodinek</string>
     <string name="snackbar_no_connected_watches">Nebyly nalezeny žádné připojené hodinky</string>
 
-    <string name="notification_title">Otevřít Light Signals</string>
-    <string name="notification_text">Použijte svítilnu nebo obrazovku k zobrazení signálů. Klepnutím otevřete.</string>
+    <string name="notification_title">Svítilna je aktivní</string>
+    <string name="notification_text">Klepnutím otevřete</string>
 
     <string name="notification_channel_name">Kanál oznámení Light Signals</string>
     <string name="notification_channel_description">Rychlý přístup ke svítilně a signálům na obrazovce</string>

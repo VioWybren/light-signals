@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">Launched on watch. Control the app from your watch</string>
     <string name="snackbar_no_connected_watches">Nenhum relógio conectado</string>
 
-    <string name="notification_title">Open Light Signals</string>
-    <string name="notification_text">Use the flashlight or screen to show signals. Tap to open.</string>
+    <string name="notification_title">Lanterna ativa</string>
+    <string name="notification_text">Toque para abrir</string>
 
     <string name="notification_channel_name">Light Signals notification channel</string>
     <string name="notification_channel_description">Quick access to flashlight and screen signals</string>

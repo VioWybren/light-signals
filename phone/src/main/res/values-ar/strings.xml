@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">تم التشغيل على الساعة. تحكّم في التطبيق من ساعتك.</string>
     <string name="snackbar_no_connected_watches">لا توجد ساعات متصلة</string>
 
-    <string name="notification_title">افتح Light Signals</string>
-    <string name="notification_text">استخدم المصباح أو الشاشة لعرض الإشارات. انقر للفتح.</string>
+    <string name="notification_title">المصباح اليدوي قيد التشغيل</string>
+    <string name="notification_text">انقر للفتح</string>
 
     <string name="notification_channel_name">قناة إشعارات Light Signals</string>
     <string name="notification_channel_description">وصول سريع إلى إشارات المصباح والشاشة</string>

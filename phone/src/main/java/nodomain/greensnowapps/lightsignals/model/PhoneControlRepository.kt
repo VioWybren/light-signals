@@ -17,8 +17,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -91,6 +93,9 @@ class PhoneControlRepository internal constructor(
     private val _activeSound = MutableStateFlow(0)
     private val _screenIndex = MutableStateFlow(0)
     private val _activeButton = MutableStateFlow(Active.RED)
+
+    private val _torchNotificationRefreshes = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    internal val torchNotificationRefreshes = _torchNotificationRefreshes.asSharedFlow()
 
     val flashOn = _flashOn.asStateFlow()
     val colorBlinkActive = _colorBlinkActive.asStateFlow()
@@ -169,6 +174,10 @@ class PhoneControlRepository internal constructor(
     }
 
     fun switchFlash(on: Boolean) = setFlash(on)
+
+    internal fun refreshTorchNotification() {
+        _torchNotificationRefreshes.tryEmit(Unit)
+    }
 
     fun setFlash(on: Boolean) {
         val wasOn = _flashOn.value

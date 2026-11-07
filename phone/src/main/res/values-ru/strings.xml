@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">Запущено на часах. Управляйте приложением с часов</string>
     <string name="snackbar_no_connected_watches">Нет подключённых часов</string>
 
-    <string name="notification_title">Открыть Light Signals</string>
-    <string name="notification_text">Используйте фонарик или экран для сигналов. Нажмите, чтобы открыть</string>
+    <string name="notification_title">Фонарик активен</string>
+    <string name="notification_text">Нажмите, чтобы открыть</string>
 
     <string name="notification_channel_name">Канал уведомлений Light Signals</string>
     <string name="notification_channel_description">Быстрый доступ к сигналам фонарика и экрана</string>
