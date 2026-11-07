@@ -104,6 +104,8 @@ class PhoneMainViewModel @Inject constructor(
 
     fun switchFlash(isOn: Boolean) = phoneCtrl.switchFlash(isOn)
 
+    internal fun refreshTorchNotification() = phoneCtrl.refreshTorchNotification()
+
     fun toggleControl(on: Boolean) {
         phoneCtrl.setBlinking(on, blinkDelay.value)
     }

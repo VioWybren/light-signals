@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">已在手表上启动。可从手表控制应用。</string>
     <string name="snackbar_no_connected_watches">未检测到已连接的手表</string>
 
-    <string name="notification_title">打开 Light Signals</string>
-    <string name="notification_text">使用手电筒或屏幕显示信号。点击打开。</string>
+    <string name="notification_title">手电筒工作中</string>
+    <string name="notification_text">点击打开</string>
 
     <string name="notification_channel_name">Light Signals 通知频道</string>
     <string name="notification_channel_description">快速访问手电筒和屏幕信号</string>

@@ -20,8 +20,8 @@
     <string name="snackbar_app_launched_on_watch">Avviata sull\'orologio. Controlla l\'app dal tuo orologio</string>
     <string name="snackbar_no_connected_watches">Nessun orologio connesso</string>
 
-    <string name="notification_title">Apri Light Signals</string>
-    <string name="notification_text">Usa la torcia o lo schermo per mostrare segnali. Tocca per aprire</string>
+    <string name="notification_title">Torcia attiva</string>
+    <string name="notification_text">Tocca per aprire</string>
 
     <string name="notification_channel_name">Canale notifiche Light Signals</string>
     <string name="notification_channel_description">Accesso rapido ai segnali tramite torcia e schermo</string>

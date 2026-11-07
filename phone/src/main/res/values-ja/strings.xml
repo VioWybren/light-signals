@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">ウォッチで起動しました。ウォッチからアプリを操作できます。</string>
     <string name="snackbar_no_connected_watches">接続された時計がありません</string>
 
-    <string name="notification_title">Light Signals を開く</string>
-    <string name="notification_text">懐中電灯または画面を使って信号を表示します。タップして開く。</string>
+    <string name="notification_title">懐中電灯が作動中</string>
+    <string name="notification_text">タップして開く</string>
 
     <string name="notification_channel_name">Light Signals 通知チャンネル</string>
     <string name="notification_channel_description">懐中電灯と画面の信号へのクイックアクセス</string>

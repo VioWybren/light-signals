@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">Đã khởi chạy trên đồng hồ. Điều khiển ứng dụng từ đồng hồ của bạn.</string>
     <string name="snackbar_no_connected_watches">Không có đồng hồ được kết nối</string>
 
-    <string name="notification_title">Mở Light Signals</string>
-    <string name="notification_text">Sử dụng đèn pin hoặc màn hình để hiển thị tín hiệu. Chạm để mở.</string>
+    <string name="notification_title">Đèn pin đang hoạt động</string>
+    <string name="notification_text">Chạm để mở</string>
 
     <string name="notification_channel_name">Kênh thông báo Light Signals</string>
     <string name="notification_channel_description">Truy cập nhanh đến tín hiệu đèn pin và màn hình</string>

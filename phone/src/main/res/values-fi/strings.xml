@@ -20,8 +20,8 @@
     <string name="snackbar_app_launched_on_watch">Käynnistetty kellossa. Ohjaa sovellusta kellostasi</string>
     <string name="snackbar_no_connected_watches">Yhtään yhdistettyä kelloa ei löytynyt</string>
 
-    <string name="notification_title">Avaa Light Signals</string>
-    <string name="notification_text">Käytä taskulamppua tai näyttöä näyttämään merkkejä. Napauta avataksesi.</string>
+    <string name="notification_title">Taskulamppu käytössä</string>
+    <string name="notification_text">Napauta avataksesi</string>
 
     <string name="notification_channel_name">Light Signals -ilmoituskanava</string>
     <string name="notification_channel_description">Nopea pääsy taskulampulle ja näytön merkeille</string>

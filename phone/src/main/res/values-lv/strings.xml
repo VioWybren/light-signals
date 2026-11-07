@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">Palaists uz pulksteņa. Pārvaldiet lietotni no sava pulksteņa</string>
     <string name="snackbar_no_connected_watches">Nav savienotu pulksteņu</string>
 
-    <string name="notification_title">Atvērt Light Signals</string>
-    <string name="notification_text">Izmantojiet zibspuldzi vai ekrānu, lai rādītu signālus. Pieskarieties, lai atvērtu</string>
+    <string name="notification_title">Lukturītis ir aktīvs</string>
+    <string name="notification_text">Pieskarieties, lai atvērtu</string>
 
     <string name="notification_channel_name">Light Signals paziņojumu kanāls</string>
     <string name="notification_channel_description">Ātra piekļuve zibspuldzes un ekrāna signāliem</string>

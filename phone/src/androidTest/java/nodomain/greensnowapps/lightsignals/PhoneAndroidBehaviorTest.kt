@@ -147,15 +147,23 @@ class PhoneAndroidBehaviorTest {
     }
 
     @Test @SdkSuppress(minSdkVersion = 33)
-    fun grantingOptionalNotificationsLeavesTheTorchRunningWithoutCameraPermission() {
+    fun grantingNotificationsPostsTheNotificationForTheRunningTorch() {
         assertPermissionDenied(Manifest.permission.POST_NOTIFICATIONS)
         launchPhone()
         clickTorch()
-        permissionButton("permission_allow_button").click()
         awaitTorchRunning()
+        permissionButton("permission_allow_button").click()
+        eventually("The running torch did not post its notification after permission was granted") {
+            notifications.activeNotifications.any {
+                it.id == NOTIF_ID && it.notification.flags and Notification.FLAG_FOREGROUND_SERVICE != 0
+            }
+        }
         assertEquals(PackageManager.PERMISSION_GRANTED,
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS))
+        awaitTorchRunning()
         assertCameraPermissionAbsent()
+        clickTorch()
+        awaitTorchStopped()
     }
 
     @Test fun leavingTheActivityKeepsAnExplicitTorchRequestRunning() {

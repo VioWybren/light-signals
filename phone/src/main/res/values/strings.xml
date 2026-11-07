@@ -23,8 +23,8 @@
     <string name="snackbar_no_connected_watches">No connected watches found</string>
 
 
-    <string name="notification_title">Open Light Signals</string>
-    <string name="notification_text">Use the flashlight or screen to show signals. Tap to open.</string>
+    <string name="notification_title">Flashlight active</string>
+    <string name="notification_text">Tap to open</string>
 
     <string name="notification_channel_name">Light Signals notification channel</string>
     <string name="notification_channel_description">Quick access to flashlight and screen signals</string>

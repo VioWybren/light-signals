@@ -29,7 +29,9 @@ class PhoneMainActivity : ComponentActivity() {
     // The LED request is independent of this optional permission and its result.
     private val notificationsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) {}
+    ) { granted ->
+        if (granted) viewModel.refreshTorchNotification()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

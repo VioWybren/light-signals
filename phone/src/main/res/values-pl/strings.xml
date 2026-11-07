@@ -19,8 +19,8 @@
     <string name="snackbar_app_launched_on_watch">Uruchomiono na zegarku. Steruj aplikacją z zegarka</string>
     <string name="snackbar_no_connected_watches">Brak podłączonych zegarków</string>
 
-    <string name="notification_title">Otwórz Light Signals</string>
-    <string name="notification_text">Użyj latarki lub ekranu do wyświetlania sygnałów. Dotknij, aby otworzyć.</string>
+    <string name="notification_title">Latarka aktywna</string>
+    <string name="notification_text">Dotknij, aby otworzyć</string>
 
     <string name="notification_channel_name">Kanał powiadomień Light Signals</string>
     <string name="notification_channel_description">Szybki dostęp do sygnałów latarki i ekranu</string>
