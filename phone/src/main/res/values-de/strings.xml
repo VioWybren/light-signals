@@ -2,28 +2,8 @@
 
 <resources>
 
-    <string name="dialog_title_pre_explain">Berechtigungen erforderlich</string>
-    <string name="dialog_message_pre_explain_base">Warum wir diese Berechtigungen benötigen:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Kamera — wird nur zum Ein- und Ausschalten der Taschenlampe verwendet. Light Signals macht keine Fotos oder Videos.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Benachrichtigungen — ermöglichen der App, Hinweise anzuzeigen und schnellen Zugriff im Hintergrund bereitzustellen.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Berechtigungen erforderlich</string>
-    <string name="confirm_button_rationale_dialog">Erneut anfordern</string>
-    <string name="dialog_message_rationale_dialog_base">Um fortzufahren, benötigt die App:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Kamera — um die Taschenlampe ein- und auszuschalten.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Benachrichtigungen — um Hintergrundhinweise und Schnellaktionen anzuzeigen.\n</string>
-
-    <string name="dialog_title_setting_dialog">Berechtigungen in den Einstellungen aktivieren</string>
-    <string name="confirm_button_setting_dialog">Einstellungen öffnen</string>
-    <string name="dialog_message_setting_dialog_base">Eine oder mehrere Berechtigungen wurden dauerhaft verweigert. Öffnen Sie die App-Einstellungen, um sie zu aktivieren:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Kamera (Taschenlampe)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Benachrichtigungen\n</string>
-
     <string name="_ok">OK</string>
     <string name="_cancel">Abbrechen</string>
-    <string name="_continue">Weiter</string>
-    <string name="_later">Später</string>
-
 
     <string name="dialog_title_wear_api_unavailable">Wear-Funktionen nicht verfügbar</string>
     <string name="dialog_message_wear_api_unavailable">Dieses Gerät unterstützt keine Wearable-Funktionen.</string>

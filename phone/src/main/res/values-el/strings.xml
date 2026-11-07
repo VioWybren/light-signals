@@ -4,25 +4,6 @@
 
     <string name="_ok">OK</string>
     <string name="_cancel">Ακύρωση</string>
-    <string name="_continue">Συνέχεια</string>
-    <string name="_later">Αργότερα</string>
-
-    <string name="dialog_title_pre_explain">Απαιτούνται δικαιώματα</string>
-    <string name="dialog_message_pre_explain_base">Γιατί χρειαζόμαστε αυτά τα δικαιώματα:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Κάμερα — χρησιμοποιείται μόνο για να ενεργοποιήσει/απενεργοποιήσει το φλας. Το Light Signals δεν τραβάει φωτογραφίες ούτε καταγράφει βίντεο.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Ειδοποιήσεις — επιτρέπουν στην εφαρμογή να εμφανίζει ειδοποιήσεις και να παρέχει γρήγορη πρόσβαση ενώ λειτουργεί στο παρασκήνιο</string>
-
-    <string name="dialog_title_rationale_dialog">Απαιτούνται δικαιώματα</string>
-    <string name="confirm_button_rationale_dialog">Ζητήστε ξανά</string>
-    <string name="dialog_message_rationale_dialog_base">Για να συνεχίσετε, η εφαρμογή χρειάζεται:\n\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Κάμερα — για να ελέγχει το φλας \n</string>
-    <string name="dialog_message_rationale_dialog_notification">• Ειδοποιήσεις — για να εμφανίζει ειδοποιήσεις στο παρασκήνιο και να παρέχει γρήγορες ενέργειες</string>
-
-    <string name="dialog_title_setting_dialog">Ενεργοποιήστε τα δικαιώματα στις Ρυθμίσεις</string>
-    <string name="confirm_button_setting_dialog">Άνοιγμα ρυθμίσεων</string>
-    <string name="dialog_message_setting_dialog_base">Ένα ή περισσότερα δικαιώματα απορρίφθηκαν οριστικά. Ανοίξτε τις ρυθμίσεις της εφαρμογής για να τα ενεργοποιήσετε:\n\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Κάμερα (φλας)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Ειδοποιήσεις\n</string>
 
     <string name="dialog_title_wear_api_unavailable">Λειτουργίες Wear μη διαθέσιμες</string>
     <string name="dialog_message_wear_api_unavailable">Αυτή η συσκευή δεν υποστηρίζει λειτουργίες για φορητές συσκευές</string>

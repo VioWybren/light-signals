@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">अनुमतियाँ आवश्यक</string>
-    <string name="dialog_message_pre_explain_base">हमें इन अनुमतियों की आवश्यकता है:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• कैमरा — केवल टॉर्च (फ्लैश) को चालू/बंद करने के लिए उपयोग किया जाता है। Light Signals फ़ोटो या वीडियो नहीं लेता।\n</string>
-    <string name="dialog_message_pre_explain_notification">• सूचनाएँ — ऐप को बैकग्राउंड में अलर्ट दिखाने और त्वरित पहुँच प्रदान करने देती हैं।\n</string>
-
-    <string name="dialog_title_rationale_dialog">अनुमतियाँ आवश्यक</string>
-    <string name="confirm_button_rationale_dialog">फिर से अनुरोध करें</string>
-    <string name="dialog_message_rationale_dialog_base">जारी रखने के लिए, ऐप को निम्न अनुमतियों की आवश्यकता है:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• कैमरा — टॉर्च को चलाने के लिए।</string>
-    <string name="dialog_message_rationale_dialog_notification">• सूचनाएँ — बैकग्राउंड अलर्ट और त्वरित क्रियाएँ दिखाने के लिए।\n</string>
-
-    <string name="dialog_title_setting_dialog">सेटिंग्स में अनुमतियाँ सक्षम करें</string>
-    <string name="confirm_button_setting_dialog">सेटिंग्स खोलें</string>
-    <string name="dialog_message_setting_dialog_base">एक या अधिक अनुमतियों को स्थायी रूप से अस्वीकार कर दिया गया है। इन्हें सक्षम करने के लिए ऐप सेटिंग्स खोलें:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• कैमरा (टॉर्च)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• सूचनाएँ\n</string>
-
     <string name="_ok">ठीक है</string>
     <string name="_cancel">रद्द करें</string>
-    <string name="_continue">जारी रखें</string>
-    <string name="_later">बाद में</string>
 
     <string name="dialog_title_wear_api_unavailable">Wear सुविधाएँ उपलब्ध नहीं</string>
     <string name="dialog_message_wear_api_unavailable">इस डिवाइस में पहनने योग्य सुविधाओं के लिए समर्थन नहीं है।</string>

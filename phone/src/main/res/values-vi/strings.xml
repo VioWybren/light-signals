@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">Cần quyền</string>
-    <string name="dialog_message_pre_explain_base">Lý do chúng tôi cần các quyền sau:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Camera — chỉ dùng để bật/tắt đèn pin. Light Signals không chụp ảnh hoặc quay video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Thông báo — cho phép ứng dụng hiển thị cảnh báo và cung cấp truy cập nhanh khi chạy nền.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Cần quyền</string>
-    <string name="confirm_button_rationale_dialog">Yêu cầu lại</string>
-    <string name="dialog_message_rationale_dialog_base">Để tiếp tục, ứng dụng cần:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Camera — để bật/tắt đèn pin.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Thông báo — để hiển thị cảnh báo nền và các hành động nhanh.\n</string>
-
-    <string name="dialog_title_setting_dialog">Bật quyền trong Cài đặt</string>
-    <string name="confirm_button_setting_dialog">Mở Cài đặt</string>
-    <string name="dialog_message_setting_dialog_base">Một hoặc nhiều quyền đã bị từ chối vĩnh viễn. Mở cài đặt ứng dụng để bật chúng:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Camera (đèn pin)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Thông báo\n</string>
-
     <string name="_ok">OK</string>
     <string name="_cancel">Hủy</string>
-    <string name="_continue">Tiếp tục</string>
-    <string name="_later">Sau</string>
 
     <string name="dialog_title_wear_api_unavailable">Tính năng Wear không khả dụng</string>
     <string name="dialog_message_wear_api_unavailable">Thiết bị này không hỗ trợ tính năng cho thiết bị đeo.</string>

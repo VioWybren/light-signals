@@ -10,5 +10,4 @@
     <string name="signal_interval">Odstęp między sygnałami</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Menu</string>
-    <string name="dialog_message_optional_notifications">• Powiadomienia (opcjonalne) — wyświetlają powiadomienie latarki w panelu powiadomień. Latarka działa również po odmowie tego uprawnienia.</string>
 </resources>

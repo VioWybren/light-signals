@@ -10,5 +10,4 @@
     <string name="signal_interval">सिग्नल का अंतराल</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">मेन्यू</string>
-    <string name="dialog_message_optional_notifications">• सूचनाएँ (वैकल्पिक) — सूचना पैनल में टॉर्च की सूचना दिखाती हैं। अनुमति न देने पर भी टॉर्च काम करती है।</string>
 </resources>

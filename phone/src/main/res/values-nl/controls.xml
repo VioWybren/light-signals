@@ -10,5 +10,4 @@
     <string name="signal_interval">Signaalinterval</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Menu</string>
-    <string name="dialog_message_optional_notifications">• Meldingen (optioneel) — tonen de zaklampmelding in het meldingenpaneel. De zaklamp werkt ook als je deze toestemming weigert.</string>
 </resources>

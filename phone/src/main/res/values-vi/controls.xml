@@ -10,5 +10,4 @@
     <string name="signal_interval">Khoảng thời gian tín hiệu</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Trình đơn</string>
-    <string name="dialog_message_optional_notifications">• Thông báo (không bắt buộc) — hiển thị thông báo đèn pin trong bảng thông báo. Đèn pin vẫn hoạt động nếu bạn từ chối quyền này.</string>
 </resources>

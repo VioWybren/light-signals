@@ -10,5 +10,4 @@
     <string name="signal_interval">Signaalin aikaväli</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Valikko</string>
-    <string name="dialog_message_optional_notifications">• Ilmoitukset (valinnainen) — näyttävät taskulampun ilmoituksen ilmoituspaneelissa. Taskulamppu toimii myös ilman tätä lupaa.</string>
 </resources>

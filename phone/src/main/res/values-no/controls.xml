@@ -10,5 +10,4 @@
     <string name="signal_interval">Signalintervall</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Meny</string>
-    <string name="dialog_message_optional_notifications">• Varsler (valgfritt) — viser lommelyktvarselet i varselpanelet. Lommelykten fungerer også uten denne tillatelsen.</string>
 </resources>

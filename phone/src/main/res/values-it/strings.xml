@@ -2,27 +2,8 @@
 
 <resources>
 
-    <string name="dialog_title_pre_explain">Autorizzazioni richieste</string>
-    <string name="dialog_message_pre_explain_base">Perché abbiamo bisogno di questi permessi:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Fotocamera — usata solo per attivare la torcia. Light Signals non scatta foto né registra video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Notifiche — permettono all\'app di mostrare avvisi e fornire accesso rapido quando è in background.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Autorizzazioni richieste</string>
-    <string name="confirm_button_rationale_dialog">Richiedi di nuovo</string>
-    <string name="dialog_message_rationale_dialog_base">Per continuare, l\'app necessita di:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Fotocamera — per attivare la torcia.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Notifiche — per mostrare avvisi in background e azioni rapide.\n</string>
-
-    <string name="dialog_title_setting_dialog">Abilita i permessi nelle Impostazioni</string>
-    <string name="confirm_button_setting_dialog">Apri Impostazioni</string>
-    <string name="dialog_message_setting_dialog_base">Una o più autorizzazioni sono state negate permanentemente. Apri le impostazioni dell\'app per abilitarle:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Fotocamera (torcia)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Notifiche\n</string>
-
     <string name="_ok">OK</string>
     <string name="_cancel">Annulla</string>
-    <string name="_continue">Continua</string>
-    <string name="_later">Più tardi</string>
 
     <string name="dialog_title_wear_api_unavailable">Funzioni Wear non disponibili</string>
     <string name="dialog_message_wear_api_unavailable">Questo dispositivo non supporta le funzionalità per dispositivi indossabili</string>

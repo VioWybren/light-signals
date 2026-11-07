@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">권한 필요</string>
-    <string name="dialog_message_pre_explain_base">다음 권한이 필요합니다:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• 카메라 — 손전등(플래시)을 켜고 끄는 데만 사용됩니다. Light Signals는 사진이나 동영상을 촬영하지 않습니다.\n</string>
-    <string name="dialog_message_pre_explain_notification">• 알림 — 앱이 백그라운드에서 알림을 표시하고 빠르게 접근할 수 있도록 합니다.\n</string>
-
-    <string name="dialog_title_rationale_dialog">권한 필요</string>
-    <string name="confirm_button_rationale_dialog">다시 요청</string>
-    <string name="dialog_message_rationale_dialog_base">계속하려면 앱에 다음 권한이 필요합니다:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• 카메라 — 손전등을 켜고 끌 수 있습니다.</string>
-    <string name="dialog_message_rationale_dialog_notification">• 알림 — 백그라운드 알림과 빠른 작업을 표시합니다.\n</string>
-
-    <string name="dialog_title_setting_dialog">설정에서 권한 활성화</string>
-    <string name="confirm_button_setting_dialog">설정 열기</string>
-    <string name="dialog_message_setting_dialog_base">하나 이상의 권한이 영구적으로 거부되었습니다. 앱 설정을 열어 권한을 활성화하세요:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• 카메라(손전등)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• 알림\n</string>
-
     <string name="_ok">확인</string>
     <string name="_cancel">취소</string>
-    <string name="_continue">계속</string>
-    <string name="_later">나중에</string>
 
     <string name="dialog_title_wear_api_unavailable">웨어 기능을 사용할 수 없습니다</string>
     <string name="dialog_message_wear_api_unavailable">이 기기는 웨어러블 기능을 지원하지 않습니다.</string>

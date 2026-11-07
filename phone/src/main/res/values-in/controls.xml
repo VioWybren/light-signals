@@ -10,5 +10,4 @@
     <string name="signal_interval">Interval sinyal</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Menu</string>
-    <string name="dialog_message_optional_notifications">• Notifikasi (opsional) — menampilkan notifikasi senter di panel notifikasi. Senter tetap berfungsi jika izin ini ditolak.</string>
 </resources>

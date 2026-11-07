@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">Autorisations requises</string>
-    <string name="dialog_message_pre_explain_base">Pourquoi nous avons besoin de ces autorisations :\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Caméra — utilisée uniquement pour activer la lampe torche. Light Signals ne prend pas de photos ni n’enregistre de vidéos.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Notifications — permettent à l’application d’afficher des alertes et d’offrir un accès rapide en arrière-plan.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Autorisations requises</string>
-    <string name="confirm_button_rationale_dialog">Demander à nouveau</string>
-    <string name="dialog_message_rationale_dialog_base">Pour continuer, l’application a besoin de :\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Caméra — pour activer la lampe torche.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Notifications — pour afficher des alertes en arrière-plan et des actions rapides.\n</string>
-
-    <string name="dialog_title_setting_dialog">Activer les autorisations dans les paramètres</string>
-    <string name="confirm_button_setting_dialog">Ouvrir les paramètres</string>
-    <string name="dialog_message_setting_dialog_base">Une ou plusieurs autorisations ont été définitivement refusées. Ouvrez les paramètres de l’application pour les activer :\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Caméra (lampe torche)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Notifications\n</string>
-
     <string name="_ok">OK</string>
     <string name="_cancel">Annuler</string>
-    <string name="_continue">Continuer</string>
-    <string name="_later">Plus tard</string>
 
     <string name="dialog_title_wear_api_unavailable">Fonctions Wear indisponibles</string>
     <string name="dialog_message_wear_api_unavailable">Cet appareil ne prend pas en charge les fonctionnalités pour wearables.</string>

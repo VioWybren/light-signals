@@ -3,25 +3,6 @@
 
     <string name="_ok">ตกลง</string>
     <string name="_cancel">ยกเลิก</string>
-    <string name="_continue">ดำเนินการต่อ</string>
-    <string name="_later">ภายหลัง</string>
-
-    <string name="dialog_title_pre_explain">สิทธิ์ที่จำเป็น</string>
-    <string name="dialog_message_pre_explain_base">เหตุผลที่เราต้องการสิทธิ์เหล่านี้:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• กล้อง — ใช้เพื่อสลับไฟฉายเท่านั้น Light Signals จะไม่ถ่ายภาพหรือบันทึกวิดีโอ\n</string>
-    <string name="dialog_message_pre_explain_notification">• การแจ้งเตือน — ทำให้แอปสามารถแสดงการแจ้งเตือนและให้การเข้าถึงที่รวดเร็วขณะทำงานเบื้องหลัง</string>
-
-    <string name="dialog_title_rationale_dialog">สิทธิ์ที่จำเป็น</string>
-    <string name="confirm_button_rationale_dialog">ขออีกครั้ง</string>
-    <string name="dialog_message_rationale_dialog_base">เพื่อดำเนินการต่อ แอปต้องการ:\n\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• กล้อง — เพื่อสลับไฟฉาย \n</string>
-    <string name="dialog_message_rationale_dialog_notification">• การแจ้งเตือน — เพื่อแสดงการแจ้งเตือนเบื้องหลังและให้การดำเนินการด่วน</string>
-
-    <string name="dialog_title_setting_dialog">เปิดสิทธิ์ในการตั้งค่า</string>
-    <string name="confirm_button_setting_dialog">เปิดการตั้งค่า</string>
-    <string name="dialog_message_setting_dialog_base">มีสิทธิ์อย่างน้อยหนึ่งรายการถูกปฏิเสธอย่างถาวร เปิดการตั้งค่าแอปเพื่อเปิดใช้งาน:\n\n</string>
-    <string name="dialog_message_setting_dialog_camera">• กล้อง (ไฟฉาย)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• การแจ้งเตือน\n</string>
 
     <string name="dialog_title_wear_api_unavailable">ฟีเจอร์ Wear ไม่พร้อมใช้งาน</string>
     <string name="dialog_message_wear_api_unavailable">อุปกรณ์นี้ไม่รองรับฟีเจอร์สำหรับอุปกรณ์สวมใส่</string>

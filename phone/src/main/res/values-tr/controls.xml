@@ -10,5 +10,4 @@
     <string name="signal_interval">Sinyal aralığı</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Menü</string>
-    <string name="dialog_message_optional_notifications">• Bildirimler (isteğe bağlı) — el feneri bildirimini bildirim panelinde gösterir. Bu izni reddetseniz de el feneri çalışır.</string>
 </resources>

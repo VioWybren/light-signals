@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">Gerekli izinler</string>
-    <string name="dialog_message_pre_explain_base">Neden bu izinlere ihtiyaç duyuyoruz:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Kamera — yalnızca el fenerini açıp kapatmak için kullanılır. Light Signals fotoğraf veya video çekmez.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Bildirimler — uygulamanın arka planda uyarı gösterebilmesini ve hızlı erişim sağlamasını sağlar.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Gerekli izinler</string>
-    <string name="confirm_button_rationale_dialog">Tekrar iste</string>
-    <string name="dialog_message_rationale_dialog_base">Devam etmek için uygulamanın aşağıdaki izinlere ihtiyacı var:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Kamera — el fenerini kontrol etmek için.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Bildirimler — arka plan uyarıları ve hızlı işlemler için.\n</string>
-
-    <string name="dialog_title_setting_dialog">Ayarlar\'da izinleri etkinleştir</string>
-    <string name="confirm_button_setting_dialog">Ayarları aç</string>
-    <string name="dialog_message_setting_dialog_base">Bir veya daha fazla izin kalıcı olarak reddedildi. Etkinleştirmek için uygulama ayarlarını açın:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Kamera (el feneri)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Bildirimler\n</string>
-
     <string name="_ok">Tamam</string>
     <string name="_cancel">İptal</string>
-    <string name="_continue">Devam</string>
-    <string name="_later">Daha sonra</string>
 
     <string name="dialog_title_wear_api_unavailable">Wear özellikleri kullanılamıyor</string>
     <string name="dialog_message_wear_api_unavailable">Bu cihaz giyilebilir özellikleri desteklemiyor</string>

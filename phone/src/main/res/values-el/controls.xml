@@ -10,5 +10,4 @@
     <string name="signal_interval">Διάστημα σήματος</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Μενού</string>
-    <string name="dialog_message_optional_notifications">• Ειδοποιήσεις (προαιρετικές) — εμφανίζουν την ειδοποίηση του φακού στον πίνακα ειδοποιήσεων. Ο φακός λειτουργεί και χωρίς αυτή την άδεια.</string>
 </resources>

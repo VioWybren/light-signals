@@ -10,5 +10,4 @@
     <string name="signal_interval">الفاصل الزمني للإشارة</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">القائمة</string>
-    <string name="dialog_message_optional_notifications">• الإشعارات (اختيارية) — عرض إشعار المصباح في لوحة الإشعارات. يعمل المصباح أيضًا إذا رفضت الإذن.</string>
 </resources>
