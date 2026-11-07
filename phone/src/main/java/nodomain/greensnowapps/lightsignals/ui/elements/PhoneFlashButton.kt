@@ -1,9 +1,8 @@
 package nodomain.greensnowapps.lightsignals.ui.elements
 
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FlashlightOff
-import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -26,7 +25,7 @@ fun PhoneFlashButton(
         toggleBtnHeight,
         checkedBtn = checkedFlash,
         onCheckedChange = { if (!checkedFlash) activity.tryEnableFlash() else viewModel.switchFlash(false) },
-        icon = if (!checkedFlash) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff,
+        icon = if (!checkedFlash) ImageVector.vectorResource(R.drawable.ic_filled_flashlight_on_24) else ImageVector.vectorResource(R.drawable.ic_filled_flashlight_off_24),
         contentDescriptionRes = R.string.flashlight,
         modifier = Modifier
             .size(iconSize)

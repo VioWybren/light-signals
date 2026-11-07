@@ -1,5 +1,7 @@
 package nodomain.greensnowapps.lightsignals.ui.screens
 
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
@@ -23,9 +25,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Watch
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -260,7 +259,7 @@ fun PhoneMainScreen(
 
                     IconButton(onClick = { expanded = true }) {
                         Icon(
-                            imageVector = Icons.Default.MoreVert,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_filled_more_vert_24),
                             contentDescription = stringResource(R.string.menu),
                             tint = Color.White
                         )
@@ -270,7 +269,7 @@ fun PhoneMainScreen(
                             text = { Text(stringResource(R.string.menu_item_synchronize_with_watch)) },
                             leadingIcon = {
                                 Icon(
-                                    Icons.Outlined.Watch,
+                                    ImageVector.vectorResource(R.drawable.ic_outlined_watch_24),
                                     contentDescription = null
                                 )
                             },

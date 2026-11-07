@@ -114,7 +114,6 @@ dependencies {
     // Wear OS preview annotations
     implementation("androidx.wear.compose:compose-ui-tooling:1.7.1")
 
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.1.2")
 

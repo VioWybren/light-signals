@@ -1,14 +1,13 @@
 package nodomain.greensnowapps.lightsignals.ui.screens
 
 
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.VolumeDown
-import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -77,8 +76,8 @@ fun WearSoundSelectionScreen(
                     modifier = Modifier.height(30.dp),
                     value = volume,
                     onValueChange = wearSoundViewModel::setVolume,
-                    increaseIcon = { Icon(Icons.AutoMirrored.Rounded.VolumeUp, stringResource(R.string.control_increase_volume), tint = Color.White) },
-                    decreaseIcon = { Icon(Icons.AutoMirrored.Rounded.VolumeDown, stringResource(R.string.control_decrease_volume), tint = Color.White) },
+                    increaseIcon = { Icon(ImageVector.vectorResource(R.drawable.ic_automirrored_rounded_volume_up_24), stringResource(R.string.control_increase_volume), tint = Color.White) },
+                    decreaseIcon = { Icon(ImageVector.vectorResource(R.drawable.ic_automirrored_rounded_volume_down_24), stringResource(R.string.control_decrease_volume), tint = Color.White) },
                     valueRange = 0f..1f,
                     steps = 9,
                     segmented = false,

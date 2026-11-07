@@ -22,6 +22,9 @@ DataStore, and Google Play services Wearable APIs. The watch UI uses Wear Compos
 Companion control requires the app on both paired devices and an available Wearable connection.
 Both app modules depend on `core`; see [ARCHITECTURE.md](ARCHITECTURE.md) for module boundaries.
 
+App icons use the required XML vector assets rather than the extended Material Icons library.
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for their source and license.
+
 The checked-in build configuration uses:
 
 | Component | Version |

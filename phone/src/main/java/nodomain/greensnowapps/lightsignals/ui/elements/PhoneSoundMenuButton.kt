@@ -1,13 +1,10 @@
 package nodomain.greensnowapps.lightsignals.ui.elements
 
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material.icons.filled.MusicOff
-import androidx.compose.material.icons.filled.RadioButtonChecked
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -48,7 +45,7 @@ fun PhoneSoundMenuButton(
             toggleBtnHeight,
             checkedBtn = expanded,
             onCheckedChange = { expanded = it },
-            icon = if (active == 0) Icons.Filled.MusicOff else Icons.Filled.MusicNote,
+            icon = if (active == 0) ImageVector.vectorResource(R.drawable.ic_filled_music_off_24) else ImageVector.vectorResource(R.drawable.ic_filled_music_note_24),
             contentDescriptionRes = R.string.sound_selection,
             modifier = Modifier.size(iconSize)
         )
@@ -64,7 +61,7 @@ fun PhoneSoundMenuButton(
             modifier = Modifier.semantics { selected = active == 0 },
             leadingIcon = {
                 Icon(
-                    imageVector = if (active == 0) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
+                    imageVector = if (active == 0) ImageVector.vectorResource(R.drawable.ic_filled_radio_button_checked_24) else ImageVector.vectorResource(R.drawable.ic_filled_radio_button_unchecked_24),
                     contentDescription = null
                 )
             },
@@ -79,7 +76,7 @@ fun PhoneSoundMenuButton(
             modifier = Modifier.semantics { selected = active == 1 },
             leadingIcon = {
                 Icon(
-                    imageVector = if (active == 1) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
+                    imageVector = if (active == 1) ImageVector.vectorResource(R.drawable.ic_filled_radio_button_checked_24) else ImageVector.vectorResource(R.drawable.ic_filled_radio_button_unchecked_24),
                     contentDescription = null
                 )
             },
@@ -93,7 +90,7 @@ fun PhoneSoundMenuButton(
             modifier = Modifier.semantics { selected = active == 2 },
             leadingIcon = {
                 Icon(
-                    imageVector = if (active == 2) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
+                    imageVector = if (active == 2) ImageVector.vectorResource(R.drawable.ic_filled_radio_button_checked_24) else ImageVector.vectorResource(R.drawable.ic_filled_radio_button_unchecked_24),
                     contentDescription = null
                 )
             },
@@ -107,7 +104,7 @@ fun PhoneSoundMenuButton(
             modifier = Modifier.semantics { selected = active == 3 },
             leadingIcon = {
                 Icon(
-                    imageVector = if (active == 3) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
+                    imageVector = if (active == 3) ImageVector.vectorResource(R.drawable.ic_filled_radio_button_checked_24) else ImageVector.vectorResource(R.drawable.ic_filled_radio_button_unchecked_24),
                     contentDescription = null
                 )
             },
