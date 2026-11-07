@@ -10,6 +10,8 @@ upcoming release; a release date should be added when it is published.
 - Removed both direct `material-icons-extended` dependencies and included the original
   icon attribution and Apache 2.0 license with each app.
 - Added the missing ignore rule for generated `core/build` output.
+- Enabled R8 code and resource optimization for phone and watch releases. Added an
+  optimized `releasecheck` build for device testing with the test application ID.
 
 ## Shared core refactoring - Not released
 

@@ -1,0 +1,4 @@
+# Protobuf Lite reads Horologist message fields by name during companion RPCs.
+-keepclassmembers class com.google.android.horologist.data.** extends com.google.protobuf.GeneratedMessageLite {
+    <fields>;
+}
