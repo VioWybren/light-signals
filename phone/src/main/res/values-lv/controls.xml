@@ -10,5 +10,4 @@
     <string name="signal_interval">Signāla intervāls</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Izvēlne</string>
-    <string name="dialog_message_optional_notifications">• Paziņojumi (neobligāti) — paziņojumu panelī parāda lukturīša paziņojumu. Lukturītis darbojas arī bez šīs atļaujas.</string>
 </resources>

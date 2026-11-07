@@ -10,5 +10,4 @@
     <string name="signal_interval">Signalintervall</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Meny</string>
-    <string name="dialog_message_optional_notifications">• Aviseringar (valfritt) — visar ficklampans avisering i aviseringspanelen. Ficklampan fungerar även utan denna behörighet.</string>
 </resources>

@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">Потрібні дозволи</string>
-    <string name="dialog_message_pre_explain_base">Чому нам потрібні ці дозволи:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Камера — використовується лише для увімкнення ліхтарика. Light Signals не робить фото і не знімає відео.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Сповіщення — дозволяє додатку показувати попередження та забезпечує швидкий старт у фоновому режимі.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Потрібні дозволи</string>
-    <string name="confirm_button_rationale_dialog">Запитати повторно</string>
-    <string name="dialog_message_rationale_dialog_base">Щоб продовжити, додатку потрібні:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Камера — щоб увімкнути ліхтарик\n</string>
-    <string name="dialog_message_rationale_dialog_notification">• Сповіщення — щоб показувати сповіщення та швидко відкриватися з фонового режиму</string>
-
-    <string name="dialog_title_setting_dialog">Увімкніть дозволи в налаштуваннях</string>
-    <string name="confirm_button_setting_dialog">Відкрити налаштування</string>
-    <string name="dialog_message_setting_dialog_base">Один або кілька дозволів було остаточно відхилено. Відкрийте налаштування додатку, щоб увімкнути їх:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Камера (ліхтарик)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Сповіщення\n</string>
-
     <string name="_ok">OK</string>
     <string name="_cancel">Скасувати</string>
-    <string name="_continue">Продовжити</string>
-    <string name="_later">Пізніше</string>
 
     <string name="dialog_title_wear_api_unavailable">Функції Wear недоступні</string>
     <string name="dialog_message_wear_api_unavailable">Цей пристрій не підтримує функції для роботи з носимими (wearable) пристроями</string>

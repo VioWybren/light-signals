@@ -4,25 +4,6 @@
 
     <string name="_ok">OK</string>
     <string name="_cancel">Avbryt</string>
-    <string name="_continue">Fortsätt</string>
-    <string name="_later">Senare</string>
-
-    <string name="dialog_title_pre_explain">Behörigheter krävs</string>
-    <string name="dialog_message_pre_explain_base">Varför vi behöver dessa behörigheter:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Kamera — används endast för att växla ficklampan. Light Signals tar inte bilder eller spelar in video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Aviseringar — låter appen visa aviseringar och ge snabb åtkomst medan den körs i bakgrunden</string>
-
-    <string name="dialog_title_rationale_dialog">Behörigheter krävs</string>
-    <string name="confirm_button_rationale_dialog">Begär igen</string>
-    <string name="dialog_message_rationale_dialog_base">För att fortsätta behöver appen:\n\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Kamera — för att växla ficklampan \n</string>
-    <string name="dialog_message_rationale_dialog_notification">• Aviseringar — för att visa bakgrundsvarningar och erbjuda snabba åtgärder</string>
-
-    <string name="dialog_title_setting_dialog">Aktivera behörigheter i Inställningar</string>
-    <string name="confirm_button_setting_dialog">Öppna inställningar</string>
-    <string name="dialog_message_setting_dialog_base">En eller flera behörigheter nekades permanent. Öppna appinställningarna för att aktivera dem:\n\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Kamera (ficklampa)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Aviseringar\n</string>
 
     <string name="dialog_title_wear_api_unavailable">Wear-funktioner ej tillgängliga</string>
     <string name="dialog_message_wear_api_unavailable">Denna enhet stöder inte funktioner för bärbara enheter</string>

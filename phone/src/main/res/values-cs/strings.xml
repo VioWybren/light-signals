@@ -4,25 +4,6 @@
 
     <string name="_ok">OK</string>
     <string name="_cancel">Zrušit</string>
-    <string name="_continue">Pokračovat</string>
-    <string name="_later">Později</string>
-
-    <string name="dialog_title_pre_explain">Požadována oprávnění</string>
-    <string name="dialog_message_pre_explain_base">Proč potřebujeme tato oprávnění:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Fotoaparát — používá se pouze k ovládání svítilny. Light Signals nepořizuje fotografie ani nenahrává video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Oznámení — umožňují aplikaci zobrazovat upozornění a poskytovat rychlý přístup při běhu na pozadí</string>
-
-    <string name="dialog_title_rationale_dialog">Požadována oprávnění</string>
-    <string name="confirm_button_rationale_dialog">Požádat znovu</string>
-    <string name="dialog_message_rationale_dialog_base">Pro pokračování aplikace potřebuje:\n\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Fotoaparát — pro ovládání svítilny \n</string>
-    <string name="dialog_message_rationale_dialog_notification">• Oznámení — pro zobrazení upozornění na pozadí a nabídku rychlých akcí</string>
-
-    <string name="dialog_title_setting_dialog">Povolit oprávnění v Nastavení</string>
-    <string name="confirm_button_setting_dialog">Otevřít Nastavení</string>
-    <string name="dialog_message_setting_dialog_base">Jedno nebo více oprávnění bylo trvale odmítnuto. Otevřete nastavení aplikace a povolte je:\n\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Fotoaparát (svítilna)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Oznámení\n</string>
 
     <string name="dialog_title_wear_api_unavailable">Funkce Wear nejsou dostupné</string>
     <string name="dialog_message_wear_api_unavailable">Toto zařízení nepodporuje funkce pro nositelná zařízení</string>

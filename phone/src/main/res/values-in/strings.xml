@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">Izin diperlukan</string>
-    <string name="dialog_message_pre_explain_base">Mengapa kami membutuhkan izin ini:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Kamera — hanya digunakan untuk menyalakan senter. Light Signals tidak mengambil foto atau merekam video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Notifikasi — memungkinkan aplikasi menampilkan peringatan dan memberi akses cepat saat berjalan di latar belakang.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Izin diperlukan</string>
-    <string name="confirm_button_rationale_dialog">Minta lagi</string>
-    <string name="dialog_message_rationale_dialog_base">Untuk melanjutkan, aplikasi membutuhkan:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Kamera — untuk mengontrol senter.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Notifikasi — untuk menampilkan peringatan latar belakang dan tindakan cepat.\n</string>
-
-    <string name="dialog_title_setting_dialog">Aktifkan izin di Pengaturan</string>
-    <string name="confirm_button_setting_dialog">Buka Pengaturan</string>
-    <string name="dialog_message_setting_dialog_base">Satu atau lebih izin ditolak secara permanen. Buka pengaturan aplikasi untuk mengaktifkannya:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Kamera (senter)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Notifikasi\n</string>
-
     <string name="_ok">OK</string>
     <string name="_cancel">Batal</string>
-    <string name="_continue">Lanjut</string>
-    <string name="_later">Nanti</string>
 
     <string name="dialog_title_wear_api_unavailable">Fitur Wear tidak tersedia</string>
     <string name="dialog_message_wear_api_unavailable">Perangkat ini tidak mendukung fitur wearable</string>

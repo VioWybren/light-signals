@@ -10,5 +10,4 @@
     <string name="signal_interval">ช่วงเวลาสัญญาณ</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">เมนู</string>
-    <string name="dialog_message_optional_notifications">• การแจ้งเตือน (ไม่บังคับ) — แสดงการแจ้งเตือนไฟฉายในแผงการแจ้งเตือน ไฟฉายยังใช้งานได้แม้ไม่อนุญาตสิทธิ์นี้</string>
 </resources>

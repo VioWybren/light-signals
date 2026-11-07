@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">Nepieciešamas atļaujas</string>
-    <string name="dialog_message_pre_explain_base">Kāpēc mums šīs atļaujas ir nepieciešamas:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Kamera — tiek izmantota tikai, lai ieslēgtu vai izslēgtu zibspuldzi. Light Signals neveic foto vai video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Paziņojumi — ļauj lietotnei rādīt brīdinājumus un nodrošina ātru piekļuvi, kad tā darbojas fonā.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Nepieciešamas atļaujas</string>
-    <string name="confirm_button_rationale_dialog">Pieprasīt vēlreiz</string>
-    <string name="dialog_message_rationale_dialog_base">Lai turpinātu, lietotnei nepieciešams:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Kamera — lai ieslēgtu zibspuldzi.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Paziņojumi — lai rādītu fona brīdinājumus un ātras darbības.\n</string>
-
-    <string name="dialog_title_setting_dialog">Ieslēgt atļaujas iestatījumos</string>
-    <string name="confirm_button_setting_dialog">Atvērt iestatījumus</string>
-    <string name="dialog_message_setting_dialog_base">Viena vai vairākas atļaujas tika pastāvīgi noraidītas. Atveriet lietotnes iestatījumus, lai tās iespējotu:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Kamera (zibspuldze)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Paziņojumi\n</string>
-
     <string name="_ok">Labi</string>
     <string name="_cancel">Atcelt</string>
-    <string name="_continue">Turpināt</string>
-    <string name="_later">Vēlāk</string>
 
     <string name="dialog_title_wear_api_unavailable">Wear funkcijas nav pieejamas</string>
     <string name="dialog_message_wear_api_unavailable">Šī ierīce neatbalsta valkājamo ierīču funkcijas</string>

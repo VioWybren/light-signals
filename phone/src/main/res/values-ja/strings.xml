@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">権限が必要です</string>
-    <string name="dialog_message_pre_explain_base">以下の権限が必要です：\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• カメラ — 懐中電灯の切り替えにのみ使用します。Light Signalsは写真や動画を撮影しません。\n</string>
-    <string name="dialog_message_pre_explain_notification">• 通知 — バックグラウンド実行中にアラートを表示し、クイックアクセスを提供します。\n</string>
-
-    <string name="dialog_title_rationale_dialog">権限が必要です</string>
-    <string name="confirm_button_rationale_dialog">再度要求する</string>
-    <string name="dialog_message_rationale_dialog_base">続行するには、アプリに以下の権限が必要です：\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• カメラ — 懐中電灯を切り替えるため。</string>
-    <string name="dialog_message_rationale_dialog_notification">• 通知 — バックグラウンドのアラートやクイックアクションを表示するため。\n</string>
-
-    <string name="dialog_title_setting_dialog">設定で権限を有効にする</string>
-    <string name="confirm_button_setting_dialog">設定を開く</string>
-    <string name="dialog_message_setting_dialog_base">一部の権限が永続的に拒否されました。アプリの設定を開いて有効にしてください：\n</string>
-    <string name="dialog_message_setting_dialog_camera">• カメラ（懐中電灯）\n</string>
-    <string name="dialog_message_setting_dialog_notification">• 通知\n</string>
-
     <string name="_ok">OK</string>
     <string name="_cancel">キャンセル</string>
-    <string name="_continue">続行</string>
-    <string name="_later">あとで</string>
 
     <string name="dialog_title_wear_api_unavailable">Wear 機能は利用できません</string>
     <string name="dialog_message_wear_api_unavailable">この端末はウェアラブル機能をサポートしていません。</string>

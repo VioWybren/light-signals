@@ -4,23 +4,6 @@
 
     <string name="_ok">OK</string>
     <string name="_cancel">Peruuta</string>
-    <string name="_continue">Jatka</string>
-    <string name="_later">Myöhemmin</string>
-
-    <string name="dialog_title_pre_explain">Tarvittavat luvat</string>
-    <string name="dialog_message_pre_explain_base">Miksi tarvitsemme näitä lupia:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Kamera — käytetään vain taskulampun kytkemiseen. Light Signals ei ota kuvia eikä tallenna videoita.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Ilmoitukset — sallivat sovelluksen näyttää hälytyksiä ja tarjota nopean pääsyn taustalla toimiessaan</string>
-    <string name="dialog_title_rationale_dialog">Tarvittavat luvat</string>
-    <string name="confirm_button_rationale_dialog">Pyydä uudelleen</string>
-    <string name="dialog_message_rationale_dialog_base">Jatkaaksesi sovellus tarvitsee:\n\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Kamera — taskulampun kytkemistä varten \n</string>
-    <string name="dialog_message_rationale_dialog_notification">• Ilmoitukset — näyttää taustahälytyksiä ja tarjota pikatoimintoja</string>
-    <string name="dialog_title_setting_dialog">Ota luvat käyttöön asetuksissa</string>
-    <string name="confirm_button_setting_dialog">Avaa asetukset</string>
-    <string name="dialog_message_setting_dialog_base">Yksi tai useampi lupa on evätty pysyvästi. Avaa sovelluksen asetukset ottaaksesi ne käyttöön:\n\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Kamera (taskulamppu)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Ilmoitukset\n</string>
 
     <string name="dialog_title_wear_api_unavailable">Wear-ominaisuudet eivät ole käytettävissä</string>
     <string name="dialog_message_wear_api_unavailable">Tämä laite ei tue puettavia ominaisuuksia</string>

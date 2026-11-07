@@ -10,5 +10,4 @@
     <string name="signal_interval">Interval signálu</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Nabídka</string>
-    <string name="dialog_message_optional_notifications">• Oznámení (volitelné) — zobrazují oznámení svítilny v panelu oznámení. Svítilna funguje i při zamítnutí oprávnění.</string>
 </resources>

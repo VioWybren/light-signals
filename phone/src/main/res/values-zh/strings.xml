@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">需要权限</string>
-    <string name="dialog_message_pre_explain_base">我们需要以下权限：\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• 相机 — 仅用于切换手电筒。Light Signals 不会拍照或录制视频。\n</string>
-    <string name="dialog_message_pre_explain_notification">• 通知 — 允许应用在后台显示提醒并提供快速访问。\n</string>
-
-    <string name="dialog_title_rationale_dialog">需要权限</string>
-    <string name="confirm_button_rationale_dialog">再次请求</string>
-    <string name="dialog_message_rationale_dialog_base">要继续，应用需要：\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• 相机 — 用于切换手电筒。</string>
-    <string name="dialog_message_rationale_dialog_notification">• 通知 — 显示后台提醒并提供快速操作。\n</string>
-
-    <string name="dialog_title_setting_dialog">在设置中启用权限</string>
-    <string name="confirm_button_setting_dialog">打开设置</string>
-    <string name="dialog_message_setting_dialog_base">某些权限已被永久拒绝。请打开应用设置以启用它们：\n</string>
-    <string name="dialog_message_setting_dialog_camera">• 相机（手电筒）\n</string>
-    <string name="dialog_message_setting_dialog_notification">• 通知\n</string>
-
     <string name="_ok">确定</string>
     <string name="_cancel">取消</string>
-    <string name="_continue">继续</string>
-    <string name="_later">稍后</string>
 
     <string name="dialog_title_wear_api_unavailable">可穿戴功能不可用</string>
     <string name="dialog_message_wear_api_unavailable">此设备不支持可穿戴功能。</string>

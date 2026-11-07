@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">الأذونات المطلوبة</string>
-    <string name="dialog_message_pre_explain_base">لماذا نحتاج هذه الأذونات:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• الكاميرا — تُستخدم فقط لتشغيل المصباح اليدوي. Light Signals لا يلتقط صورًا أو يسجل فيديو.\n</string>
-    <string name="dialog_message_pre_explain_notification">• الإشعارات — تتيح للتطبيق عرض التنبيهات وتوفير وصول سريع أثناء التشغيل في الخلفية.\n</string>
-
-    <string name="dialog_title_rationale_dialog">الأذونات المطلوبة</string>
-    <string name="confirm_button_rationale_dialog">اطلب مرة أخرى</string>
-    <string name="dialog_message_rationale_dialog_base">للمتابعة، يحتاج التطبيق إلى:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• الكاميرا — لتشغيل المصباح اليدوي.</string>
-    <string name="dialog_message_rationale_dialog_notification">• الإشعارات — لعرض التنبيهات في الخلفية وتوفير إجراءات سريعة.\n</string>
-
-    <string name="dialog_title_setting_dialog">تمكين الأذونات في الإعدادات</string>
-    <string name="confirm_button_setting_dialog">افتح الإعدادات</string>
-    <string name="dialog_message_setting_dialog_base">تم رفض واحد أو أكثر من الأذونات نهائيًا. افتح إعدادات التطبيق لتمكينها:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• الكاميرا (المصباح اليدوي)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• الإشعارات\n</string>
-
     <string name="_ok">موافق</string>
     <string name="_cancel">إلغاء</string>
-    <string name="_continue">متابعة</string>
-    <string name="_later">لاحقًا</string>
 
     <string name="dialog_title_wear_api_unavailable">ميزات Wear غير متاحة</string>
     <string name="dialog_message_wear_api_unavailable">هذا الجهاز لا يدعم ميزات الأجهزة القابلة للارتداء.</string>

@@ -6,25 +6,6 @@
 
     <string name="_ok">OK</string>
     <string name="_cancel">Cancel</string>
-    <string name="_continue">Continue</string>
-    <string name="_later">Later</string>
-
-    <string name="dialog_title_pre_explain">Permissions required</string>
-    <string name="dialog_message_pre_explain_base">Why we need these permissions:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Camera — used only to toggle the flashlight. Light Signals does not take photos or record video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Notifications — let the app show alerts and provide quick access while running in the background</string>
-
-    <string name="dialog_title_rationale_dialog">Permissions required</string>
-    <string name="confirm_button_rationale_dialog">Request again</string>
-    <string name="dialog_message_rationale_dialog_base">To continue, the app needs:\n\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Camera — to toggle the flashlight \n</string>
-    <string name="dialog_message_rationale_dialog_notification">• Notifications — to show background alerts and provide quick actions</string>
-
-    <string name="dialog_title_setting_dialog">Enable permissions in Settings</string>
-    <string name="confirm_button_setting_dialog">Open Settings</string>
-    <string name="dialog_message_setting_dialog_base">One or more permissions were permanently denied. Open the app settings to enable them:\n\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Camera (flashlight)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Notifications\n</string>
 
     <string name="dialog_title_wear_api_unavailable">Wear features unavailable</string>
     <string name="dialog_message_wear_api_unavailable">This device does not support wearable features</string>
@@ -57,7 +38,6 @@
 
     <string name="circular_indicator_text">Launching on watch</string>
 
-    <string name="dialog_message_optional_notifications">• Notifications (optional) — show the flashlight notification in the notification drawer. The flashlight works if you decline.</string>
     <string name="flashlight">Flashlight</string>
     <string name="sos_signal">SOS signal</string>
     <string name="blink_signal">Blink signal</string>

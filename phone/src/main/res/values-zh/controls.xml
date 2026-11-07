@@ -10,5 +10,4 @@
     <string name="signal_interval">信号间隔</string>
     <string name="interval_milliseconds">%1$d 毫秒</string>
     <string name="menu">菜单</string>
-    <string name="dialog_message_optional_notifications">• 通知（可选）— 在通知栏中显示手电筒通知。即使拒绝此权限，手电筒也能正常工作。</string>
 </resources>

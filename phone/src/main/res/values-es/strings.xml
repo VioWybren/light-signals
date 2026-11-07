@@ -2,27 +2,8 @@
 
 <resources>
 
-    <string name="dialog_title_pre_explain">Permisos necesarios</string>
-    <string name="dialog_message_pre_explain_base">Por qué necesitamos estos permisos:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Cámara — se usa solo para activar la linterna. Light Signals no toma fotos ni graba vídeo.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Notificaciones — permiten que la app muestre alertas y ofrezca acceso rápido en segundo plano.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Permisos necesarios</string>
-    <string name="confirm_button_rationale_dialog">Solicitar de nuevo</string>
-    <string name="dialog_message_rationale_dialog_base">Para continuar, la app necesita:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Cámara — para activar la linterna.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Notificaciones — para mostrar alertas en segundo plano y acciones rápidas.\n</string>
-
-    <string name="dialog_title_setting_dialog">Habilitar permisos en Ajustes</string>
-    <string name="confirm_button_setting_dialog">Abrir Ajustes</string>
-    <string name="dialog_message_setting_dialog_base">Uno o más permisos fueron denegados permanentemente. Abra los ajustes de la app para habilitarlos:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Cámara (linterna)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Notificaciones\n</string>
-
     <string name="_ok">OK</string>
     <string name="_cancel">Cancelar</string>
-    <string name="_continue">Continuar</string>
-    <string name="_later">Más tarde</string>
 
     <string name="dialog_title_wear_api_unavailable">Funciones Wear no disponibles</string>
     <string name="dialog_message_wear_api_unavailable">Este dispositivo no es compatible con funciones para wearables.</string>

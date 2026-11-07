@@ -10,5 +10,4 @@
     <string name="signal_interval">Intervalo de la señal</string>
     <string name="interval_milliseconds">%1$d ms</string>
     <string name="menu">Menú</string>
-    <string name="dialog_message_optional_notifications">• Notificaciones (opcionales): muestran la notificación de la linterna en el panel de notificaciones. La linterna también funciona si rechazas este permiso.</string>
 </resources>
