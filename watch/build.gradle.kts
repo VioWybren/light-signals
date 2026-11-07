@@ -31,15 +31,14 @@ android {
             matchingFallbacks += listOf("debug")
         }
         release {
-            // Enables code-related app optimization. For release - true, debug - false
-            isMinifyEnabled = false
-//            // Enables resource shrinking. For release - true, debug - false
-//            isShrinkResources = true
-
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            optimization { enable = true }
+        }
+        create("releasecheck") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".uitest"
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            optimization { enable = true }
         }
     }
     testBuildType = "uitest"
@@ -64,6 +63,10 @@ android {
         resources.srcDir(rootProject.file("test-support/src/main/resources"))
     }
     sourceSets.getByName("androidTest").java.srcDir(rootProject.file("instrumentation-support/src/main/kotlin"))
+    sourceSets.getByName("releasecheck") {
+        manifest.srcFile("src/uitest/AndroidManifest.xml")
+        res.srcDir("src/uitest/res")
+    }
     testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
 }
 
@@ -114,7 +117,6 @@ dependencies {
     // Wear OS preview annotations
     implementation("androidx.wear.compose:compose-ui-tooling:1.7.1")
 
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.1.2")
 

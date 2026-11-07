@@ -1,8 +1,9 @@
 package nodomain.greensnowapps.lightsignals.ui.elements
 
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.PhonelinkErase
+import nodomain.greensnowapps.lightsignals.R
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -25,7 +26,7 @@ fun WearFailureConfirmationDialog(
         onDismissRequest = { onDismiss() },
         title = {},
         text = { Text(text = message, style = androidx.wear.compose.material3.MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center) },
-        icon = { Icon(Icons.Outlined.PhonelinkErase, contentDescription = null, tint = Color(0xffff6f00)) },
+        icon = { Icon(ImageVector.vectorResource(R.drawable.ic_outlined_phonelink_erase_24), contentDescription = null, tint = Color(0xffff6f00)) },
         confirmButton = {
             AlertDialogDefaults.ConfirmButton(
                 onClick = onDismiss,

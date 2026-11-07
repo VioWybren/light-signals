@@ -1,5 +1,7 @@
 package nodomain.greensnowapps.lightsignals.ui.screens
 
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,14 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material.icons.filled.MusicOff
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Sos
-import androidx.compose.material.icons.outlined.FlashlightOn
-import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
@@ -260,7 +254,7 @@ fun WearMainScreen(
                         border = BorderStroke(width = 2.dp, color = Color(COLOR_BUTTON_BORDER))
                     ) {
                         Icon(
-                            Icons.Outlined.PhoneAndroid,
+                            ImageVector.vectorResource(R.drawable.ic_outlined_phone_android_24),
                             contentDescription = stringResource(R.string.control_connect_phone),
                             tint = Color.White
                         )
@@ -290,7 +284,7 @@ fun WearMainScreen(
                         border = BorderStroke(width = 2.dp, color = Color(COLOR_BUTTON_BORDER))
                     ) {
                         Icon(
-                            Icons.Outlined.FlashlightOn,
+                            ImageVector.vectorResource(R.drawable.ic_outlined_flashlight_on_24),
                             contentDescription = stringResource(R.string.control_phone_flashlight),
                             tint = Color.White
                         )
@@ -382,7 +376,7 @@ fun WearMainScreen(
                             border = BorderStroke(width = 2.dp, color = Color(COLOR_BUTTON_BORDER)),
                         ) {
                             Icon(
-                                if (checkedBlink) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                if (checkedBlink) ImageVector.vectorResource(R.drawable.ic_filled_pause_24) else ImageVector.vectorResource(R.drawable.ic_filled_play_arrow_24),
                                 contentDescription = stringResource(R.string.control_blinking),
                                 tint = Color.White
                             )
@@ -409,7 +403,7 @@ fun WearMainScreen(
                                 .clip(CircleShape)
                         ) {
                             Icon(
-                                if (isSoundOn) Icons.Filled.MusicNote else Icons.Filled.MusicOff,
+                                if (isSoundOn) ImageVector.vectorResource(R.drawable.ic_filled_music_note_24) else ImageVector.vectorResource(R.drawable.ic_filled_music_off_24),
                                 contentDescription = stringResource(R.string.sound_settings),
                                 tint = Color.White
                             )
@@ -436,7 +430,7 @@ fun WearMainScreen(
                             border = BorderStroke(width = 2.dp, color = Color(COLOR_BUTTON_BORDER)),
                         ) {
                             Icon(
-                                if (checkedSOS) Icons.Filled.Sos else Icons.Filled.Sos,
+                                if (checkedSOS) ImageVector.vectorResource(R.drawable.ic_filled_sos_24) else ImageVector.vectorResource(R.drawable.ic_filled_sos_24),
                                 contentDescription = stringResource(R.string.control_sos),
                                 tint = Color.White
                             )

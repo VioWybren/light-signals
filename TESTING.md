@@ -164,6 +164,33 @@ Reports from Gradle device runs are under each module's `build/reports/androidTe
 and `build/outputs/androidTest-results/connected` directories. Tests conditioned on a newer API
 are reported as skipped on older devices.
 
+## Optimized release checks
+
+Build the release bundles and the optimized device test APKs from the project root.
+
+```powershell
+.\gradlew.bat :phone:bundleRelease :watch:bundleRelease :phone:assembleReleasecheck :watch:assembleReleasecheck
+```
+
+`releasecheck` uses the release optimizer and the `.uitest` application ID. Both device APKs
+use the debug signing key and the **Light Signals Tests** label. Install the phone APK on the
+phone and the watch APK on its paired watch. This replaces the corresponding `uitest` app.
+
+```powershell
+adb -s PHONE_SERIAL install -r -t .\phone\build\outputs\apk\releasecheck\phone-releasecheck.apk
+adb -s WATCH_SERIAL install -r -t .\watch\build\outputs\apk\releasecheck\watch-releasecheck.apk
+```
+
+Check the main screens, icons, sound selection and volume. Exercise steady LED, blinking,
+and SOS, including screen-off operation. Verify phone control from the watch and confirm
+that stopping the signal clears the foreground notification. Check Home and resume on the
+watch and confirm the screen brightness returns to normal when leaving the signal screen.
+Reinstall the regular `uitest` APKs before running instrumentation.
+
+Measure the release AABs with `android analyze` and retain the release `mapping.txt` files
+for crash deobfuscation. Record uncompressed DEX sizes and R8 scores as separate measures.
+[Android DEX optimization guidance](https://developer.android.com/google/play/vitals/code-optimization)
+
 ## Before merging or releasing
 
 Run the full Gradle checks:

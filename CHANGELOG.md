@@ -3,6 +3,16 @@
 Notable changes are recorded here, beginning with v4.0.0. The entry below describes the
 upcoming release; a release date should be added when it is published.
 
+## App size improvements - Not released
+
+- Replaced Material Icons library references with the required Android XML vectors in
+  both apps, preserving the original artwork, dimensions, tint and RTL mirroring.
+- Removed both direct `material-icons-extended` dependencies and included the original
+  icon attribution and Apache 2.0 license with each app.
+- Added the missing ignore rule for generated `core/build` output.
+- Enabled R8 code and resource optimization for phone and watch releases. Added an
+  optimized `releasecheck` build for device testing with the test application ID.
+
 ## Shared core refactoring - Not released
 
 - Added a Kotlin/JVM `core` module used by the phone and watch for the common SOS engine,

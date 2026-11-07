@@ -31,11 +31,14 @@ android {
             matchingFallbacks += listOf("debug")
         }
         release {
-            // Enables code-related app optimization. For release - true, debug - false
-            isMinifyEnabled = false
-            // Enables resource shrinking. For release - true, debug - false
-//            isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            optimization { enable = true }
+        }
+        create("releasecheck") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".uitest"
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            optimization { enable = true }
         }
     }
     testBuildType = "uitest"
@@ -60,6 +63,10 @@ android {
     }
 
     sourceSets.getByName("androidTest").java.srcDir(rootProject.file("instrumentation-support/src/main/kotlin"))
+    sourceSets.getByName("releasecheck") {
+        manifest.srcFile("src/uitest/AndroidManifest.xml")
+        res.srcDir("src/uitest/res")
+    }
     testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
 
 }
@@ -100,7 +107,6 @@ dependencies {
     //Datastore
     implementation ("androidx.datastore:datastore-preferences:1.3.0")
 
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     implementation("androidx.compose.material3:material3:1.4.0")
     implementation("androidx.compose.material3:material3-window-size-class:1.4.0")
