@@ -26,6 +26,10 @@
     <string name="notification_channel_description">Truy cập nhanh đến tín hiệu đèn pin và màn hình</string>
 
     <string name="menu_item_synchronize_with_watch">Đồng bộ với đồng hồ</string>
+    <string name="menu_item_add_quick_settings_tile">Thêm vào Cài đặt nhanh</string>
+    <string name="quick_settings_tile_help_title">Mở nhanh Light Signals</string>
+    <string name="quick_settings_tile_instructions">Mở Cài đặt nhanh, nhấn vào biểu tượng chỉnh sửa và thêm ô %1$s.</string>
+    <string name="quick_settings_tile_usage">Nhấn vào ô để mở Light Signals</string>
 
     <string name="no_sound">Không</string>
     <string name="sound_1">Âm thanh 1</string>

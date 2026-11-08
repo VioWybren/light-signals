@@ -8,12 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.APP_FAILED_TO_LAUNCH_ON_WATCH
@@ -43,6 +45,8 @@ class PhoneMainViewModel @Inject constructor(
     private val _isReady = MutableStateFlow(false)
     val isReady = _isReady.asStateFlow()
     private var preferencesLoaded = false
+    private val openControlsChannel = Channel<Unit>(Channel.CONFLATED)
+    internal val openControlsRequests = openControlsChannel.receiveAsFlow()
     private val _progressFrequency = MutableStateFlow(400f)
     val progressFrequency = _progressFrequency.asStateFlow()
     private val _progressColor = MutableStateFlow(DEFAULT_COLOR_PROGRESS)
@@ -123,6 +127,10 @@ class PhoneMainViewModel @Inject constructor(
     }
 
     fun updateScreenIndex(index: Int) = phoneCtrl.updateScreenIndex(index)
+
+    internal fun requestOpenControls() {
+        openControlsChannel.trySend(Unit)
+    }
 
     fun startWearOperations(command: String) {
         viewModelScope.launch {

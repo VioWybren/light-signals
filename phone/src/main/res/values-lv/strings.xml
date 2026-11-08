@@ -26,6 +26,10 @@
     <string name="notification_channel_description">Ātra piekļuve zibspuldzes un ekrāna signāliem</string>
 
     <string name="menu_item_synchronize_with_watch">Sinhronizēt ar pulksteni</string>
+    <string name="menu_item_add_quick_settings_tile">Pievienot ātrajiem iestatījumiem</string>
+    <string name="quick_settings_tile_help_title">Ātra piekļuve lietotnei Light Signals</string>
+    <string name="quick_settings_tile_instructions">Atveriet ātros iestatījumus, pieskarieties rediģēšanas ikonai un pievienojiet elementu %1$s.</string>
+    <string name="quick_settings_tile_usage">Pieskarieties elementam, lai atvērtu lietotni Light Signals</string>
 
     <string name="no_sound">Nav</string>
     <string name="sound_1">Skaņa 1</string>

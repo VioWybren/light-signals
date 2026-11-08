@@ -26,6 +26,10 @@
     <string name="notification_channel_description">Snelle toegang tot zaklamp- en schermsignalen</string>
 
     <string name="menu_item_synchronize_with_watch">Synchroniseren met het horloge</string>
+    <string name="menu_item_add_quick_settings_tile">Toevoegen aan Snelle instellingen</string>
+    <string name="quick_settings_tile_help_title">Snelle toegang tot Light Signals</string>
+    <string name="quick_settings_tile_instructions">Open Snelle instellingen, tik op het bewerkingspictogram en voeg de tegel %1$s toe.</string>
+    <string name="quick_settings_tile_usage">Tik op de tegel om Light Signals te openen</string>
 
     <string name="no_sound">Geen</string>
     <string name="sound_1">Geluid 1</string>

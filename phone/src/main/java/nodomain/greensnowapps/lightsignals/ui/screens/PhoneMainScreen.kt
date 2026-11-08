@@ -4,7 +4,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -242,7 +241,21 @@ fun PhoneMainScreen(
         )
     }
 
-    val activity = context as ComponentActivity
+    val activity = context as PhoneMainActivity
+    val quickSettingsUsage = stringResource(R.string.quick_settings_tile_usage)
+    var showQuickSettingsInstructions by rememberSaveable { mutableStateOf(false) }
+    if (showQuickSettingsInstructions) {
+        val tileLabel = remember(activity) { activity.applicationInfo.loadLabel(activity.packageManager) }
+        val instructions = stringResource(R.string.quick_settings_tile_instructions, tileLabel)
+        UniversalDialog(
+            title = stringResource(R.string.quick_settings_tile_help_title),
+            message = "$instructions\n\n$quickSettingsUsage",
+            confirmText = stringResource(R.string._ok),
+            onConfirm = { showQuickSettingsInstructions = false },
+            onDismiss = { showQuickSettingsInstructions = false },
+        )
+    }
+
     val iconSize = 30.dp
     val intervalDescription = stringResource(R.string.signal_interval)
 
@@ -279,6 +292,22 @@ fun PhoneMainScreen(
                                 showConnectToWatchDialog = true
                                 expanded = false
                             }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_item_add_quick_settings_tile)) },
+                            leadingIcon = {
+                                Icon(
+                                    ImageVector.vectorResource(R.drawable.outline_traffic_24),
+                                    contentDescription = null,
+                                )
+                            },
+                            onClick = {
+                                expanded = false
+                                activity.requestQuickSettingsTile(
+                                    onAvailable = { showSnack(quickSettingsUsage) },
+                                    onManualSetup = { scope.launch { showQuickSettingsInstructions = true } },
+                                )
+                            },
                         )
                         HorizontalDivider()
                         Text(
@@ -401,7 +430,7 @@ fun PhoneMainScreen(
                         Spacer(Modifier.weight(7f))
 
                         if (hasTorch == true) {
-                            PhoneFlashButton(toggleBtnWidth, toggleBtnHeight, checkedFlash, viewModel, activity as PhoneMainActivity, iconSize)
+                            PhoneFlashButton(toggleBtnWidth, toggleBtnHeight, checkedFlash, viewModel, activity, iconSize)
                         }
 
                         Spacer(Modifier.weight(1f))

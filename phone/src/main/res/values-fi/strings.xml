@@ -27,6 +27,10 @@
     <string name="notification_channel_description">Nopea pääsy taskulampulle ja näytön merkeille</string>
 
     <string name="menu_item_synchronize_with_watch">Synkronoi kellon kanssa</string>
+    <string name="menu_item_add_quick_settings_tile">Lisää pika-asetuksiin</string>
+    <string name="quick_settings_tile_help_title">Avaa Light Signals nopeasti</string>
+    <string name="quick_settings_tile_instructions">Avaa pika-asetukset, napauta muokkauskuvaketta ja lisää %1$s -ruutu.</string>
+    <string name="quick_settings_tile_usage">Avaa Light Signals napauttamalla ruutua</string>
 
     <string name="no_sound">Ei</string>
     <string name="sound_1">Ääni 1</string>

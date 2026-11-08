@@ -26,6 +26,10 @@
     <string name="notification_channel_description">懐中電灯と画面の信号へのクイックアクセス</string>
 
     <string name="menu_item_synchronize_with_watch">時計と同期</string>
+    <string name="menu_item_add_quick_settings_tile">クイック設定に追加</string>
+    <string name="quick_settings_tile_help_title">Light Signals をすばやく開く</string>
+    <string name="quick_settings_tile_instructions">クイック設定を開き、編集アイコンをタップして %1$s のタイルを追加します。</string>
+    <string name="quick_settings_tile_usage">タイルをタップして Light Signals を開きます</string>
 
     <string name="no_sound">なし</string>
     <string name="sound_1">サウンド 1</string>

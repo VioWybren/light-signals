@@ -26,6 +26,10 @@
     <string name="notification_channel_description">Akses cepat ke sinyal senter dan layar</string>
 
     <string name="menu_item_synchronize_with_watch">Sinkronkan dengan jam</string>
+    <string name="menu_item_add_quick_settings_tile">Tambahkan ke Setelan Cepat</string>
+    <string name="quick_settings_tile_help_title">Akses cepat ke Light Signals</string>
+    <string name="quick_settings_tile_instructions">Buka Setelan Cepat, ketuk ikon edit, lalu tambahkan ubin %1$s.</string>
+    <string name="quick_settings_tile_usage">Ketuk ubin untuk membuka Light Signals</string>
 
     <string name="no_sound">Tidak ada</string>
     <string name="sound_1">Suara 1</string>

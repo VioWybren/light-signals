@@ -27,6 +27,10 @@
     <string name="notification_channel_description">Rychlý přístup ke svítilně a signálům na obrazovce</string>
 
     <string name="menu_item_synchronize_with_watch">Synchronizovat s hodinkami</string>
+    <string name="menu_item_add_quick_settings_tile">Přidat do rychlého nastavení</string>
+    <string name="quick_settings_tile_help_title">Rychlý přístup k Light Signals</string>
+    <string name="quick_settings_tile_instructions">Otevřete rychlé nastavení, klepněte na ikonu úprav a přidejte dlaždici %1$s.</string>
+    <string name="quick_settings_tile_usage">Klepnutím na dlaždici otevřete Light Signals</string>
 
     <string name="no_sound">Žádný</string>
     <string name="sound_1">Zvuk 1</string>

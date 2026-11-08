@@ -27,6 +27,10 @@
     <string name="notification_channel_description">Hurtig tilgang til lommelykt og skjermsignaler</string>
 
     <string name="menu_item_synchronize_with_watch">Synkroniser med klokken</string>
+    <string name="menu_item_add_quick_settings_tile">Legg til i hurtiginnstillingene</string>
+    <string name="quick_settings_tile_help_title">Rask tilgang til Light Signals</string>
+    <string name="quick_settings_tile_instructions">Åpne hurtiginnstillingene, trykk på redigeringsikonet og legg til %1$s-flisen.</string>
+    <string name="quick_settings_tile_usage">Trykk på flisen for å åpne Light Signals</string>
 
     <string name="no_sound">Ingen</string>
     <string name="sound_1">Lyd 1</string>

@@ -26,6 +26,10 @@
     <string name="notification_channel_description">وصول سريع إلى إشارات المصباح والشاشة</string>
 
     <string name="menu_item_synchronize_with_watch">مزامنة مع الساعة</string>
+    <string name="menu_item_add_quick_settings_tile">إضافة إلى الإعدادات السريعة</string>
+    <string name="quick_settings_tile_help_title">وصول سريع إلى Light Signals</string>
+    <string name="quick_settings_tile_instructions">افتح الإعدادات السريعة، وانقر على رمز التعديل، ثم أضف مربع %1$s.</string>
+    <string name="quick_settings_tile_usage">انقر على المربع لفتح Light Signals</string>
 
     <string name="no_sound">لا شيء</string>
     <string name="sound_1">الصوت 1</string>

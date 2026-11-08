@@ -35,6 +35,8 @@ upcoming release; a release date should be added when it is published.
 
 ### Added
 
+- Open the phone's signal controls from the Light Signals Quick Settings tile.
+  Add it from the phone app's three-dot menu.
 - Repository/state, SOS timing and cancellation, and phone/watch synchronization contract tests.
 - Android device tests for permissions, notifications, foreground-service behavior, Activity
   recreation, Home/resume, watch brightness, and resource cleanup.

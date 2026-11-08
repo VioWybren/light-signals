@@ -27,6 +27,10 @@
     <string name="notification_channel_description">Snabb åtkomst till ficklampa och skärmsignaler</string>
 
     <string name="menu_item_synchronize_with_watch">Synkronisera med klockan</string>
+    <string name="menu_item_add_quick_settings_tile">Lägg till i snabbinställningarna</string>
+    <string name="quick_settings_tile_help_title">Snabbåtkomst till Light Signals</string>
+    <string name="quick_settings_tile_instructions">Öppna snabbinställningarna, tryck på redigeringsikonen och lägg till rutan %1$s.</string>
+    <string name="quick_settings_tile_usage">Tryck på rutan för att öppna Light Signals</string>
 
     <string name="no_sound">Ingen</string>
     <string name="sound_1">Ljud 1</string>
