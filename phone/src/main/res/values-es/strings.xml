@@ -27,6 +27,10 @@
     <string name="notification_channel_description">Acceso rápido a señales por linterna y pantalla</string>
 
     <string name="menu_item_synchronize_with_watch">Sincronizar con el reloj</string>
+    <string name="menu_item_add_quick_settings_tile">Añadir a Ajustes rápidos</string>
+    <string name="quick_settings_tile_help_title">Acceso rápido a Light Signals</string>
+    <string name="quick_settings_tile_instructions">Abra Ajustes rápidos, toque el icono de edición y añada el acceso de %1$s.</string>
+    <string name="quick_settings_tile_usage">Toque el acceso para abrir Light Signals</string>
 
     <string name="no_sound">Ninguno</string>
     <string name="sound_1">Sonido 1</string>

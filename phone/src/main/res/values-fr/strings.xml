@@ -26,6 +26,10 @@
     <string name="notification_channel_description">Accès rapide aux signaux par lampe torche et écran</string>
 
     <string name="menu_item_synchronize_with_watch">Synchroniser avec la montre</string>
+    <string name="menu_item_add_quick_settings_tile">Ajouter aux paramètres rapides</string>
+    <string name="quick_settings_tile_help_title">Accès rapide à Light Signals</string>
+    <string name="quick_settings_tile_instructions">Ouvrez les paramètres rapides, appuyez sur l’icône de modification et ajoutez la tuile %1$s.</string>
+    <string name="quick_settings_tile_usage">Appuyez sur la tuile pour ouvrir Light Signals</string>
 
     <string name="no_sound">Aucun</string>
     <string name="sound_1">Son 1</string>

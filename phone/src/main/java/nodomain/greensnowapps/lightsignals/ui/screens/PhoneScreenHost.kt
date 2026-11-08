@@ -63,6 +63,12 @@ fun PhoneScreenHost() {
     }
 
 
+    LaunchedEffect(pagerState, mainVm) {
+        mainVm.openControlsRequests.collect {
+            pagerState.scrollToPage(0)
+        }
+    }
+
     val scrollScope = rememberCoroutineScope()
 
     HorizontalPager(

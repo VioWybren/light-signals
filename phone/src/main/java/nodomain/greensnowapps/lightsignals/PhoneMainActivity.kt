@@ -1,6 +1,10 @@
 package nodomain.greensnowapps.lightsignals
 
 import android.Manifest
+import android.app.StatusBarManager
+import android.content.ComponentName
+import android.content.Intent
+import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -39,6 +43,7 @@ class PhoneMainActivity : ComponentActivity() {
         notificationPermissionRequested = savedInstanceState?.getBoolean(NOTIFICATIONS_REQUESTED) ?: false
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        handleControlsIntent(intent)
         setContent {
             LightSignalNewTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
@@ -49,9 +54,55 @@ class PhoneMainActivity : ComponentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleControlsIntent(intent)
+    }
+
+    private fun handleControlsIntent(intent: Intent) {
+        if (intent.getBooleanExtra(OPEN_CONTROLS_EXTRA, false)) {
+            intent.removeExtra(OPEN_CONTROLS_EXTRA)
+            viewModel.requestOpenControls()
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(NOTIFICATIONS_REQUESTED, notificationPermissionRequested)
         super.onSaveInstanceState(outState)
+    }
+
+    internal fun requestQuickSettingsTile(onAvailable: () -> Unit, onManualSetup: () -> Unit) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            onManualSetup()
+            return
+        }
+        val statusBarManager = getSystemService(StatusBarManager::class.java)
+        if (statusBarManager == null) {
+            onManualSetup()
+            return
+        }
+        try {
+            statusBarManager.requestAddTileService(
+                ComponentName(this, LightSignalsTileService::class.java),
+                applicationInfo.loadLabel(packageManager),
+                Icon.createWithResource(this, R.drawable.outline_traffic_24),
+                mainExecutor,
+            ) { result ->
+                when (result) {
+                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED,
+                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED -> onAvailable()
+                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_NOT_ADDED,
+                    StatusBarManager.TILE_ADD_REQUEST_ERROR_REQUEST_IN_PROGRESS -> Unit
+                    else -> {
+                        Log.w(TAG, "Quick Settings tile request failed: $result")
+                        onManualSetup()
+                    }
+                }
+            }
+        } catch (error: RuntimeException) {
+            Log.w(TAG, "Unable to request a Quick Settings tile", error)
+            onManualSetup()
+        }
     }
 
     fun tryEnableFlash() {

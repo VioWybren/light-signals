@@ -26,6 +26,10 @@
     <string name="notification_channel_description">टॉर्च और स्क्रीन संकेतों के त्वरित एक्सेस</string>
 
     <string name="menu_item_synchronize_with_watch">घड़ी के साथ सिंक करें</string>
+    <string name="menu_item_add_quick_settings_tile">क्विक सेटिंग में जोड़ें</string>
+    <string name="quick_settings_tile_help_title">Light Signals तुरंत खोलें</string>
+    <string name="quick_settings_tile_instructions">क्विक सेटिंग खोलें, बदलाव करने वाले आइकॉन पर टैप करें और %1$s की टाइल जोड़ें।</string>
+    <string name="quick_settings_tile_usage">Light Signals खोलने के लिए टाइल पर टैप करें</string>
 
     <string name="no_sound">कोई नहीं</string>
     <string name="sound_1">साउंड 1</string>

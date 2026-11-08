@@ -26,6 +26,10 @@
     <string name="notification_channel_description">El feneri ve ekran sinyallerine hızlı erişim</string>
 
     <string name="menu_item_synchronize_with_watch">Saat ile senkronize et</string>
+    <string name="menu_item_add_quick_settings_tile">Hızlı Ayarlara ekle</string>
+    <string name="quick_settings_tile_help_title">Light Signals uygulamasına hızlı erişim</string>
+    <string name="quick_settings_tile_instructions">Hızlı Ayarları açın, düzenleme simgesine dokunun ve %1$s kutucuğunu ekleyin.</string>
+    <string name="quick_settings_tile_usage">Light Signals uygulamasını açmak için kutucuğa dokunun</string>
 
     <string name="no_sound">Yok</string>
     <string name="sound_1">Ses 1</string>

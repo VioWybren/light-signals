@@ -27,6 +27,10 @@
     <string name="notification_channel_description">Accesso rapido ai segnali tramite torcia e schermo</string>
 
     <string name="menu_item_synchronize_with_watch">Sincronizza con l\'orologio</string>
+    <string name="menu_item_add_quick_settings_tile">Aggiungi alle Impostazioni rapide</string>
+    <string name="quick_settings_tile_help_title">Accesso rapido a Light Signals</string>
+    <string name="quick_settings_tile_instructions">Apri le Impostazioni rapide, tocca l’icona di modifica e aggiungi il riquadro %1$s.</string>
+    <string name="quick_settings_tile_usage">Tocca il riquadro per aprire Light Signals</string>
 
     <string name="no_sound">Nessuno</string>
     <string name="sound_1">Suono 1</string>

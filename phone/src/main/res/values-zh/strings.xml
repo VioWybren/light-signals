@@ -26,6 +26,10 @@
     <string name="notification_channel_description">快速访问手电筒和屏幕信号</string>
 
     <string name="menu_item_synchronize_with_watch">与手表同步</string>
+    <string name="menu_item_add_quick_settings_tile">添加到快捷设置</string>
+    <string name="quick_settings_tile_help_title">快速打开 Light Signals</string>
+    <string name="quick_settings_tile_instructions">打开快捷设置，点按编辑图标，然后添加 %1$s 磁贴。</string>
+    <string name="quick_settings_tile_usage">点按磁贴即可打开 Light Signals</string>
 
     <string name="no_sound">无</string>
     <string name="sound_1">声音 1</string>

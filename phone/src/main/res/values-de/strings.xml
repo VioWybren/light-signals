@@ -30,6 +30,10 @@
     <string name="notification_channel_description">Schneller Zugriff auf Taschenlampen- und Bildschirm-Signale</string>
 
     <string name="menu_item_synchronize_with_watch">Mit der Uhr synchronisieren</string>
+    <string name="menu_item_add_quick_settings_tile">Zu den Schnelleinstellungen hinzufügen</string>
+    <string name="quick_settings_tile_help_title">Schnellzugriff auf Light Signals</string>
+    <string name="quick_settings_tile_instructions">Öffnen Sie die Schnelleinstellungen, tippen Sie auf das Bearbeitungssymbol und fügen Sie die Kachel %1$s hinzu.</string>
+    <string name="quick_settings_tile_usage">Tippen Sie auf die Kachel, um Light Signals zu öffnen</string>
 
     <string name="no_sound">Keine</string>
     <string name="sound_1">Ton 1</string>

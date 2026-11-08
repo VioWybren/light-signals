@@ -26,6 +26,10 @@
     <string name="notification_channel_description">Быстрый доступ к сигналам фонарика и экрана</string>
 
     <string name="menu_item_synchronize_with_watch">Синхронизировать с часами</string>
+    <string name="menu_item_add_quick_settings_tile">Добавить в быстрые настройки</string>
+    <string name="quick_settings_tile_help_title">Быстрый доступ к Light Signals</string>
+    <string name="quick_settings_tile_instructions">Откройте быстрые настройки, нажмите на значок редактирования и добавьте плитку %1$s.</string>
+    <string name="quick_settings_tile_usage">Нажмите на плитку, чтобы открыть Light Signals</string>
 
     <string name="no_sound">Без звука</string>
     <string name="sound_1">Звук 1</string>

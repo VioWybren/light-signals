@@ -26,6 +26,10 @@
     <string name="notification_channel_description">Szybki dostęp do sygnałów latarki i ekranu</string>
 
     <string name="menu_item_synchronize_with_watch">Synchronizuj z zegarkiem</string>
+    <string name="menu_item_add_quick_settings_tile">Dodaj do szybkich ustawień</string>
+    <string name="quick_settings_tile_help_title">Szybki dostęp do Light Signals</string>
+    <string name="quick_settings_tile_instructions">Otwórz szybkie ustawienia, dotknij ikony edycji i dodaj kafelek %1$s.</string>
+    <string name="quick_settings_tile_usage">Dotknij kafelka, aby otworzyć Light Signals</string>
 
     <string name="no_sound">Brak</string>
     <string name="sound_1">Dźwięk 1</string>

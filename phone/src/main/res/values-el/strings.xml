@@ -27,6 +27,10 @@
     <string name="notification_channel_description">Γρήγορη πρόσβαση στο φλας και τα σήματα οθόνης</string>
 
     <string name="menu_item_synchronize_with_watch">Συγχρονισμός με το ρολόι</string>
+    <string name="menu_item_add_quick_settings_tile">Προσθήκη στις Γρήγορες ρυθμίσεις</string>
+    <string name="quick_settings_tile_help_title">Γρήγορη πρόσβαση στο Light Signals</string>
+    <string name="quick_settings_tile_instructions">Ανοίξτε τις Γρήγορες ρυθμίσεις, πατήστε το εικονίδιο επεξεργασίας και προσθέστε το πλακίδιο %1$s.</string>
+    <string name="quick_settings_tile_usage">Πατήστε το πλακίδιο για να ανοίξετε το Light Signals</string>
 
     <string name="no_sound">Κανένας</string>
     <string name="sound_1">Ήχος 1</string>

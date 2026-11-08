@@ -26,6 +26,10 @@
     <string name="notification_channel_description">Швидкий доступ до сигналів ліхтаря та екрана</string>
 
     <string name="menu_item_synchronize_with_watch">Синхронізувати з годинником</string>
+    <string name="menu_item_add_quick_settings_tile">Додати до швидких налаштувань</string>
+    <string name="quick_settings_tile_help_title">Швидкий доступ до Light Signals</string>
+    <string name="quick_settings_tile_instructions">Відкрийте швидкі налаштування, торкніться значка редагування й додайте плитку %1$s.</string>
+    <string name="quick_settings_tile_usage">Торкніться плитки, щоб відкрити Light Signals</string>
 
     <string name="no_sound">Немає</string>
     <string name="sound_1">Звук 1</string>

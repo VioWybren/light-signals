@@ -26,6 +26,10 @@
     <string name="notification_channel_description">Quick access to flashlight and screen signals</string>
 
     <string name="menu_item_synchronize_with_watch">Synchronize with the watch</string>
+    <string name="menu_item_add_quick_settings_tile">Adicionar às Configurações rápidas</string>
+    <string name="quick_settings_tile_help_title">Acesso rápido ao Light Signals</string>
+    <string name="quick_settings_tile_instructions">Abra as Configurações rápidas, toque no ícone de edição e adicione o bloco do %1$s.</string>
+    <string name="quick_settings_tile_usage">Toque no bloco para abrir o Light Signals</string>
 
     <string name="no_sound">None</string>
     <string name="sound_1">Sound 1</string>

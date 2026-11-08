@@ -26,6 +26,10 @@
     <string name="notification_channel_description">การเข้าถึงด่วนไปยังไฟฉายและสัญญาณบนหน้าจอ</string>
 
     <string name="menu_item_synchronize_with_watch">ซิงค์กับนาฬิกา</string>
+    <string name="menu_item_add_quick_settings_tile">เพิ่มในการตั้งค่าด่วน</string>
+    <string name="quick_settings_tile_help_title">เข้าถึง Light Signals ได้อย่างรวดเร็ว</string>
+    <string name="quick_settings_tile_instructions">เปิดการตั้งค่าด่วน แตะไอคอนแก้ไข แล้วเพิ่มไทล์ %1$s</string>
+    <string name="quick_settings_tile_usage">แตะไทล์เพื่อเปิด Light Signals</string>
 
     <string name="no_sound">ไม่มี</string>
     <string name="sound_1">เสียง 1</string>

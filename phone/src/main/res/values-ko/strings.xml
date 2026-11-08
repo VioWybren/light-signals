@@ -26,6 +26,10 @@
     <string name="notification_channel_description">손전등 및 화면 신호에 대한 빠른 접근</string>
 
     <string name="menu_item_synchronize_with_watch">시계와 동기화</string>
+    <string name="menu_item_add_quick_settings_tile">빠른 설정에 추가</string>
+    <string name="quick_settings_tile_help_title">Light Signals 빠르게 열기</string>
+    <string name="quick_settings_tile_instructions">빠른 설정을 열고 편집 아이콘을 눌러 %1$s 타일을 추가하세요.</string>
+    <string name="quick_settings_tile_usage">타일을 누르면 Light Signals가 열립니다</string>
 
     <string name="no_sound">없음</string>
     <string name="sound_1">사운드 1</string>
