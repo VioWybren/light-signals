@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.flow.first
 import nodomain.greensnowapps.lightsignals.DEFAULT_COLOR_PROGRESS
+import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
 
 data class PhoneControlState(
     val blinkEnabled: Boolean = false,
@@ -18,7 +19,7 @@ data class PhoneControlState(
     internal fun validated(): PhoneControlState = copy(
         frequency = frequency.coerceIn(100L, 1000L),
         activeSound = activeSound.coerceIn(0, 3),
-        color = color.takeIf { it.isFinite() }?.coerceIn(0f, 1785f) ?: DEFAULT_COLOR_PROGRESS,
+        color = SignalColorPalette.clampProgress(color),
         screenIndex = screenIndex.coerceIn(0, 1),
         activeColorButton = activeColorButton.coerceIn(0, 3)
     )

@@ -7,6 +7,7 @@ object ControlStateWire {
     const val SOS_ENABLED = "sosEnabled"
     const val FREQUENCY = "frequency"
     const val COLOR = "color"
+    const val EXTENDED_COLOR_PROGRESS = "extendedColorProgress"
     const val TORCH_ON = "torchOn"
     const val ACTIVE_SOUND = "activeSound"
     const val SCREEN_INDEX = "screenIndex"

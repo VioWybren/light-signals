@@ -1,5 +1,7 @@
 package nodomain.greensnowapps.lightsignals
 
+import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
+
 const val NOTIF_ID = 55555777
 
 
@@ -23,7 +25,7 @@ const val PREFERENCE_PREF_ACTIVE_COLOR_BUTTON = "pref_active_color_button"
 const val PREFERENCE_ACTIVE_SCREEN = "active_screen"
 const val PREFERENCE_SIGNAL_SCREEN_COLOR = "signal_screen_color"
 
-const val DEFAULT_COLOR_PROGRESS = 6 * 255f
+const val DEFAULT_COLOR_PROGRESS = SignalColorPalette.DEFAULT_PROGRESS
 
 const val COMMAND_START_ON_WATCH = "start"
 const val COMMAND_INSTALL_ON_WATCH = "install"

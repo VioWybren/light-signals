@@ -63,4 +63,44 @@ class WearSyncStateRepositoryTest {
         assertTrue(send.isCancelled)
         assertTrue(errors.isEmpty())
     }
+
+    @Test fun extendedColorsKeepAUsableLegacyValueAndSendTheExactNewPosition() = runTest {
+        val payloads = mutableListOf<DataMap>()
+        val repo = WearSyncStateRepository(
+            { _, values -> payloads += values },
+            { 100L },
+            { throw AssertionError(it) }
+        )
+        assertTrue(repo.sendState(WearControlState(color = 2040f, activeColorButton = 1)))
+        assertTrue(repo.sendState(WearControlState(color = 2295f, activeColorButton = 1)))
+        assertTrue(repo.sendState(WearControlState(color = 621.5f, activeColorButton = 1)))
+
+        assertEquals(1467f, payloads[0].getFloat("color"), 0f)
+        assertEquals(2040f, payloads[0].getFloat("extendedColorProgress"), 0f)
+        assertEquals(1275f, payloads[1].getFloat("color"), 0f)
+        assertEquals(2295f, payloads[1].getFloat("extendedColorProgress"), 0f)
+        assertEquals(621.5f, payloads[2].getFloat("color"), 0f)
+        assertFalse(payloads[2].containsKey("extendedColorProgress"))
+        payloads.forEach { assertEquals(1, it.getInt("key_active_color_button")) }
+    }
+
+    @Test fun orderedSliderColorsSendExactProgressAndAnOldCompatibleFallback() = runTest {
+        val payloads = mutableListOf<DataMap>()
+        val repo = WearSyncStateRepository(
+            { _, values -> payloads += values },
+            { 100L },
+            { throw AssertionError(it) }
+        )
+        val positions = listOf(2296f, 2806f, 4081f, 4591f)
+        for (stored in positions) {
+            assertTrue(repo.sendState(WearControlState(color = stored, activeColorButton = 1)))
+        }
+        assertEquals(positions, payloads.map { it.getFloat("extendedColorProgress") })
+        payloads.forEach { payload ->
+            assertTrue(payload.getFloat("color", Float.NaN) in 0f..1785f)
+            assertEquals(1, payload.getInt("key_active_color_button"))
+        }
+        assertEquals(0f, payloads.first().getFloat("color"), 0f)
+        assertEquals(1785f, payloads.last().getFloat("color"), 0f)
+    }
 }

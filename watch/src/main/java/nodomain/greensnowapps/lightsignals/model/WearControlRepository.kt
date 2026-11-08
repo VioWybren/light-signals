@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.WearConstants
 import nodomain.greensnowapps.lightsignals.core.signal.SOS_UNIT_MS
 import nodomain.greensnowapps.lightsignals.core.signal.runSosSignal
+import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
 import nodomain.greensnowapps.lightsignals.utils.WearUtils
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -206,8 +207,7 @@ class WearControlRepository internal constructor(
     }
 
     fun calcMiddleColor(progressColor: Float) {
-        val progress = progressColor.takeIf { it.isFinite() }
-            ?: WearConstants.DEFAULT_COLOR_PROGRESS
+        val progress = SignalColorPalette.clampProgress(progressColor)
         _middleColor.value = WearUtils.computeSpecialColor(progress.toInt())
     }
 

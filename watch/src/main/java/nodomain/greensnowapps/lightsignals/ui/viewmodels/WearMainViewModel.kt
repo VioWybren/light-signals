@@ -32,7 +32,7 @@ import nodomain.greensnowapps.lightsignals.model.WearSyncStateRepository
 import nodomain.greensnowapps.lightsignals.model.editSafely
 import nodomain.greensnowapps.lightsignals.model.safeData
 import nodomain.greensnowapps.lightsignals.model.statesToSynchronize
-import nodomain.greensnowapps.lightsignals.utils.WearUtils
+import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
 import javax.inject.Inject
 
 private val KEY_ACTIVE_COLOR = intPreferencesKey("active_btn")
@@ -57,7 +57,7 @@ class WearMainViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, 400f)
 
     val progressColor: StateFlow<Float> = dataStore.safeData()
-        .map { prefs -> safeColor(prefs[KEY_COLOR_PROGRESS] ?: DEFAULT_COLOR_PROGRESS) }
+        .map { prefs -> SignalColorPalette.clampProgress(prefs[KEY_COLOR_PROGRESS] ?: DEFAULT_COLOR_PROGRESS) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, DEFAULT_COLOR_PROGRESS)
 
     val flashOn = wearCtrl.flashOn
@@ -150,7 +150,7 @@ class WearMainViewModel @Inject constructor(
     fun toggleSos(on: Boolean) = wearCtrl.switchSOS(on)
 
     fun updateColorProgress(newProgress: Float) {
-        val progress = safeColor(newProgress)
+        val progress = SignalColorPalette.clampProgress(newProgress)
         wearCtrl.calcMiddleColor(progress)
         writePref(KEY_COLOR_PROGRESS, progress)
     }
@@ -179,8 +179,4 @@ class WearMainViewModel @Inject constructor(
 
     private fun safeFrequency(value: Float) =
         value.takeIf { it.isFinite() }?.coerceIn(100f, 1000f) ?: 400f
-
-    private fun safeColor(value: Float) =
-        value.takeIf { it.isFinite() }?.coerceIn(0f, WearUtils.MAX_COLOR_PROGRESS.toFloat())
-            ?: DEFAULT_COLOR_PROGRESS
 }

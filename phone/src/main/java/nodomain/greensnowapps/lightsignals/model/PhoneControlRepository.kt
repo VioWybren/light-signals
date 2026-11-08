@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import nodomain.greensnowapps.lightsignals.DEFAULT_COLOR_PROGRESS
+import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
 import nodomain.greensnowapps.lightsignals.PREFERENCE_ACTIVE_SCREEN
 import nodomain.greensnowapps.lightsignals.PREFERENCE_ACTIVE_SOUND
 import nodomain.greensnowapps.lightsignals.PREFERENCE_BLINK_DELAY
@@ -149,8 +149,7 @@ class PhoneControlRepository internal constructor(
     }
 
     fun updateColorProgress(progress: Float) {
-        val value = progress.takeIf { it.isFinite() }?.coerceIn(0f, 1785f) ?: DEFAULT_COLOR_PROGRESS
-        writePref(KEY_COLOR_PROGRESS, value)
+        writePref(KEY_COLOR_PROGRESS, SignalColorPalette.clampProgress(progress))
     }
 
     fun updateFrequencyProgress(progress: Float) {
