@@ -59,7 +59,7 @@ class PhoneControlStateTest {
             screenIndex = 99, activeColorButton = -1).validated()
         assertEquals(1000L, upper.frequency)
         assertEquals(0, upper.activeSound)
-        assertEquals(1785f, upper.color, 0f)
+        assertEquals(4591f, upper.color, 0f)
         assertEquals(1, upper.screenIndex)
         assertEquals(0, upper.activeColorButton)
     }
@@ -67,5 +67,12 @@ class PhoneControlStateTest {
     @Test fun validStateIsUnchangedByRepeatedValidation() {
         val state = PhoneControlState(true, false, true, 275L, 2, 621.5f, 1, 1)
         assertEquals(state, state.validated().validated())
+    }
+
+    @Test fun savedExtendedColorsFromBothEncodingsRestoreUnchanged() {
+        for (stored in listOf(2040f, 2295f, 2296f, 2806f, 4591f)) {
+            val state = PhoneControlState.fromPreferences(preferencesOf(KEY_COLOR_PROGRESS to stored))
+            assertEquals(stored, state.color, 0f)
+        }
     }
 }

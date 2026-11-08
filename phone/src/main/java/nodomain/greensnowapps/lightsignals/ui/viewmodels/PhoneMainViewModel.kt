@@ -22,6 +22,7 @@ import nodomain.greensnowapps.lightsignals.APP_FAILED_TO_LAUNCH_ON_WATCH
 import nodomain.greensnowapps.lightsignals.COMMAND_INSTALL_ON_WATCH
 import nodomain.greensnowapps.lightsignals.DEFAULT_COLOR_PROGRESS
 import nodomain.greensnowapps.lightsignals.INSTALLATION_ON_WATCH_FAILED
+import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
 import nodomain.greensnowapps.lightsignals.model.KEY_COLOR_PROGRESS
 import nodomain.greensnowapps.lightsignals.model.KEY_FREQUENCY_PROGRESS
 import nodomain.greensnowapps.lightsignals.model.PhoneControlRepository
@@ -81,8 +82,9 @@ class PhoneMainViewModel @Inject constructor(
             dataStore.safePreferences().collect { prefs ->
                 _progressFrequency.value = (prefs[KEY_FREQUENCY_PROGRESS] ?: 400f)
                     .takeIf { it.isFinite() }?.coerceIn(100f, 1000f) ?: 400f
-                _progressColor.value = (prefs[KEY_COLOR_PROGRESS] ?: DEFAULT_COLOR_PROGRESS)
-                    .takeIf { it.isFinite() }?.coerceIn(0f, 1785f) ?: DEFAULT_COLOR_PROGRESS
+                _progressColor.value = SignalColorPalette.clampProgress(
+                    prefs[KEY_COLOR_PROGRESS] ?: DEFAULT_COLOR_PROGRESS,
+                )
                 _middleColor.value = PhoneUtils.computeSpecialColor(_progressColor.value.toInt())
                 preferencesLoaded = true
                 _isReady.value = phoneCtrl.initialized.value

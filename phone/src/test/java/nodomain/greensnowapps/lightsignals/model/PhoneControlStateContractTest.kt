@@ -43,4 +43,27 @@ class PhoneControlStateContractTest {
         assertEquals(PhoneControlState(frequency = 100L, activeSound = 3, activeColorButton = 3),
             decodeControlState(payload))
     }
+
+    @Test fun supportedExtendedColorsTakePrecedenceOverTheLegacyFallback() {
+        for ((fallback, extended) in listOf(1467f to 2040f, 1275f to 2295f, 0f to 2296f, 1467f to 2806f, 1785f to 4591f)) {
+            val payload = DataMap().apply {
+                putFloat("color", fallback)
+                putFloat("extendedColorProgress", extended)
+                putInt("key_active_color_button", 1)
+            }
+            val state = decodeControlState(payload)
+            assertEquals(extended, state.color, 0f)
+            assertEquals(1, state.activeColorButton)
+        }
+    }
+
+    @Test fun unsupportedExtendedColorsPreserveTheLegacyFallback() {
+        for (invalid in listOf(Float.NaN, Float.POSITIVE_INFINITY, 1785f, 2295.5f, 4592f)) {
+            val payload = DataMap().apply {
+                putFloat("color", 621.5f)
+                putFloat("extendedColorProgress", invalid)
+            }
+            assertEquals(621.5f, decodeControlState(payload).color, 0f)
+        }
+    }
 }

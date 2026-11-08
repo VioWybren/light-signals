@@ -1,5 +1,7 @@
 package nodomain.greensnowapps.lightsignals
 
+import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
+
 object WearConstants {
 
 
@@ -32,7 +34,7 @@ object WearConstants {
     const val TITLE_ON_SIGNAL_SCREEN = "Light Signals"
     const val SOS_ON_SIGNAL_SCREEN = "SOS"
 
-    const val DEFAULT_COLOR_PROGRESS = 6 * 255f
+    const val DEFAULT_COLOR_PROGRESS = SignalColorPalette.DEFAULT_PROGRESS
 
     const val DEFAULT_VOLUME = 0.5f
 
