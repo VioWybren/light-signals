@@ -37,9 +37,7 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -75,7 +73,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.APP_FAILED_TO_LAUNCH_ON_WATCH
 import nodomain.greensnowapps.lightsignals.APP_IS_NOT_INSTALLED_ON_WATCH
-import nodomain.greensnowapps.lightsignals.APP_LAUNCHED_ON_WATCH
 import nodomain.greensnowapps.lightsignals.BuildConfig
 import nodomain.greensnowapps.lightsignals.COMMAND_INSTALL_ON_WATCH
 import nodomain.greensnowapps.lightsignals.COMMAND_START_ON_WATCH
@@ -84,6 +81,7 @@ import nodomain.greensnowapps.lightsignals.INSTALLATION_ON_WATCH_STARTED
 import nodomain.greensnowapps.lightsignals.NO_CONNECTED_WATCHES
 import nodomain.greensnowapps.lightsignals.PhoneMainActivity
 import nodomain.greensnowapps.lightsignals.R
+import nodomain.greensnowapps.lightsignals.WATCH_CONNECTION_UNCONFIRMED
 import nodomain.greensnowapps.lightsignals.WEARABLE_API_UNAVAILABLE
 import nodomain.greensnowapps.lightsignals.ui.elements.PhoneBlinkButton
 import nodomain.greensnowapps.lightsignals.ui.elements.PhoneColorButton
@@ -109,7 +107,8 @@ private const val MAX_SLIDER_PROGRESS = 1000f
 @Composable
 fun PhoneMainScreen(
     viewModel: PhoneMainViewModel,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    snackbarHostState: SnackbarHostState,
 ) {
 
     val phoneTorchViewModel: PhoneTorchViewModel = hiltViewModel()
@@ -123,14 +122,8 @@ fun PhoneMainScreen(
 
     var sliderPositionFrequency by remember { mutableFloatStateOf(persistedFrequencyProgress) }
 
-    val blinkDelay = sliderPositionFrequency.toLong()
-
     LaunchedEffect(persistedFrequencyProgress) {
         sliderPositionFrequency = persistedFrequencyProgress
-    }
-
-    LaunchedEffect(blinkDelay) {
-        viewModel.updateBlinkDelay(blinkDelay)
     }
 
     val persistedColorProgress by viewModel.progressColor.collectAsStateWithLifecycle()
@@ -197,14 +190,13 @@ fun PhoneMainScreen(
 
     var showInstallOnWatchDialog by rememberSaveable { mutableStateOf(false) }
 
-    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    fun showSnack(msg: String) {
+    fun showSnack(msg: String, duration: SnackbarDuration = SnackbarDuration.Short) {
         scope.launch {
             snackbarHostState.showSnackbar(
                 message = msg,
-                duration = SnackbarDuration.Short
+                duration = duration
             )
         }
     }
@@ -219,7 +211,10 @@ fun PhoneMainScreen(
                 INSTALLATION_ON_WATCH_STARTED -> showSnack(resources.getString(R.string.snackbar_app_installed_on_watch_success))
                 INSTALLATION_ON_WATCH_FAILED -> showSnack(resources.getString(R.string.snackbar_installation_on_watch_failed))
                 APP_FAILED_TO_LAUNCH_ON_WATCH -> showSnack(resources.getString(R.string.snackbar_app_failed_to_launch_on_watch))
-                APP_LAUNCHED_ON_WATCH -> showSnack(resources.getString(R.string.snackbar_app_launched_on_watch))
+                WATCH_CONNECTION_UNCONFIRMED -> showSnack(
+                    resources.getString(R.string.snackbar_watch_connection_unconfirmed),
+                    duration = SnackbarDuration.Long,
+                )
                 WEARABLE_API_UNAVAILABLE -> showWearApiNotAvailableDialog = true
                 NO_CONNECTED_WATCHES -> showSnack(resources.getString(R.string.snackbar_no_connected_watches))
                 else -> showSnack(inputCommand)
@@ -282,6 +277,7 @@ fun PhoneMainScreen(
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.menu_item_synchronize_with_watch)) },
+                            enabled = !isLaunchingOnWear,
                             leadingIcon = {
                                 Icon(
                                     ImageVector.vectorResource(R.drawable.ic_outlined_watch_24),
@@ -323,24 +319,6 @@ fun PhoneMainScreen(
             )
         },
         contentWindowInsets = WindowInsets(0),
-        snackbarHost = {
-            Box(modifier = Modifier.fillMaxSize()) {
-                SnackbarHost(
-                    hostState = snackbarHostState,
-                    snackbar = { snackbarData ->
-                        Snackbar(
-                            snackbarData = snackbarData,
-                            shape = RoundedCornerShape(12.dp),
-                            containerColor = Color.Black,
-                            contentColor = Color.White,
-                        )
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 40.dp, start = 10.dp, end = 10.dp)
-                )
-            }
-        },
     )
     { innerPadding ->
         BoxWithConstraints(
@@ -430,12 +408,16 @@ fun PhoneMainScreen(
                         Spacer(Modifier.weight(7f))
 
                         if (hasTorch == true) {
-                            PhoneFlashButton(toggleBtnWidth, toggleBtnHeight, checkedFlash, viewModel, activity, iconSize)
+                            PhoneFlashButton(
+                                toggleBtnWidth, toggleBtnHeight, checkedFlash, viewModel, activity, iconSize,
+                            )
                         }
 
                         Spacer(Modifier.weight(1f))
 
-                        PhoneSosButton(toggleBtnWidth, toggleBtnHeight, checkedSOS, viewModel, iconSize)
+                        PhoneSosButton(
+                            toggleBtnWidth, toggleBtnHeight, checkedSOS, viewModel, iconSize,
+                        )
 
                         Spacer(Modifier.weight(1f))
                     }
@@ -550,7 +532,9 @@ fun PhoneMainScreen(
 
                         Spacer(Modifier.weight(1f))
 
-                        PhoneBlinkButton(toggleBtnWidth, toggleBtnHeight, checkedBlink, sosOn, viewModel, iconSize)
+                        PhoneBlinkButton(
+                            toggleBtnWidth, toggleBtnHeight, checkedBlink, sosOn, viewModel, iconSize,
+                        )
 
                         Spacer(Modifier.weight(1f))
                     }
@@ -561,8 +545,9 @@ fun PhoneMainScreen(
                 Slider(
                     value = MIN_TIME_MS + MAX_TIME_MS - sliderPositionFrequency,
                     onValueChange = { newValue ->
-                        sliderPositionFrequency =
-                            MIN_TIME_MS + MAX_TIME_MS - newValue
+                        val delay = MIN_TIME_MS + MAX_TIME_MS - newValue
+                        sliderPositionFrequency = delay
+                        viewModel.updateBlinkDelay(delay.toLong())
                     },
                     interactionSource = interactionSource,
                     valueRange = MIN_SLIDER_PROGRESS..MAX_SLIDER_PROGRESS,

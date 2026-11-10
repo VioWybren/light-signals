@@ -126,7 +126,6 @@ fun WearMainScreen(
             showConnectToPhoneDialog = false
         },
         onDismiss = {
-            viewModel.togglePhoneConnection(false)
             showConnectToPhoneDialog = false
         },
         title = stringResource(R.string.dialog_title_app_unavailable_on_phone),
@@ -142,7 +141,6 @@ fun WearMainScreen(
             showInstallOnPhoneDialog = false
         },
         onDismiss = {
-            viewModel.togglePhoneConnection(false)
             showInstallOnPhoneDialog = false
         },
         title = stringResource(R.string.dialog_title_install_on_phone),
@@ -173,7 +171,6 @@ fun WearMainScreen(
             viewModel.controlMessageFlow.collect { inputCommand ->
             when (inputCommand) {
                 WearConstants.APP_IS_NOT_INSTALLED_ON_PHONE -> {
-                    viewModel.togglePhoneConnection(false)
                     showInstallOnPhoneDialog = true
                 }
                 WearConstants.INSTALLATION_HAS_BEEN_STARTED_ON_PHONE -> {
@@ -185,16 +182,17 @@ fun WearMainScreen(
                     showSuccess = true
                 }
                 WearConstants.INSTALLATION_ON_PHONE_FAILED -> {
-                    viewModel.togglePhoneConnection(false)
                     failureMessageRes = R.string.dialog_fail_installation_on_phone_failed
                     showFailure = true
                 }
                 WearConstants.APP_FAILED_TO_LAUNCH_ON_PHONE -> {
-                    viewModel.togglePhoneConnection(false)
                     showConnectToPhoneDialog = true
                 }
+                WearConstants.PHONE_CONNECTION_UNCONFIRMED -> {
+                    failureMessageRes = R.string.dialog_message_app_unavailable_on_phone
+                    showFailure = true
+                }
                 WearConstants.NO_CONNECTED_PHONES -> {
-                    viewModel.togglePhoneConnection(false)
                     failureMessageRes = R.string.dialog_fail_no_connected_phones
                     showFailure = true
                 }
@@ -232,11 +230,11 @@ fun WearMainScreen(
                 ) {
                     IconToggleButton(
                         checked = phoneConnection,
+                        enabled = !isLaunchingOnPhone,
                         onCheckedChange = { checked ->
                             if (!checked) {
                                 viewModel.togglePhoneConnection(false)
                             } else if (isPhoneAppAvailable) {
-                                viewModel.togglePhoneConnection(true)
                                 viewModel.performWearOperations(WearConstants.COMMAND_START_ON_PHONE)
                             } else {
                                 showConnectToPhoneDialog = true

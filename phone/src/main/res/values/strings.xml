@@ -19,7 +19,7 @@
     <string name="snackbar_app_installed_on_watch_success">The installation has started on the watch</string>
     <string name="snackbar_installation_on_watch_failed">Installation on the watch failed. Please try again later</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Failed to launch the app on the watch</string>
-    <string name="snackbar_app_launched_on_watch">Launched on watch. Control the app from your watch</string>
+    <string name="snackbar_watch_connection_unconfirmed">Light Signals opened on your watch. If it isn’t connected, tap the phone icon on the watch.</string>
     <string name="snackbar_no_connected_watches">No connected watches found</string>
 
 
@@ -40,7 +40,7 @@
     <string name="sound_2">Sound 2</string>
     <string name="sound_3">Sound 3</string>
 
-    <string name="circular_indicator_text">Launching on watch</string>
+    <string name="circular_indicator_text">Connecting to watch</string>
 
     <string name="flashlight">Flashlight</string>
     <string name="sos_signal">SOS signal</string>
@@ -54,4 +54,5 @@
     <string name="green_signal">Green signal</string>
     <string name="sos_label" translatable="false">SOS</string>
 
+    <string name="snackbar_watch_control_available">You can control the app from your watch</string>
 </resources>

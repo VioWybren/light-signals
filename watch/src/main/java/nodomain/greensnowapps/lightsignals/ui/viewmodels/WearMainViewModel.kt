@@ -2,64 +2,46 @@ package nodomain.greensnowapps.lightsignals.ui.viewmodels
 
 import android.util.Log
 import androidx.compose.ui.graphics.Color
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import com.google.android.horologist.datalayer.watch.WearDataLayerAppHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import nodomain.greensnowapps.lightsignals.WearConstants.DEFAULT_COLOR_PROGRESS
-import nodomain.greensnowapps.lightsignals.model.KEY_COLOR_PROGRESS
-import nodomain.greensnowapps.lightsignals.model.KEY_FREQUENCY_PROGRESS
 import nodomain.greensnowapps.lightsignals.model.WearControlRepository
 import nodomain.greensnowapps.lightsignals.model.WearControlState
 import nodomain.greensnowapps.lightsignals.model.WearPhoneOperations
 import nodomain.greensnowapps.lightsignals.model.WearSyncStateRepository
-import nodomain.greensnowapps.lightsignals.model.editSafely
-import nodomain.greensnowapps.lightsignals.model.safeData
 import nodomain.greensnowapps.lightsignals.model.statesToSynchronize
-import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
-import javax.inject.Inject
-
-private val KEY_ACTIVE_COLOR = intPreferencesKey("active_btn")
 
 @HiltViewModel
 @OptIn(ExperimentalHorologistApi::class)
 class WearMainViewModel @Inject constructor(
     wearDataLayerAppHelper: WearDataLayerAppHelper,
     private val wearCtrl: WearControlRepository,
-    private val dataStore: DataStore<Preferences>,
     private val wearSyncStateRepository: WearSyncStateRepository,
     private val wearPhoneOperations: WearPhoneOperations
 ) : ViewModel() {
     enum class Active { RED, MIDDLE, GREEN, FLASH }
 
-    private val _active = MutableStateFlow(Active.RED)
-    val activeButton = _active.asStateFlow()
-    private val preferencesLoaded = MutableStateFlow(false)
+    val activeButton: StateFlow<Active> = wearCtrl.activeColorButton
+        .map { Active.entries.getOrNull(it) ?: Active.RED }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Active.RED)
 
-    val progressFrequency: StateFlow<Float> = dataStore.safeData()
-        .map { prefs -> safeFrequency(prefs[KEY_FREQUENCY_PROGRESS] ?: 400f) }
+    val progressFrequency: StateFlow<Float> = wearCtrl.blinkDelay
+        .map(Long::toFloat)
         .stateIn(viewModelScope, SharingStarted.Eagerly, 400f)
 
-    val progressColor: StateFlow<Float> = dataStore.safeData()
-        .map { prefs -> SignalColorPalette.clampProgress(prefs[KEY_COLOR_PROGRESS] ?: DEFAULT_COLOR_PROGRESS) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, DEFAULT_COLOR_PROGRESS)
-
+    val progressColor = wearCtrl.colorProgress
     val flashOn = wearCtrl.flashOn
     val blinkOn = wearCtrl.blinkOn
     val colorBlinkActive = wearCtrl.colorBlinkActive
@@ -70,9 +52,7 @@ class WearMainViewModel @Inject constructor(
     val sosOn = wearCtrl.sosOn
     val phoneConnection = wearCtrl.phoneConnection
     val isForeground = wearCtrl.isForeground
-    val isInitialized = combine(wearCtrl.isInitialized, preferencesLoaded) { controlReady, uiReady ->
-        controlReady && uiReady
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    val isInitialized = wearCtrl.isInitialized
 
     val controlMessageFlow = wearPhoneOperations.controlMessageFlow
     val isLaunchingOnPhone = wearPhoneOperations.isLaunchingOnPhone
@@ -83,7 +63,7 @@ class WearMainViewModel @Inject constructor(
                 if (error is CancellationException) throw error
                 Log.w("WearMainViewModel", "Device discovery failed", error)
                 emit(emptySet())
-                delay((1_000L * (attempt + 1).coerceAtMost(10L)))
+                delay(1_000L * (attempt + 1).coerceAtMost(10L))
                 true
             }
             .map { it.isNotEmpty() }
@@ -100,10 +80,14 @@ class WearMainViewModel @Inject constructor(
         )
     }
 
-    val controlState: StateFlow<WearControlState> =
-        combine(controlModes, progressColor, screenIndex, activeButton) { modes, color, screen, active ->
-            modes.copy(color = color, screenIndex = screen, activeColorButton = active.ordinal)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, WearControlState())
+    private val legacyState = combine(
+        controlModes,
+        progressColor,
+        screenIndex,
+        wearCtrl.activeColorButton
+    ) { modes, color, screen, active ->
+        modes.copy(color = color, screenIndex = screen, activeColorButton = active)
+    }
 
     val activeColor: StateFlow<Color> = combine(activeButton, middleColor) { active, middle ->
         when (active) {
@@ -116,29 +100,17 @@ class WearMainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val prefs = dataStore.safeData().first()
-            _active.value = Active.entries.getOrNull(prefs[KEY_ACTIVE_COLOR] ?: 0)
-                ?.takeUnless { it == Active.FLASH } ?: Active.RED
-            preferencesLoaded.value = true
-        }
-        viewModelScope.launch {
-            progressColor.collect(wearCtrl::calcMiddleColor)
-        }
-        viewModelScope.launch {
-            statesToSynchronize(controlState, phoneConnection, isForeground, isInitialized).collect { state ->
-                wearSyncStateRepository.sendState(state)
-            }
+            statesToSynchronize(legacyState, wearCtrl.manualPhoneConnection, isForeground, isInitialized)
+                .collect { state ->
+                    val manualLinkStartedAt = wearCtrl.manualLinkStartedAt ?: return@collect
+                    wearSyncStateRepository.sendState(state, manualLinkStartedAt)
+                }
         }
     }
 
     fun select(button: Active) {
-        if (button == Active.FLASH) {
-            wearCtrl.setFlash(true)
-        } else {
-            _active.value = button
-            writePref(KEY_ACTIVE_COLOR, button.ordinal)
-            wearCtrl.setFlash(false)
-        }
+        if (button == Active.FLASH) wearCtrl.setFlash(true)
+        else wearCtrl.selectColorButton(button.ordinal)
     }
 
     fun switchFlash(isOn: Boolean) = wearCtrl.setFlash(isOn)
@@ -149,34 +121,20 @@ class WearMainViewModel @Inject constructor(
 
     fun toggleSos(on: Boolean) = wearCtrl.switchSOS(on)
 
-    fun updateColorProgress(newProgress: Float) {
-        val progress = SignalColorPalette.clampProgress(newProgress)
-        wearCtrl.calcMiddleColor(progress)
-        writePref(KEY_COLOR_PROGRESS, progress)
-    }
+    fun updateColorProgress(newProgress: Float) = wearCtrl.commitColor(newProgress)
 
-    fun updateFrequencyProgress(newFrequencyProgress: Float) {
-        val progress = safeFrequency(newFrequencyProgress)
-        wearCtrl.setBlinking(blinkOn.value, progress.toLong())
-        writePref(KEY_FREQUENCY_PROGRESS, progress)
+    fun updateFrequencyProgress(newProgress: Float) {
+        val progress = newProgress.takeIf { it.isFinite() }?.coerceIn(100f, 1000f) ?: 400f
+        wearCtrl.setBlinkDelay(progress.toLong())
     }
 
     fun updateScreenIndex(newScreenIndex: Int) = wearCtrl.updateScreenIndex(newScreenIndex)
 
     fun togglePhoneConnection(isConnect: Boolean) = wearCtrl.togglePhoneConnection(isConnect)
 
-    private fun <T> writePref(key: Preferences.Key<T>, value: T) {
-        viewModelScope.launch {
-            dataStore.editSafely { prefs -> prefs[key] = value }
-        }
-    }
-
     fun performWearOperations(command: String) {
         viewModelScope.launch {
             wearPhoneOperations.performWearOperations(command)
         }
     }
-
-    private fun safeFrequency(value: Float) =
-        value.takeIf { it.isFinite() }?.coerceIn(100f, 1000f) ?: 400f
 }

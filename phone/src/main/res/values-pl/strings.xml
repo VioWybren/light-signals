@@ -16,7 +16,7 @@
     <string name="snackbar_app_installed_on_watch_success">Rozpoczęto instalację na zegarku</string>
     <string name="snackbar_installation_on_watch_failed">Instalacja na zegarku nie powiodła się. Spróbuj ponownie później</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Nie udało się uruchomić aplikacji na zegarku</string>
-    <string name="snackbar_app_launched_on_watch">Uruchomiono na zegarku. Steruj aplikacją z zegarka</string>
+    <string name="snackbar_watch_connection_unconfirmed">Aplikacja jest otwarta na zegarku. Dotknij ikony telefonu na zegarku, aby się połączyć.</string>
     <string name="snackbar_no_connected_watches">Brak podłączonych zegarków</string>
 
     <string name="notification_title">Latarka aktywna</string>
@@ -38,4 +38,5 @@
 
     <string name="circular_indicator_text">Uruchamianie na zegarku</string>
 
+    <string name="snackbar_watch_control_available">Możesz sterować aplikacją z zegarka</string>
 </resources>

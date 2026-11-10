@@ -16,7 +16,7 @@
     <string name="snackbar_app_installed_on_watch_success">L’installation sur la montre a démarré</string>
     <string name="snackbar_installation_on_watch_failed">L’installation sur la montre a échoué. Veuillez réessayer plus tard</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Échec du lancement de l’application sur la montre</string>
-    <string name="snackbar_app_launched_on_watch">Lancé sur la montre. Contrôlez l’application depuis votre montre</string>
+    <string name="snackbar_watch_connection_unconfirmed">L’app est ouverte sur la montre. Appuyez sur l’icône du téléphone sur la montre pour vous connecter.</string>
     <string name="snackbar_no_connected_watches">Aucune montre connectée</string>
 
     <string name="notification_title">Lampe torche active</string>
@@ -38,4 +38,5 @@
 
     <string name="circular_indicator_text">Lancement sur la montre</string>
 
+    <string name="snackbar_watch_control_available">Vous pouvez contrôler l’application depuis votre montre</string>
 </resources>

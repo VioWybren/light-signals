@@ -39,6 +39,9 @@ import nodomain.greensnowapps.lightsignals.PREFERENCE_SIGNAL_SCREEN_COLOR
 import nodomain.greensnowapps.lightsignals.PREFERENCE_SOS_ON
 import nodomain.greensnowapps.lightsignals.core.signal.SOS_UNIT_MS
 import nodomain.greensnowapps.lightsignals.core.signal.runSosSignal
+import nodomain.greensnowapps.lightsignals.core.sync.PhoneSignalState
+import nodomain.greensnowapps.lightsignals.core.sync.WatchControl
+import nodomain.greensnowapps.lightsignals.core.sync.WatchModeChange
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel.Companion.Active
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -93,6 +96,7 @@ class PhoneControlRepository internal constructor(
     private val _activeSound = MutableStateFlow(0)
     private val _screenIndex = MutableStateFlow(0)
     private val _activeButton = MutableStateFlow(Active.RED)
+    private val _colorProgress = MutableStateFlow(SignalColorPalette.DEFAULT_PROGRESS)
 
     private val _torchNotificationRefreshes = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     internal val torchNotificationRefreshes = _torchNotificationRefreshes.asSharedFlow()
@@ -105,6 +109,92 @@ class PhoneControlRepository internal constructor(
     val activeSound = _activeSound.asStateFlow()
     val screenIndex = _screenIndex.asStateFlow()
     val activeButton = _activeButton.asStateFlow()
+    val colorProgress = _colorProgress.asStateFlow()
+
+    internal fun connectionSignal() = PhoneSignalState(
+        torchOn = _flashOn.value,
+        blinkEnabled = _blinkOn.value,
+        sosEnabled = _sosOn.value,
+        frequency = _blinkDelay.value,
+        color = _colorProgress.value,
+        activeSound = _activeSound.value,
+        screenIndex = _screenIndex.value,
+        activeColorButton = _activeButton.value.ordinal
+    )
+
+    internal fun applyWatchHandoff(signal: PhoneSignalState): Boolean {
+        if (!_initialized.value) return false
+        val state = PhoneControlState(
+            blinkEnabled = signal.blinkEnabled,
+            sosEnabled = signal.sosEnabled,
+            torchOn = signal.torchOn,
+            frequency = signal.frequency,
+            activeSound = signal.activeSound,
+            color = signal.color,
+            screenIndex = signal.screenIndex,
+            activeColorButton = signal.activeColorButton
+        )
+        // Check synchronous startup before changing any other state.
+        val startingTorch = state.torchOn && !_flashOn.value
+        if (startingTorch && !startTorchService()) return false
+        applyRemoteState(state, startingTorch)
+        return true
+    }
+
+    internal fun applyWatchControl(control: WatchControl, value: Int): Boolean {
+        if (!_initialized.value) return false
+        when (control) {
+            WatchControl.TORCH -> {
+                if (value !in 0..1) return false
+                val enabled = value == 1
+                applyFlash(enabled)
+                return _flashOn.value == enabled
+            }
+            WatchControl.BLINK, WatchControl.SOS -> return applyWatchMode(control, value)
+            WatchControl.FREQUENCY -> {
+                if (value !in 100..1000) return false
+                applyBlinking(_blinkOn.value, value.toLong())
+                writePref(KEY_FREQUENCY_PROGRESS, value.toFloat())
+            }
+            WatchControl.COLOR -> {
+                val progress = Float.fromBits(value)
+                if (!progress.isFinite()) return false
+                applyColorProgress(progress)
+            }
+            WatchControl.COLOR_BUTTON -> {
+                val button = Active.entries.getOrNull(value)
+                    ?.takeUnless { it == Active.FLASH } ?: return false
+                applySelection(button)
+            }
+            WatchControl.SCREEN -> {
+                if (value !in 0..1) return false
+                applyScreenIndex(value)
+            }
+            WatchControl.SOUND -> {
+                if (value !in 0..3) return false
+                applySound(value)
+            }
+            WatchControl.CHECK, WatchControl.DISCONNECT -> return false
+        }
+        return true
+    }
+
+    private fun applyWatchMode(control: WatchControl, value: Int): Boolean {
+        val change = WatchModeChange.fromWireValue(value) ?: return false
+        val blink = control == WatchControl.BLINK
+        val enabled = change != WatchModeChange.DISABLE
+        val useTorch = change == WatchModeChange.ENABLE_ON_TORCH
+        if (enabled && _flashOn.value != useTorch) {
+            // Apply the new mode with its output, using the current phone settings for other controls.
+            return applyWatchHandoff(connectionSignal().copy(
+                torchOn = useTorch,
+                blinkEnabled = blink,
+                sosEnabled = !blink
+            ))
+        }
+        if (blink) applyBlinking(enabled, _blinkDelay.value) else applySos(enabled)
+        return true
+    }
 
     fun initFromPrefs() {
         if (sessionJob?.isActive == true) return
@@ -116,18 +206,19 @@ class PhoneControlRepository internal constructor(
             _activeSound.value = saved.activeSound
             _screenIndex.value = saved.screenIndex
             _activeButton.value = Active.entries[saved.activeColorButton]
+            _colorProgress.value = saved.color
             // A previous session's torch is never restarted without a new command.
             _flashOn.value = false
             refreshScreenSignal()
             _initialized.value = true
 
             remoteStates.filterNotNull().collect { incoming ->
-                applyRemoteState(incoming)
+                if (remoteStates.value === incoming) applyRemoteState(incoming)
             }
         }
     }
 
-    private fun applyRemoteState(incoming: PhoneControlState) {
+    private fun applyRemoteState(incoming: PhoneControlState, torchAlreadyStarted: Boolean = false) {
         val state = incoming.validated()
         _activeButton.value = Active.entries[state.activeColorButton]
         _activeSound.value = state.activeSound
@@ -135,7 +226,8 @@ class PhoneControlRepository internal constructor(
         _blinkDelay.value = state.frequency
         _sosOn.value = state.sosEnabled
         _blinkOn.value = state.blinkEnabled && !state.sosEnabled
-        setFlash(state.torchOn)
+        _colorProgress.value = state.color
+        applyFlash(state.torchOn, torchAlreadyStarted)
         preferenceScope.launch { dataStore.editSafely(onPreferenceError) { prefs ->
             prefs[KEY_ACTIVE_SOUND] = state.activeSound
             prefs[KEY_ACTIVE_SCREEN] = state.screenIndex
@@ -148,8 +240,11 @@ class PhoneControlRepository internal constructor(
         } }
     }
 
-    fun updateColorProgress(progress: Float) {
-        writePref(KEY_COLOR_PROGRESS, SignalColorPalette.clampProgress(progress))
+    fun updateColorProgress(progress: Float) = applyColorProgress(progress)
+
+    private fun applyColorProgress(progress: Float) {
+        _colorProgress.value = SignalColorPalette.clampProgress(progress)
+        writePref(KEY_COLOR_PROGRESS, _colorProgress.value)
     }
 
     fun updateFrequencyProgress(progress: Float) {
@@ -158,17 +253,24 @@ class PhoneControlRepository internal constructor(
     }
 
     fun updateScreenIndex(index: Int) {
+        val page = index.coerceIn(0, 1)
+        if (_screenIndex.value != page) applyScreenIndex(page)
+    }
+
+    private fun applyScreenIndex(index: Int) {
         _screenIndex.value = index.coerceIn(0, 1)
         writePref(KEY_ACTIVE_SCREEN, _screenIndex.value)
     }
 
-    fun select(button: Active) {
+    fun select(button: Active) = applySelection(button)
+
+    private fun applySelection(button: Active) {
         if (button == Active.FLASH) {
-            setFlash(true)
+            applyFlash(true)
         } else {
             _activeButton.value = button
             writePref(KEY_PREF_ACTIVE_COLOR_BUTTON, button.ordinal)
-            setFlash(false)
+            applyFlash(false)
         }
     }
 
@@ -178,16 +280,20 @@ class PhoneControlRepository internal constructor(
         _torchNotificationRefreshes.tryEmit(Unit)
     }
 
-    fun setFlash(on: Boolean) {
+    fun setFlash(on: Boolean) = applyFlash(on)
+
+    private fun applyFlash(on: Boolean, torchAlreadyStarted: Boolean = false) {
         val wasOn = _flashOn.value
         _flashOn.value = on
-        if (on && !wasOn && !startTorchService()) _flashOn.value = false
+        if (on && !wasOn && !torchAlreadyStarted && !startTorchService()) _flashOn.value = false
         writePref(KEY_FLASH_ON, _flashOn.value)
         if (!_flashOn.value) stopTorchService()
         refreshScreenSignal()
     }
 
-    fun setBlinking(on: Boolean, delayMs: Long) {
+    fun setBlinking(on: Boolean, delayMs: Long) = applyBlinking(on, delayMs)
+
+    private fun applyBlinking(on: Boolean, delayMs: Long) {
         _blinkDelay.value = delayMs.coerceIn(100L, 1000L)
         _blinkOn.value = on
         if (on) {
@@ -199,7 +305,9 @@ class PhoneControlRepository internal constructor(
         refreshScreenSignal()
     }
 
-    fun switchSOS(on: Boolean) {
+    fun switchSOS(on: Boolean) = applySos(on)
+
+    private fun applySos(on: Boolean) {
         _sosOn.value = on
         if (on) {
             _blinkOn.value = false
@@ -234,7 +342,9 @@ class PhoneControlRepository internal constructor(
         }
     }
 
-    fun setActiveSound(sound: Int) {
+    fun setActiveSound(sound: Int) = applySound(sound)
+
+    private fun applySound(sound: Int) {
         _activeSound.value = sound.coerceIn(0, 3)
         writePref(KEY_ACTIVE_SOUND, _activeSound.value)
     }

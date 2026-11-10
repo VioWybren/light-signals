@@ -17,7 +17,7 @@
     <string name="snackbar_app_installed_on_watch_success">L\'installazione sull\'orologio è stata avviata</string>
     <string name="snackbar_installation_on_watch_failed">L\'installazione sull\'orologio è fallita. Riprova più tardi</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Impossibile avviare l\'app sull\'orologio</string>
-    <string name="snackbar_app_launched_on_watch">Avviata sull\'orologio. Controlla l\'app dal tuo orologio</string>
+    <string name="snackbar_watch_connection_unconfirmed">L’app è aperta sull’orologio. Tocca l’icona del telefono sull’orologio per connetterti.</string>
     <string name="snackbar_no_connected_watches">Nessun orologio connesso</string>
 
     <string name="notification_title">Torcia attiva</string>
@@ -39,4 +39,5 @@
 
     <string name="circular_indicator_text">Avvio sullo smartwatch</string>
 
+    <string name="snackbar_watch_control_available">Puoi controllare l’app dal tuo orologio</string>
 </resources>

@@ -17,7 +17,7 @@
     <string name="snackbar_app_installed_on_watch_success">Η εγκατάσταση ξεκίνησε στο ρολόι</string>
     <string name="snackbar_installation_on_watch_failed">Η εγκατάσταση στο ρολόι απέτυχε. Προσπαθήστε ξανά αργότερα</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Αποτυχία εκκίνησης της εφαρμογής στο ρολόι</string>
-    <string name="snackbar_app_launched_on_watch">Ξεκίνησε στο ρολόι. Ελέγξτε την εφαρμογή από το ρολόι σας</string>
+    <string name="snackbar_watch_connection_unconfirmed">Η εφαρμογή άνοιξε στο ρολόι. Πατήστε το εικονίδιο τηλεφώνου στο ρολόι για σύνδεση.</string>
     <string name="snackbar_no_connected_watches">Δεν βρέθηκαν συνδεδεμένα ρολόγια</string>
 
     <string name="notification_title">Φακός ενεργός</string>
@@ -39,4 +39,5 @@
 
     <string name="circular_indicator_text">Εκκίνηση στο ρολόι</string>
 
+    <string name="snackbar_watch_control_available">Μπορείτε να ελέγχετε την εφαρμογή από το ρολόι σας</string>
 </resources>

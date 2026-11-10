@@ -16,7 +16,7 @@
     <string name="snackbar_app_installed_on_watch_success">تم بدء التثبيت على الساعة</string>
     <string name="snackbar_installation_on_watch_failed">فشل التثبيت على الساعة. الرجاء المحاولة لاحقًا.</string>
     <string name="snackbar_app_failed_to_launch_on_watch">فشل تشغيل التطبيق على الساعة</string>
-    <string name="snackbar_app_launched_on_watch">تم التشغيل على الساعة. تحكّم في التطبيق من ساعتك.</string>
+    <string name="snackbar_watch_connection_unconfirmed">تم فتح التطبيق على ساعتك. انقر على رمز الهاتف للاتصال.</string>
     <string name="snackbar_no_connected_watches">لا توجد ساعات متصلة</string>
 
     <string name="notification_title">المصباح اليدوي قيد التشغيل</string>
@@ -38,4 +38,5 @@
 
     <string name="circular_indicator_text">يتم التشغيل على الساعة</string>
 
+    <string name="snackbar_watch_control_available">يمكنك التحكم في التطبيق من ساعتك</string>
 </resources>

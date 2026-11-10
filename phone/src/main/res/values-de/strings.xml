@@ -18,7 +18,7 @@
     <string name="snackbar_app_installed_on_watch_success">Die Installation auf der Uhr wurde gestartet</string>
     <string name="snackbar_installation_on_watch_failed">Die Installation auf der Uhr ist fehlgeschlagen. Bitte versuchen Sie es später erneut</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Die App konnte auf der Uhr nicht gestartet werden</string>
-    <string name="snackbar_app_launched_on_watch">Auf der Uhr gestartet. Steuere die App von deiner Uhr aus</string>
+    <string name="snackbar_watch_connection_unconfirmed">Die App ist auf der Uhr geöffnet. Tippen Sie dort auf das Telefonsymbol, um eine Verbindung herzustellen.</string>
     <string name="snackbar_no_connected_watches">Keine verbundenen Uhren</string>
 
 
@@ -42,4 +42,5 @@
 
     <string name="circular_indicator_text">Start auf der Uhr</string>
 
+    <string name="snackbar_watch_control_available">Sie können die App über Ihre Uhr steuern</string>
 </resources>

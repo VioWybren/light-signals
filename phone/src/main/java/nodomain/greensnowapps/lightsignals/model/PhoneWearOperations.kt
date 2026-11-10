@@ -7,6 +7,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.wearable.CapabilityClient
+import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.Wearable
 import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import com.google.android.horologist.data.AppHelperResultCode.APP_HELPER_RESULT_SUCCESS
@@ -16,6 +17,7 @@ import com.google.android.horologist.datalayer.phone.PhoneDataLayerAppHelper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,9 +27,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import nodomain.greensnowapps.lightsignals.APP_FAILED_TO_LAUNCH_ON_WATCH
 import nodomain.greensnowapps.lightsignals.APP_IS_NOT_INSTALLED_ON_WATCH
-import nodomain.greensnowapps.lightsignals.APP_LAUNCHED_ON_WATCH
 import nodomain.greensnowapps.lightsignals.COMMAND_INSTALL_ON_WATCH
 import nodomain.greensnowapps.lightsignals.COMMAND_START_ON_WATCH
 import nodomain.greensnowapps.lightsignals.INSTALLATION_ON_WATCH_FAILED
@@ -35,7 +37,11 @@ import nodomain.greensnowapps.lightsignals.INSTALLATION_ON_WATCH_STARTED
 import nodomain.greensnowapps.lightsignals.NO_CONNECTED_WATCHES
 import nodomain.greensnowapps.lightsignals.TARGET_ROLE_WATCH
 import nodomain.greensnowapps.lightsignals.TARGET_ROLE_WEAR
+import nodomain.greensnowapps.lightsignals.WATCH_CONNECTION_UNCONFIRMED
 import nodomain.greensnowapps.lightsignals.WEARABLE_API_UNAVAILABLE
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionRequest
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply
+import java.util.UUID
 import javax.inject.Inject
 
 
@@ -43,7 +49,10 @@ class PhoneWearOperations
 @OptIn(ExperimentalHorologistApi::class)
 @Inject() constructor(
     @param: ApplicationContext private val context: Context,
-    private val phoneDataLayerAppHelper: PhoneDataLayerAppHelper
+    private val phoneDataLayerAppHelper: PhoneDataLayerAppHelper,
+    private val messageClient: MessageClient,
+    private val phoneControlRepository: PhoneControlRepository,
+    private val phoneSyncStateRepository: PhoneSyncStateRepository,
 ) {
     private val operationMutex = Mutex()
     private val capabilityClient = Wearable.getCapabilityClient(context)
@@ -69,7 +78,7 @@ class PhoneWearOperations
 
     @OptIn(ExperimentalHorologistApi::class)
     suspend fun performWearOperations(command: String) {
-        val resultOfOperation: String
+        val resultOfOperation: String?
         val nodes = phoneDataLayerAppHelper.connectedNodes()
         val connectedNode = isNodeConnected(nodes)
         if (connectedNode == null) {
@@ -89,12 +98,10 @@ class PhoneWearOperations
                 COMMAND_INSTALL_ON_WATCH -> {
                     installOnWatch(phoneDataLayerAppHelper, connectedNode)
                 }
-                else -> {
-                    ""
-                }
+                else -> null
             }
         }
-        emitMessage(resultOfOperation)
+        if (resultOfOperation != null) emitMessage(resultOfOperation)
     }
 
     suspend fun isWearableApiActuallyAvailable(context: Context): Boolean {
@@ -125,13 +132,16 @@ class PhoneWearOperations
     suspend fun launchAppOnWatch(
         phoneDataLayerAppHelper: PhoneDataLayerAppHelper,
         targetNode: AppHelperNodeStatus,
-    ): String {
+    ): String? {
         _isLaunchingOnWear.value = true
         return try {
-            withContext(Dispatchers.IO) {
-                val result = phoneDataLayerAppHelper.startRemoteOwnApp(targetNode.id)
-                if (result == APP_HELPER_RESULT_SUCCESS) APP_LAUNCHED_ON_WATCH
-                else APP_FAILED_TO_LAUNCH_ON_WATCH
+            val result = withContext(Dispatchers.IO) {
+                phoneDataLayerAppHelper.startRemoteOwnApp(targetNode.id)
+            }
+            when {
+                result != APP_HELPER_RESULT_SUCCESS -> APP_FAILED_TO_LAUNCH_ON_WATCH
+                requestWatchConnection(targetNode.id) -> null
+                else -> WATCH_CONNECTION_UNCONFIRMED
             }
         } catch (error: CancellationException) {
             throw error
@@ -140,6 +150,67 @@ class PhoneWearOperations
             APP_FAILED_TO_LAUNCH_ON_WATCH
         } finally {
             _isLaunchingOnWear.value = false
+        }
+    }
+
+    private suspend fun requestWatchConnection(nodeId: String): Boolean {
+        val requestId = UUID.randomUUID()
+        var connected = false
+        try {
+            val ready = withTimeoutOrNull(CONNECT_SETUP_TIMEOUT_MS) {
+                val supportsConnection = capabilityClient.getCapability(
+                    WatchConnectionRequest.CAPABILITY,
+                    CapabilityClient.FILTER_ALL,
+                ).await().nodes.any { it.id == nodeId }
+                if (!supportsConnection) {
+                    Log.d("PhoneWearOperations", "Watch did not advertise automatic connection")
+                    phoneSyncStateRepository.allowLegacyWatch(nodeId)
+                    return@withTimeoutOrNull false
+                }
+                phoneSyncStateRepository.beginWatchConnection(nodeId, requestId)
+            } == true
+            if (!ready) {
+                Log.d("PhoneWearOperations", "Watch connection setup did not complete")
+                return false
+            }
+
+            val request = WatchConnectionRequest.create(phoneControlRepository.connectionSignal(), id = requestId)
+            val acknowledged = withTimeoutOrNull(CONNECT_TIMEOUT_MS) {
+                sendConnectionRequestWithRetry(nodeId, request.encode())
+            } == true
+            connected = if (acknowledged) {
+                phoneSyncStateRepository.confirmWatchConnection(nodeId, requestId)
+            } else {
+                phoneSyncStateRepository.isWatchConnectionConfirmed(nodeId, requestId)
+            }
+            Log.d("PhoneWearOperations", "Watch connection confirmed: $connected")
+            return connected
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Log.w("PhoneWearOperations", "Unable to connect to watch", error)
+            return false
+        } finally {
+            if (!connected) phoneSyncStateRepository.cancelWatchConnection(requestId)
+        }
+    }
+
+    private suspend fun sendConnectionRequestWithRetry(nodeId: String, payload: ByteArray): Boolean {
+        while (true) {
+            val reply = try {
+                withTimeoutOrNull(CONNECT_ATTEMPT_TIMEOUT_MS) {
+                    messageClient.sendRequest(nodeId, WatchConnectionRequest.PATH, payload).await()
+                }
+            } catch (error: ApiException) {
+                // The watch may advertise support before its foreground receiver is ready.
+                Log.d("PhoneWearOperations", "Watch connection attempt failed: ${error.statusCode}")
+                null
+            }
+            when (WatchConnectionReply.decode(reply)) {
+                WatchConnectionReply.ACCEPTED -> return true
+                WatchConnectionReply.REJECTED -> return false
+                WatchConnectionReply.RETRY -> delay(CONNECT_RETRY_DELAY_MS)
+            }
         }
     }
 
@@ -192,4 +263,10 @@ class PhoneWearOperations
         else _controlMessageFlow.emit(message + System.currentTimeMillis())
     }
 
+    private companion object {
+        const val CONNECT_SETUP_TIMEOUT_MS = 4_000L
+        const val CONNECT_TIMEOUT_MS = WatchConnectionRequest.LIFETIME_MS + 1_000L
+        const val CONNECT_ATTEMPT_TIMEOUT_MS = 2_000L
+        const val CONNECT_RETRY_DELAY_MS = 200L
+    }
 }

@@ -18,6 +18,11 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import nodomain.greensnowapps.lightsignals.WearConstants
+import nodomain.greensnowapps.lightsignals.core.sync.PhoneSignalState
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionRequest
+import nodomain.greensnowapps.lightsignals.core.sync.WatchControl
+import nodomain.greensnowapps.lightsignals.core.sync.WatchControlCommand
+import nodomain.greensnowapps.lightsignals.core.sync.WatchModeChange
 import nodomain.greensnowapps.lightsignals.testing.FakePreferencesDataStore
 import org.junit.Assert.*
 import org.junit.Test
@@ -32,10 +37,140 @@ class WearControlRepositoryTest {
     private class Fixture(scope: TestScope, saved: Preferences = emptyPreferences()) {
         val store = FakePreferencesDataStore(saved)
         val errors = mutableListOf<IOException>()
+        val linkedCommands = mutableListOf<Pair<String, WatchControlCommand>>()
         var soundStops = 0
         val repo = WearControlRepository(store, { soundStops++ },
             { CoroutineScope(scope.backgroundScope.coroutineContext + SupervisorJob(scope.backgroundScope.coroutineContext[Job])) },
-            scope.backgroundScope, { errors += it })
+            scope.backgroundScope, { errors += it },
+            { phone, command -> linkedCommands += phone to command; true })
+    }
+
+    @Test fun phoneInitiatedConnectSeedsAllControlsWithoutSendingCommands() = runTest {
+        val f = Fixture(this, preferencesOf(KEY_COLOR_PROGRESS to 99f, sound to 1))
+        val owner = Any()
+        val request = WatchConnectionRequest.create(PhoneSignalState(true, true, false, 350L, 789f, 3, 1, 2))
+        assertFalse(f.repo.connectFromPhone("phone", request))
+        f.repo.start(owner)
+        runCurrent()
+        assertFalse(f.repo.phoneConnection.value)
+
+        assertTrue(f.repo.connectFromPhone("phone", request))
+        runCurrent()
+        assertTrue(f.repo.phoneConnection.value)
+        assertFalse(f.repo.manualPhoneConnection.value)
+        assertTrue(f.repo.flashOn.value)
+        assertTrue(f.repo.blinkOn.value)
+        assertEquals(350L, f.repo.blinkDelay.value)
+        assertEquals(789f, f.repo.colorProgress.value)
+        assertEquals(3, f.repo.activeSound.value)
+        assertEquals(1, f.repo.screenIndex.value)
+        assertEquals(2, f.repo.activeColorButton.value)
+        assertTrue(f.linkedCommands.isEmpty())
+
+        f.repo.commitColor(3f)
+        f.repo.setFlash(false)
+        runCurrent()
+        assertEquals(listOf("phone", "phone"), f.linkedCommands.map { it.first })
+        assertEquals(listOf(WatchControl.COLOR, WatchControl.TORCH),
+            f.linkedCommands.map { it.second.control })
+        assertEquals(listOf(1L, 2L), f.linkedCommands.map { it.second.sequence })
+        assertEquals(0, f.linkedCommands.last().second.value)
+        assertTrue(f.repo.connectFromPhone("phone", request))
+        assertFalse(f.repo.flashOn.value)
+
+        f.repo.togglePhoneConnection(false)
+        runCurrent()
+        assertFalse(f.repo.phoneConnection.value)
+        assertEquals(WatchControl.DISCONNECT, f.linkedCommands.last().second.control)
+        assertEquals(99f, f.repo.colorProgress.value)
+        assertEquals(1, f.repo.activeSound.value)
+        assertEquals(99f, f.store.snapshot[KEY_COLOR_PROGRESS])
+        f.repo.togglePhoneConnection(true)
+        assertTrue(f.repo.manualPhoneConnection.value)
+    }
+
+    @Test fun watchInitiatedHandoffSendsCurrentConfigurationAndWaitsForAck() = runTest {
+        val f = Fixture(this)
+        f.repo.start(Any())
+        runCurrent()
+        f.repo.setBlinking(true, 330L)
+        f.repo.setActiveSound(2)
+        f.repo.selectColorButton(1)
+        f.repo.commitColor(1200f)
+        f.repo.updateScreenIndex(1)
+        val request = checkNotNull(f.repo.preparePhoneHandoff("phone"))
+        assertEquals(PhoneSignalState(false, true, false, 330L, 1200f, 2, 1, 1), request.signal)
+        assertFalse(f.repo.phoneConnection.value)
+        f.repo.setActiveSound(3)
+        assertTrue(f.repo.finishPhoneHandoff("phone", request.id))
+        runCurrent()
+        assertTrue(f.repo.phoneConnection.value)
+        assertFalse(f.repo.manualPhoneConnection.value)
+        assertEquals(WatchControl.SOUND, f.linkedCommands.single().second.control)
+        assertEquals(3, f.linkedCommands.single().second.value)
+        assertFalse(f.repo.revokePhoneLink("other", request.id))
+        assertTrue(f.repo.revokePhoneLink("phone", request.id))
+        assertFalse(f.repo.phoneConnection.value)
+        assertFalse(f.repo.finishPhoneHandoff("phone", request.id))
+    }
+
+    @Test fun explicitResyncImportsNewPhoneSettingsAndRetainsStandaloneSettings() = runTest {
+        val f = Fixture(this, preferencesOf(KEY_COLOR_PROGRESS to 99f))
+        f.repo.start(Any())
+        runCurrent()
+        val state = PhoneSignalState(true, true, false, 350L, 789f)
+        val first = WatchConnectionRequest.create(state)
+        val refresh = WatchConnectionRequest.create(state.copy(color = 690f, activeSound = 2))
+        assertTrue(f.repo.connectFromPhone("phone", first))
+        assertFalse(f.repo.connectFromPhone("other", refresh))
+        assertTrue(f.repo.connectFromPhone("phone", refresh))
+        runCurrent()
+        assertEquals(690f, f.repo.colorProgress.value)
+        assertEquals(2, f.repo.activeSound.value)
+        assertTrue(f.linkedCommands.isEmpty())
+        assertFalse(f.repo.revokePhoneLink("phone", first.id))
+        assertTrue(f.repo.revokePhoneLink("phone", refresh.id))
+        assertEquals(99f, f.repo.colorProgress.value)
+    }
+
+    @Test fun timedModeCommandsCarryTheSelectedWatchOutput() = runTest {
+        val f = Fixture(this)
+        f.repo.start(Any())
+        runCurrent()
+        val request = checkNotNull(f.repo.preparePhoneHandoff("phone"))
+        assertTrue(f.repo.finishPhoneHandoff("phone", request.id))
+        f.repo.setFlash(true)
+        f.repo.switchSOS(true)
+        f.repo.switchSOS(false)
+        f.repo.selectColorButton(1)
+        f.repo.setBlinking(true, 400L)
+        runCurrent()
+
+        val modeCommands = f.linkedCommands.map { it.second }
+            .filter { it.control == WatchControl.SOS || it.control == WatchControl.BLINK }
+        assertEquals(
+            listOf(
+                WatchControl.SOS to WatchModeChange.ENABLE_ON_TORCH.wireValue,
+                WatchControl.SOS to WatchModeChange.DISABLE.wireValue,
+                WatchControl.BLINK to WatchModeChange.ENABLE_ON_SCREEN.wireValue
+            ),
+            modeCommands.map { it.control to it.value }
+        )
+    }
+
+    @Test fun watchRechecksOwnershipAfterReturningToForeground() = runTest {
+        val f = Fixture(this)
+        val owner = Any()
+        f.repo.start(owner)
+        runCurrent()
+        val request = checkNotNull(f.repo.preparePhoneHandoff("phone"))
+        assertTrue(f.repo.finishPhoneHandoff("phone", request.id))
+        f.repo.stop(owner)
+        f.repo.start(owner)
+        runCurrent()
+        val check = f.linkedCommands.single().second
+        assertEquals(request.id, check.id)
+        assertEquals(WatchControl.CHECK, check.control)
     }
 
     @Test fun restoresValidatedPreferencesAndNeverRestartsSavedRemoteTorch() = runTest {

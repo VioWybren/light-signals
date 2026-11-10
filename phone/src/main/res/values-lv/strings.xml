@@ -16,7 +16,7 @@
     <string name="snackbar_app_installed_on_watch_success">Instalēšana pulkstenī ir sākta</string>
     <string name="snackbar_installation_on_watch_failed">Instalēšana pulkstenī neizdevās. Lūdzu, mēģiniet vēlāk</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Neizdevās palaist lietotni pulkstenī</string>
-    <string name="snackbar_app_launched_on_watch">Palaists uz pulksteņa. Pārvaldiet lietotni no sava pulksteņa</string>
+    <string name="snackbar_watch_connection_unconfirmed">Lietotne ir atvērta pulkstenī. Lai izveidotu savienojumu, pieskarieties tālruņa ikonai pulkstenī.</string>
     <string name="snackbar_no_connected_watches">Nav savienotu pulksteņu</string>
 
     <string name="notification_title">Lukturītis ir aktīvs</string>
@@ -38,4 +38,5 @@
 
     <string name="circular_indicator_text">Tiek palaists pulkstenī</string>
 
+    <string name="snackbar_watch_control_available">Varat vadīt lietotni no sava pulksteņa</string>
 </resources>

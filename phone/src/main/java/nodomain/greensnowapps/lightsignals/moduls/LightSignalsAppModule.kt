@@ -52,9 +52,11 @@ object LightSignalsAppModule {
     @Provides
     @Singleton
     fun providePhoneSyncStateRepository(
-        dataClient: DataClient
+        @ApplicationContext context: Context,
+        dataClient: DataClient,
+        messageClient: MessageClient
     ): PhoneSyncStateRepository {
-        return PhoneSyncStateRepository( dataClient)
+        return PhoneSyncStateRepository(context, dataClient, messageClient)
     }
 
     @Provides

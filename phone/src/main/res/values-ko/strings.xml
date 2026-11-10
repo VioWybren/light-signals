@@ -16,7 +16,7 @@
     <string name="snackbar_app_installed_on_watch_success">시계에서 설치가 시작되었습니다</string>
     <string name="snackbar_installation_on_watch_failed">시계에서의 설치가 실패했습니다. 나중에 다시 시도해주세요.</string>
     <string name="snackbar_app_failed_to_launch_on_watch">시계에서 앱을 실행하지 못했습니다</string>
-    <string name="snackbar_app_launched_on_watch">시계에서 실행되었습니다. 시계에서 앱을 제어하세요.</string>
+    <string name="snackbar_watch_connection_unconfirmed">시계에서 앱이 열렸습니다. 연결하려면 시계의 휴대전화 아이콘을 누르세요.</string>
     <string name="snackbar_no_connected_watches">연결된 시계가 없습니다</string>
 
     <string name="notification_title">손전등 작동 중</string>
@@ -38,4 +38,5 @@
 
     <string name="circular_indicator_text">시계에서 실행 중</string>
 
+    <string name="snackbar_watch_control_available">시계에서 앱을 제어할 수 있습니다</string>
 </resources>

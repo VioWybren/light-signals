@@ -16,7 +16,7 @@
     <string name="snackbar_app_installed_on_watch_success">已开始在手表上安装</string>
     <string name="snackbar_installation_on_watch_failed">在手表上的安装失败。请稍后再试。</string>
     <string name="snackbar_app_failed_to_launch_on_watch">无法在手表上启动应用</string>
-    <string name="snackbar_app_launched_on_watch">已在手表上启动。可从手表控制应用。</string>
+    <string name="snackbar_watch_connection_unconfirmed">应用已在手表上打开。点按手表上的手机图标进行连接。</string>
     <string name="snackbar_no_connected_watches">未检测到已连接的手表</string>
 
     <string name="notification_title">手电筒工作中</string>
@@ -38,4 +38,5 @@
 
     <string name="circular_indicator_text">正在手表上启动</string>
 
+    <string name="snackbar_watch_control_available">你可以通过手表控制应用</string>
 </resources>
