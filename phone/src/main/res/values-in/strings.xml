@@ -16,7 +16,7 @@
     <string name="snackbar_app_installed_on_watch_success">Instalasi pada jam telah dimulai</string>
     <string name="snackbar_installation_on_watch_failed">Instalasi pada jam gagal. Silakan coba lagi nanti</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Gagal meluncurkan aplikasi di jam</string>
-    <string name="snackbar_app_launched_on_watch">Diluncurkan di jam tangan. Kendalikan aplikasi dari jam tangan Anda</string>
+    <string name="snackbar_watch_connection_unconfirmed">Aplikasi terbuka di jam tangan. Ketuk ikon ponsel di jam tangan untuk menghubungkan.</string>
     <string name="snackbar_no_connected_watches">Tidak ada jam tangan yang terhubung</string>
 
     <string name="notification_title">Senter aktif</string>
@@ -38,4 +38,5 @@
 
     <string name="circular_indicator_text">Meluncurkan di jam tangan</string>
 
+    <string name="snackbar_watch_control_available">Anda dapat mengontrol aplikasi dari jam tangan Anda</string>
 </resources>

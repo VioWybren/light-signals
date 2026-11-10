@@ -16,7 +16,7 @@
     <string name="snackbar_app_installed_on_watch_success">Quá trình cài đặt trên đồng hồ đã bắt đầu</string>
     <string name="snackbar_installation_on_watch_failed">Cài đặt trên đồng hồ thất bại. Vui lòng thử lại sau.</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Không thể khởi chạy ứng dụng trên đồng hồ</string>
-    <string name="snackbar_app_launched_on_watch">Đã khởi chạy trên đồng hồ. Điều khiển ứng dụng từ đồng hồ của bạn.</string>
+    <string name="snackbar_watch_connection_unconfirmed">Ứng dụng đã mở trên đồng hồ. Nhấn vào biểu tượng điện thoại trên đồng hồ để kết nối.</string>
     <string name="snackbar_no_connected_watches">Không có đồng hồ được kết nối</string>
 
     <string name="notification_title">Đèn pin đang hoạt động</string>
@@ -38,4 +38,5 @@
 
     <string name="circular_indicator_text">Đang khởi chạy trên đồng hồ</string>
 
+    <string name="snackbar_watch_control_available">Bạn có thể điều khiển ứng dụng từ đồng hồ</string>
 </resources>

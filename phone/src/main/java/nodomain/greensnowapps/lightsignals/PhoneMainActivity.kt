@@ -59,6 +59,16 @@ class PhoneMainActivity : ComponentActivity() {
         handleControlsIntent(intent)
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.setHostResumed(true)
+    }
+
+    override fun onPause() {
+        viewModel.setHostResumed(false)
+        super.onPause()
+    }
+
     private fun handleControlsIntent(intent: Intent) {
         if (intent.getBooleanExtra(OPEN_CONTROLS_EXTRA, false)) {
             intent.removeExtra(OPEN_CONTROLS_EXTRA)

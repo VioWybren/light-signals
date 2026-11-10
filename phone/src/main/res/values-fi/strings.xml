@@ -17,7 +17,7 @@
     <string name="snackbar_app_installed_on_watch_success">Asennus on aloitettu kellossa</string>
     <string name="snackbar_installation_on_watch_failed">Asennus kellossa epäonnistui. Yritä myöhemmin uudelleen</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Sovelluksen käynnistäminen kellossa epäonnistui</string>
-    <string name="snackbar_app_launched_on_watch">Käynnistetty kellossa. Ohjaa sovellusta kellostasi</string>
+    <string name="snackbar_watch_connection_unconfirmed">Sovellus avattiin kellossa. Yhdistä napauttamalla kellon puhelinkuvaketta.</string>
     <string name="snackbar_no_connected_watches">Yhtään yhdistettyä kelloa ei löytynyt</string>
 
     <string name="notification_title">Taskulamppu käytössä</string>
@@ -39,4 +39,5 @@
 
     <string name="circular_indicator_text">Käynnistetään kellossa</string>
 
+    <string name="snackbar_watch_control_available">Voit ohjata sovellusta kellollasi</string>
 </resources>

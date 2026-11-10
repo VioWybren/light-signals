@@ -16,7 +16,7 @@
     <string name="snackbar_app_installed_on_watch_success">การติดตั้งเริ่มต้นบนสมาร์ทวอทช์แล้ว</string>
     <string name="snackbar_installation_on_watch_failed">การติดตั้งบนสมาร์ทวอทช์ล้มเหลว โปรดลองอีกครั้งในภายหลัง</string>
     <string name="snackbar_app_failed_to_launch_on_watch">ไม่สามารถเปิดแอปบนสมาร์ทวอทช์ได้</string>
-    <string name="snackbar_app_launched_on_watch">เปิดบนสมาร์ทวอทช์แล้ว ควบคุมแอปจากนาฬิกาของคุณได้</string>
+    <string name="snackbar_watch_connection_unconfirmed">เปิดแอปบนนาฬิกาแล้ว แตะไอคอนโทรศัพท์บนนาฬิกาเพื่อเชื่อมต่อ</string>
     <string name="snackbar_no_connected_watches">ไม่มีนาฬิกาที่เชื่อมต่อ</string>
 
     <string name="notification_title">ไฟฉายทำงานอยู่</string>
@@ -38,4 +38,5 @@
 
     <string name="circular_indicator_text">กำลังเริ่มบนสมาร์ทวอทช์</string>
 
+    <string name="snackbar_watch_control_available">คุณควบคุมแอปจากนาฬิกาได้</string>
 </resources>

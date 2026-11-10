@@ -6,6 +6,7 @@
         translatable="false"
         tools:ignore="UnusedResources">
         <item>data_layer_app_helper_device_phone</item>
-         <item>horologist_phone</item>
+        <item>horologist_phone</item>
+        <item>light_signals_phone_control_v3</item>
     </string-array>
 </resources>

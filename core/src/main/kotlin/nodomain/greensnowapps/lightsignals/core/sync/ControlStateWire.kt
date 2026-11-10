@@ -13,4 +13,5 @@ object ControlStateWire {
     const val SCREEN_INDEX = "screenIndex"
     const val ACTIVE_COLOR_BUTTON = "key_active_color_button"
     const val SENT_AT = "sentAt"
+    const val MANUAL_LINK_STARTED_AT = "manualLinkStartedAt"
 }

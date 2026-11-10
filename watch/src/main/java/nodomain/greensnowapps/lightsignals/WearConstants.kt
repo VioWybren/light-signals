@@ -17,6 +17,7 @@ object WearConstants {
     const val APP_IS_NOT_INSTALLED_ON_PHONE = "The app isn't installed on connected phone. Do you want to install it?"
     const val APP_LAUNCHED_ON_PHONE = "Light Signals has been launched on the phone. You can now control the app from the watch"
     const val APP_FAILED_TO_LAUNCH_ON_PHONE = "Failed to launch the remote app on node"
+    const val PHONE_CONNECTION_UNCONFIRMED = "Phone connection was not confirmed"
     const val NO_CONNECTED_PHONES = "No connected phones found"
     const val INSTALLATION_HAS_BEEN_STARTED_ON_PHONE = "Installation has been started on the phone"
     const val INSTALLATION_ON_PHONE_FAILED = "Installation on the phone has been failed. Please, try later"

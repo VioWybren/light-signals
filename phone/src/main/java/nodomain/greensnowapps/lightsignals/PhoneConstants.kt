@@ -7,7 +7,7 @@ const val NOTIF_ID = 55555777
 
 const val APP_IS_NOT_INSTALLED_ON_WATCH = "The app isn't installed on connected watch. Do you want to install it?"
 const val NO_CONNECTED_WATCHES = "No connected watches found"
-const val APP_LAUNCHED_ON_WATCH = "Light Signals has been launched on the watch. You can now control the app from it"
+const val WATCH_CONNECTION_UNCONFIRMED = "Watch connection unconfirmed"
 const val APP_FAILED_TO_LAUNCH_ON_WATCH = "Failed to launch the remote app on node"
 const val INSTALLATION_ON_WATCH_STARTED = "Installation on watch has been started"
 const val INSTALLATION_ON_WATCH_FAILED = "Installation on watch has been failed. Please, try later"

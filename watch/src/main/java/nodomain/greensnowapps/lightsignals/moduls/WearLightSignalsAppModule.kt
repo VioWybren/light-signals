@@ -46,8 +46,11 @@ object WearLightSignalsAppModule {
 
     @Provides
     @Singleton
-    fun provideWearControlStateRepository(dataClient: DataClient ): WearSyncStateRepository {
-        return WearSyncStateRepository( dataClient)
+    fun provideWearControlStateRepository(
+        dataClient: DataClient,
+        messageClient: MessageClient
+    ): WearSyncStateRepository {
+        return WearSyncStateRepository(dataClient, messageClient)
     }
 
     @Provides

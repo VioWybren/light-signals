@@ -17,7 +17,7 @@
     <string name="snackbar_app_installed_on_watch_success">Installation har startat på klockan</string>
     <string name="snackbar_installation_on_watch_failed">Installation på klockan misslyckades. Försök igen senare</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Misslyckades med att starta appen på klockan</string>
-    <string name="snackbar_app_launched_on_watch">Startad på klockan. Styr appen från din klocka</string>
+    <string name="snackbar_watch_connection_unconfirmed">Appen är öppen på klockan. Tryck på telefonikonen på klockan för att ansluta.</string>
     <string name="snackbar_no_connected_watches">Inga anslutna klockor hittades</string>
 
     <string name="notification_title">Ficklampan är aktiv</string>
@@ -39,4 +39,5 @@
 
     <string name="circular_indicator_text">Startar på klockan</string>
 
+    <string name="snackbar_watch_control_available">Du kan styra appen från din klocka</string>
 </resources>

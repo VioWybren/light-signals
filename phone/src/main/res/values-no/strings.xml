@@ -17,7 +17,7 @@
     <string name="snackbar_app_installed_on_watch_success">Installasjonen har startet på klokken</string>
     <string name="snackbar_installation_on_watch_failed">Installasjonen på klokken mislyktes. Prøv igjen senere</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Kunne ikke starte appen på klokken</string>
-    <string name="snackbar_app_launched_on_watch">Startet på klokken. Styr appen fra klokken din</string>
+    <string name="snackbar_watch_connection_unconfirmed">Appen er åpen på klokken. Trykk på telefonikonet på klokken for å koble til.</string>
     <string name="snackbar_no_connected_watches">Ingen tilkoblede klokker funnet</string>
 
     <string name="notification_title">Lommelykt aktiv</string>
@@ -39,4 +39,5 @@
 
     <string name="circular_indicator_text">Starter på klokken</string>
 
+    <string name="snackbar_watch_control_available">Du kan styre appen fra klokken din</string>
 </resources>
