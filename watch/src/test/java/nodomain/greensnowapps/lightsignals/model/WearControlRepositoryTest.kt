@@ -12,6 +12,7 @@ import java.io.IOException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -19,10 +20,15 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import nodomain.greensnowapps.lightsignals.WearConstants
 import nodomain.greensnowapps.lightsignals.core.sync.PhoneSignalState
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.ACCEPTED
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.REJECTED
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.RETRY
 import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionRequest
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControl
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControlCommand
 import nodomain.greensnowapps.lightsignals.core.sync.WatchModeChange
+import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeRequest
 import nodomain.greensnowapps.lightsignals.testing.FakePreferencesDataStore
 import org.junit.Assert.*
 import org.junit.Test
@@ -38,11 +44,20 @@ class WearControlRepositoryTest {
         val store = FakePreferencesDataStore(saved)
         val errors = mutableListOf<IOException>()
         val linkedCommands = mutableListOf<Pair<String, WatchControlCommand>>()
+        val reachablePhones = MutableStateFlow(setOf("phone"))
+        val requests = mutableListOf<Triple<String, String, ByteArray>>()
+        var reply: suspend (String) -> WatchConnectionReply? = { ACCEPTED }
+        var commandAccepted = true
         var soundStops = 0
         val repo = WearControlRepository(store, { soundStops++ },
             { CoroutineScope(scope.backgroundScope.coroutineContext + SupervisorJob(scope.backgroundScope.coroutineContext[Job])) },
             scope.backgroundScope, { errors += it },
-            { phone, command -> linkedCommands += phone to command; true })
+            { phone, command -> linkedCommands += phone to command; commandAccepted },
+            reachablePhones,
+            { node, path, payload ->
+                requests += Triple(node, path, payload)
+                reply(path)
+            })
     }
 
     @Test fun phoneInitiatedConnectSeedsAllControlsWithoutSendingCommands() = runTest {
@@ -81,7 +96,9 @@ class WearControlRepositoryTest {
         f.repo.togglePhoneConnection(false)
         runCurrent()
         assertFalse(f.repo.phoneConnection.value)
-        assertEquals(WatchControl.DISCONNECT, f.linkedCommands.last().second.control)
+        val release = f.requests.single()
+        assertEquals(WatchConnectionRequest.RELEASE_PATH, release.second)
+        assertEquals(request.id, WatchConnectionRequest.decodeId(release.third))
         assertEquals(99f, f.repo.colorProgress.value)
         assertEquals(1, f.repo.activeSound.value)
         assertEquals(99f, f.store.snapshot[KEY_COLOR_PROGRESS])
@@ -158,7 +175,177 @@ class WearControlRepositoryTest {
         )
     }
 
-    @Test fun watchRechecksOwnershipAfterReturningToForeground() = runTest {
+    @Test fun aReopenedWatchResumesItsSavedLinkOnlyAfterPhoneAcknowledges() = runTest {
+        val original = Fixture(this, preferencesOf(KEY_COLOR_PROGRESS to 99f))
+        val owner = Any()
+        original.repo.start(owner)
+        runCurrent()
+        val request = WatchConnectionRequest.create(PhoneSignalState(true, true, false, 350L, 789f))
+        assertTrue(original.repo.connectFromPhone("phone", request))
+        original.repo.commitColor(678f)
+        runCurrent()
+        original.repo.stop(owner)
+
+        val reopened = Fixture(this, original.store.snapshot)
+        val response = CompletableDeferred<WatchConnectionReply>()
+        reopened.reply = { response.await() }
+        reopened.repo.start(Any())
+        runCurrent()
+        val (phone, path, payload) = reopened.requests.single()
+        assertEquals("phone", phone)
+        assertEquals(WatchConnectionRequest.RESUME_PATH, path)
+        val resume = checkNotNull(WatchResumeRequest.decode(payload))
+        assertEquals(request.id, resume.linkId)
+        assertFalse(reopened.repo.phoneConnection.value)
+        assertFalse(reopened.repo.flashOn.value)
+        assertEquals(99f, reopened.repo.colorProgress.value)
+        response.complete(ACCEPTED)
+        runCurrent()
+        assertTrue(reopened.repo.phoneConnection.value)
+        assertTrue(reopened.repo.flashOn.value)
+        assertTrue(reopened.repo.blinkOn.value)
+        assertEquals(678f, reopened.repo.colorProgress.value)
+        assertTrue(reopened.linkedCommands.isEmpty())
+        reopened.repo.setFlash(false)
+        runCurrent()
+        assertEquals(resume.commandId, reopened.linkedCommands.single().second.id)
+        assertTrue(reopened.repo.revokePhoneLink("phone", request.id))
+        assertEquals(99f, reopened.repo.colorProgress.value)
+    }
+
+    @Test fun reachabilityLossPausesTheLinkAndItsReturnResumesWithoutReplayingControls() = runTest {
+        val f = Fixture(this)
+        f.repo.start(Any())
+        runCurrent()
+        val request = checkNotNull(f.repo.preparePhoneHandoff("phone"))
+        assertTrue(f.repo.finishPhoneHandoff("phone", request.id))
+        runCurrent()
+
+        f.reachablePhones.value = setOf("other-phone")
+        runCurrent()
+        assertFalse(f.repo.phoneConnection.value)
+        f.repo.setFlash(true)
+        assertTrue(f.requests.isEmpty())
+        f.reachablePhones.value = setOf("phone")
+        runCurrent()
+        assertTrue(f.repo.phoneConnection.value)
+        assertEquals(WatchConnectionRequest.RESUME_PATH, f.requests.single().second)
+        assertTrue(f.linkedCommands.isEmpty())
+    }
+
+    @Test fun explicitPhoneRejectionClearsTheSavedLink() = runTest {
+        val f = Fixture(this)
+        val owner = Any()
+        f.repo.start(owner)
+        runCurrent()
+        val request = checkNotNull(f.repo.preparePhoneHandoff("phone"))
+        assertTrue(f.repo.finishPhoneHandoff("phone", request.id))
+        f.reply = { REJECTED }
+
+        advanceTimeBy(5_000)
+        runCurrent()
+        assertEquals(WatchConnectionRequest.STATUS_PATH, f.requests.single().second)
+        assertFalse(f.repo.phoneConnection.value)
+        val reopened = Fixture(this, f.store.snapshot)
+        reopened.repo.start(Any())
+        runCurrent()
+        assertTrue(reopened.requests.isEmpty())
+        assertFalse(reopened.repo.phoneConnection.value)
+    }
+
+    @Test fun anUnresponsivePhoneClearsTheIconAndRecoveryAttemptsBackOff() = runTest {
+        val f = Fixture(this)
+        f.repo.start(Any())
+        runCurrent()
+        val request = checkNotNull(f.repo.preparePhoneHandoff("phone"))
+        assertTrue(f.repo.finishPhoneHandoff("phone", request.id))
+        f.reply = { RETRY }
+
+        advanceTimeBy(20_000)
+        runCurrent()
+        assertEquals(listOf(WatchConnectionRequest.STATUS_PATH, WatchConnectionRequest.RESUME_PATH,
+            WatchConnectionRequest.RESUME_PATH, WatchConnectionRequest.RESUME_PATH,
+            WatchConnectionRequest.RESUME_PATH), f.requests.map { it.second })
+        assertFalse(f.repo.phoneConnection.value)
+        assertTrue(f.linkedCommands.isEmpty())
+    }
+
+    @Test fun aReopenedPhoneAnnouncesAvailabilityOnlyForTheSavedLink() = runTest {
+        val f = Fixture(this)
+        f.repo.start(Any())
+        runCurrent()
+        val handoff = checkNotNull(f.repo.preparePhoneHandoff("phone"))
+        assertTrue(f.repo.finishPhoneHandoff("phone", handoff.id))
+        f.reply = { RETRY }
+        assertFalse(f.repo.phonePaused("other", handoff.id))
+        assertTrue(f.repo.phonePaused("phone", handoff.id))
+        runCurrent()
+        assertFalse(f.repo.phoneConnection.value)
+        val response = CompletableDeferred<WatchConnectionReply>()
+        f.reply = { response.await() }
+        assertFalse(f.repo.phoneAvailable("other", handoff.id))
+        assertFalse(f.repo.phoneAvailable("phone", java.util.UUID.randomUUID()))
+        assertTrue(f.repo.phoneAvailable("phone", handoff.id))
+        runCurrent()
+        assertFalse(f.repo.phoneConnection.value)
+        response.complete(ACCEPTED)
+        runCurrent()
+        assertTrue(f.repo.phoneConnection.value)
+        assertTrue(f.linkedCommands.isEmpty())
+        assertFalse(f.repo.phonePaused("phone", handoff.id)) // Delayed close from the older command session.
+
+        f.repo.togglePhoneConnection(false)
+        runCurrent()
+        val before = f.requests.size
+        assertFalse(f.repo.phoneAvailable("phone", handoff.id))
+        runCurrent()
+        assertEquals(before, f.requests.size)
+    }
+
+    @Test fun thePhoneCanReopenWithoutANoticeOrAReachabilityChange() = runTest {
+        val f = Fixture(this)
+        val owner = Any()
+        f.repo.start(owner)
+        runCurrent()
+        val handoff = checkNotNull(f.repo.preparePhoneHandoff("phone"))
+        assertTrue(f.repo.finishPhoneHandoff("phone", handoff.id))
+        f.reply = { RETRY }
+        assertTrue(f.repo.phonePaused("phone", handoff.id))
+        advanceTimeBy(2_000)
+        runCurrent()
+        assertFalse(f.repo.phoneConnection.value)
+
+        f.reply = { ACCEPTED }
+        advanceTimeBy(5_000)
+        runCurrent()
+        assertTrue(f.repo.phoneConnection.value)
+        assertTrue(f.linkedCommands.isEmpty())
+        f.repo.stop(owner)
+        val attempts = f.requests.size
+        advanceTimeBy(60_000)
+        runCurrent()
+        assertEquals(attempts, f.requests.size)
+    }
+
+    @Test fun emptyStatusRequiresAnAcknowledgedLegacyCheck() = runTest {
+        val f = Fixture(this)
+        f.repo.start(Any())
+        runCurrent()
+        val request = checkNotNull(f.repo.preparePhoneHandoff("phone"))
+        assertTrue(f.repo.finishPhoneHandoff("phone", request.id))
+        f.reply = { null }
+
+        advanceTimeBy(5_000)
+        runCurrent()
+        assertEquals(WatchControl.CHECK, f.linkedCommands.single().second.control)
+        assertTrue(f.repo.phoneConnection.value)
+        f.commandAccepted = false
+        advanceTimeBy(5_000)
+        runCurrent()
+        assertFalse(f.repo.phoneConnection.value)
+    }
+
+    @Test fun explicitDisconnectPreventsResumeAndChecksStopInTheBackground() = runTest {
         val f = Fixture(this)
         val owner = Any()
         f.repo.start(owner)
@@ -166,11 +353,23 @@ class WearControlRepositoryTest {
         val request = checkNotNull(f.repo.preparePhoneHandoff("phone"))
         assertTrue(f.repo.finishPhoneHandoff("phone", request.id))
         f.repo.stop(owner)
+        advanceTimeBy(15_000)
+        runCurrent()
+        assertTrue(f.requests.isEmpty())
+
         f.repo.start(owner)
         runCurrent()
-        val check = f.linkedCommands.single().second
-        assertEquals(request.id, check.id)
-        assertEquals(WatchControl.CHECK, check.control)
+        assertTrue(f.repo.phoneConnection.value)
+        f.repo.togglePhoneConnection(false)
+        runCurrent()
+        f.reachablePhones.value = emptySet()
+        runCurrent()
+        f.reachablePhones.value = setOf("phone")
+        advanceTimeBy(15_000)
+        runCurrent()
+        assertEquals(listOf(WatchConnectionRequest.RESUME_PATH, WatchConnectionRequest.RELEASE_PATH),
+            f.requests.map { it.second })
+        assertFalse(f.repo.phoneConnection.value)
     }
 
     @Test fun restoresValidatedPreferencesAndNeverRestartsSavedRemoteTorch() = runTest {

@@ -96,6 +96,15 @@ class WearPhoneConnectionRequests @Inject constructor(
         if (activeSession !== session || nodeId.isBlank()) {
             return Tasks.forResult(REJECTED.encode())
         }
+        if (path == WatchConnectionRequest.AVAILABLE_PATH || path == WatchConnectionRequest.PAUSE_PATH) {
+            val id = WatchConnectionRequest.decodeId(data) ?: return Tasks.forResult(REJECTED.encode())
+            val accepted = if (path == WatchConnectionRequest.AVAILABLE_PATH) {
+                controls.phoneAvailable(nodeId, id)
+            } else {
+                controls.phonePaused(nodeId, id)
+            }
+            return Tasks.forResult(if (accepted) ACCEPTED.encode() else REJECTED.encode())
+        }
         if (path == WatchConnectionRequest.REVOKE_PATH) {
             val id = WatchConnectionRequest.decodeId(data) ?: return Tasks.forResult(REJECTED.encode())
             controls.revokePhoneLink(nodeId, id)

@@ -9,6 +9,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeoutOrNull
 import nodomain.greensnowapps.lightsignals.core.sync.ControlStateWire
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControlCommand
 import javax.inject.Inject
 
@@ -48,18 +49,25 @@ class WearSyncStateRepository internal constructor(
         }
     }
 
-    internal suspend fun sendCommand(nodeId: String, command: WatchControlCommand): Boolean {
+    internal suspend fun sendCommand(nodeId: String, command: WatchControlCommand): Boolean =
+        request(nodeId, WatchControlCommand.PATH, command.encode())
+            ?.contentEquals(byteArrayOf(WatchControlCommand.ACCEPTED)) == true
+
+    internal suspend fun requestLink(nodeId: String, path: String, payload: ByteArray): WatchConnectionReply? {
+        val reply = request(nodeId, path, payload)
+        // Older v3 phones return an empty result for the added session-management paths.
+        return if (reply?.isEmpty() == true) null else WatchConnectionReply.decode(reply)
+    }
+
+    private suspend fun request(nodeId: String, path: String, payload: ByteArray): ByteArray? {
         val client = checkNotNull(messageClient)
         return try {
-            val reply = withTimeoutOrNull(2_500) {
-                client.sendRequest(nodeId, WatchControlCommand.PATH, command.encode()).await()
-            }
-            reply?.contentEquals(byteArrayOf(WatchControlCommand.ACCEPTED)) == true
+            withTimeoutOrNull(2_500) { client.sendRequest(nodeId, path, payload).await() }
         } catch (error: CancellationException) {
             throw error
         } catch (error: Exception) {
             onFailure(error)
-            false
+            null
         }
     }
 }

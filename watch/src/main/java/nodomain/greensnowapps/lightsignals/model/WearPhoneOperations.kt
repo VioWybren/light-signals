@@ -8,6 +8,7 @@ import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.Wearable
 import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import com.google.android.horologist.data.AppHelperResultCode.APP_HELPER_RESULT_SUCCESS
+import com.google.android.horologist.data.apphelper.DataLayerAppHelper
 import com.google.android.horologist.data.apphelper.AppHelperNodeStatus
 import com.google.android.horologist.data.apphelper.appInstalled
 import com.google.android.horologist.datalayer.watch.WearDataLayerAppHelper
@@ -47,15 +48,14 @@ class WearPhoneOperations @Inject constructor(
         if (_isLaunchingOnPhone.value) return
         _isLaunchingOnPhone.value = true
         try {
+            if (command == WearConstants.COMMAND_START_ON_PHONE) controls.forgetSuspendedPhoneLink()
             val node = isNodeConnected(wearDataLayerAppHelper.connectedNodes())
             val message = when {
                 node == null -> WearConstants.NO_CONNECTED_PHONES
-                command == WearConstants.COMMAND_START_ON_PHONE -> {
-                    if (!node.appInstalled) {
-                        WearConstants.APP_IS_NOT_INSTALLED_ON_PHONE
-                    } else {
-                        openAndConnect(node.id)
-                    }
+                command == WearConstants.COMMAND_START_ON_PHONE -> when (isCompanionInstalled(node)) {
+                    true -> openAndConnect(node.id)
+                    false -> WearConstants.APP_IS_NOT_INSTALLED_ON_PHONE
+                    null -> WearConstants.PHONE_CONNECTION_UNCONFIRMED
                 }
                 command == WearConstants.COMMAND_INSTALL_ON_PHONE -> {
                     if (wearDataLayerAppHelper.installOnNode(node.id) == APP_HELPER_RESULT_SUCCESS) {
@@ -79,6 +79,17 @@ class WearPhoneOperations @Inject constructor(
             )
         } finally {
             _isLaunchingOnPhone.value = false
+        }
+    }
+
+    private suspend fun isCompanionInstalled(node: AppHelperNodeStatus): Boolean? {
+        if (node.appInstalled) return true
+        // The connected-node lookup only includes currently reachable capabilities.
+        return withTimeoutOrNull(4_000) {
+            capabilityClient.getCapability(
+                DataLayerAppHelper.PHONE_CAPABILITY,
+                CapabilityClient.FILTER_ALL,
+            ).await().nodes.any { it.id == node.id }
         }
     }
 
