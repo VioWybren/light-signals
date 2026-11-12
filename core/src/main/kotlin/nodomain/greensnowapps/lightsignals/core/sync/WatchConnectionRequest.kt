@@ -48,6 +48,11 @@ data class WatchConnectionRequest private constructor(
         const val PATH = WATCH_PREFIX + "handoff"
         const val PHONE_PATH = PHONE_PREFIX + "handoff"
         const val REVOKE_PATH = WATCH_PREFIX + "release"
+        const val PAUSE_PATH = WATCH_PREFIX + "pause"
+        const val AVAILABLE_PATH = WATCH_PREFIX + "available"
+        const val RESUME_PATH = PHONE_PREFIX + "resume"
+        const val STATUS_PATH = PHONE_PREFIX + "status"
+        const val RELEASE_PATH = PHONE_PREFIX + "release"
         const val CAPABILITY = "light_signals_watch_connect_v3"
         const val PHONE_CAPABILITY = "light_signals_phone_control_v3"
         const val LIFETIME_MS = 8_000L
@@ -103,6 +108,36 @@ data class WatchConnectionRequest private constructor(
                     activeColorButton = activeColorButton
                 )
             )
+        }
+    }
+}
+
+/** Resumes a confirmed link with a fresh command ID, without importing signal settings. */
+@ConsistentCopyVisibility
+data class WatchResumeRequest private constructor(
+    val linkId: UUID,
+    val commandId: UUID,
+    val sentAt: Long
+) {
+    fun isFresh(nowMillis: Long = System.currentTimeMillis()): Boolean =
+        isRecentWearRequest(sentAt, nowMillis, WatchConnectionRequest.LIFETIME_MS)
+
+    fun encode(): ByteArray = ByteBuffer.allocate(SIZE)
+        .put(WatchConnectionRequest.encodeId(linkId))
+        .put(WatchConnectionRequest.encodeId(commandId))
+        .putLong(sentAt)
+        .array()
+
+    companion object {
+        private const val SIZE = 40
+
+        fun create(linkId: UUID, nowMillis: Long = System.currentTimeMillis()) =
+            WatchResumeRequest(linkId, UUID.randomUUID(), nowMillis)
+
+        fun decode(payload: ByteArray): WatchResumeRequest? {
+            if (payload.size != SIZE) return null
+            val buffer = ByteBuffer.wrap(payload)
+            return WatchResumeRequest(UUID(buffer.long, buffer.long), UUID(buffer.long, buffer.long), buffer.long)
         }
     }
 }

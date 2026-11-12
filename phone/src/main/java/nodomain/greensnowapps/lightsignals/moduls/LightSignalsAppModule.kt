@@ -2,6 +2,8 @@ package nodomain.greensnowapps.lightsignals.moduls
 
 import android.content.Context
 import android.hardware.camera2.CameraManager
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.emptyPreferences
@@ -54,9 +56,10 @@ object LightSignalsAppModule {
     fun providePhoneSyncStateRepository(
         @ApplicationContext context: Context,
         dataClient: DataClient,
-        messageClient: MessageClient
+        messageClient: MessageClient,
+        dataStore: DataStore<Preferences>
     ): PhoneSyncStateRepository {
-        return PhoneSyncStateRepository(context, dataClient, messageClient)
+        return PhoneSyncStateRepository(context, dataClient, messageClient, dataStore)
     }
 
     @Provides

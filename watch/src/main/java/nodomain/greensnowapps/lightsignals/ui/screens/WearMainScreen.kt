@@ -122,7 +122,6 @@ fun WearMainScreen(
     WearUniversalDialog(
         visible = showConnectToPhoneDialog,
         onConfirm = {
-            viewModel.performWearOperations(COMMAND_INSTALL_ON_PHONE)
             showConnectToPhoneDialog = false
         },
         onDismiss = {
@@ -234,10 +233,8 @@ fun WearMainScreen(
                         onCheckedChange = { checked ->
                             if (!checked) {
                                 viewModel.togglePhoneConnection(false)
-                            } else if (isPhoneAppAvailable) {
-                                viewModel.performWearOperations(WearConstants.COMMAND_START_ON_PHONE)
                             } else {
-                                showConnectToPhoneDialog = true
+                                viewModel.performWearOperations(WearConstants.COMMAND_START_ON_PHONE)
                             }
                         },
                         modifier = Modifier

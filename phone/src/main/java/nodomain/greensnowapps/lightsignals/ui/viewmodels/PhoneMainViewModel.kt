@@ -72,6 +72,10 @@ class PhoneMainViewModel @Inject constructor(
             applyHandoff = phoneCtrl::applyWatchHandoff,
             applyControl = phoneCtrl::applyWatchControl,
         )
+        viewModelScope.launch {
+            isReady.first { it }
+            phoneSyncStateRepository.announceAvailability()
+        }
     }
 
     internal fun setHostResumed(resumed: Boolean) = phoneSyncStateRepository.setHostResumed(resumed)

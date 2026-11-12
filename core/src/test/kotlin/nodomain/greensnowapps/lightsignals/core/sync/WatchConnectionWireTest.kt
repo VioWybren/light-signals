@@ -33,6 +33,17 @@ class WatchConnectionWireTest {
         ))
     }
 
+    @Test fun resumeCarriesOnlySessionIdsAndExpires() {
+        val now = 100_000L
+        val linkId = UUID.randomUUID()
+        val request = WatchResumeRequest.create(linkId, now)
+        assertEquals(request, WatchResumeRequest.decode(request.encode()))
+        assertFalse(request.commandId == linkId)
+        assertTrue(request.isFresh(now))
+        assertFalse(request.isFresh(now + WatchConnectionRequest.LIFETIME_MS + 1))
+        assertNull(WatchResumeRequest.decode(request.encode().copyOf(39)))
+    }
+
     @Test fun releaseContainsOnlyTheOwningSessionId() {
         val id = UUID.randomUUID()
         assertEquals(id, WatchConnectionRequest.decodeId(WatchConnectionRequest.encodeId(id)))

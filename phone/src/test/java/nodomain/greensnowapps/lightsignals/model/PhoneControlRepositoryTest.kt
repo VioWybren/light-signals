@@ -5,6 +5,8 @@ package nodomain.greensnowapps.lightsignals.model
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.preferencesOf
+import androidx.datastore.preferences.core.mutablePreferencesOf
+import androidx.datastore.preferences.core.stringPreferencesKey
 import java.io.IOException
 import java.util.UUID
 import kotlinx.coroutines.CompletableDeferred
@@ -15,6 +17,10 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import nodomain.greensnowapps.lightsignals.DEFAULT_COLOR_PROGRESS
 import nodomain.greensnowapps.lightsignals.core.sync.PhoneSignalState
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.ACCEPTED
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.REJECTED
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.RETRY
+import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeRequest
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControl
 import nodomain.greensnowapps.lightsignals.core.sync.WatchModeChange
 import nodomain.greensnowapps.lightsignals.testing.FakePreferencesDataStore
@@ -262,6 +268,99 @@ class PhoneControlRepositoryTest {
         assertSame(refresh, sessions.active)
         assertEquals(listOf(refresh), sessions.endAll())
         assertNull(sessions.begin("watch", refresh.requestId, acceptsEarlyControl = true))
+    }
+
+    @Test fun reopenedWatchCanReplaceItsPreviousSession() {
+        val sessions = WatchControlSessions()
+        val previous = checkNotNull(sessions.begin("watch", UUID.randomUUID(), acceptsEarlyControl = false))
+        assertTrue(sessions.confirm(previous))
+        assertNull(sessions.begin("other", UUID.randomUUID(), acceptsEarlyControl = false))
+
+        val reconnect = checkNotNull(sessions.begin("watch", UUID.randomUUID(), acceptsEarlyControl = false))
+        assertSame(previous, sessions.active)
+        assertFalse(reconnect.acceptsEarlyControl)
+        assertTrue(sessions.confirm(reconnect))
+        assertSame(reconnect, sessions.active)
+        assertFalse(sessions.confirm(previous))
+        assertNull(sessions.begin("watch", previous.requestId, acceptsEarlyControl = false))
+    }
+
+    @Test fun onlyTheConfirmedWatchCanResumeAndOldCommandsStayInvalid() {
+        var now = 100_000L
+        val sessions = WatchControlSessions { now }
+        val initial = checkNotNull(sessions.begin("watch", UUID.randomUUID(), acceptsEarlyControl = true))
+        val first = WatchResumeRequest.create(initial.linkId, now)
+        assertEquals(RETRY, sessions.resume("watch", first))
+        assertTrue(sessions.confirm(initial))
+        assertEquals(REJECTED, sessions.resume("other-watch", first))
+        assertEquals(REJECTED, sessions.resume("watch", WatchResumeRequest.create(UUID.randomUUID(), now)))
+        assertEquals(ACCEPTED, sessions.resume("watch", first))
+        val resumed = checkNotNull(sessions.active)
+        assertFalse(resumed.allows("watch", initial.requestId, Long.MAX_VALUE))
+        assertTrue(resumed.allows("watch", first.commandId, 1))
+        resumed.recordAccepted(1)
+        assertEquals(ACCEPTED, sessions.resume("watch", first))
+        assertFalse(resumed.allows("watch", first.commandId, 1))
+
+        val newer = WatchResumeRequest.create(initial.linkId, ++now)
+        assertEquals(ACCEPTED, sessions.resume("watch", newer))
+        assertEquals(RETRY, sessions.resume("watch", first))
+        assertEquals(newer.commandId, sessions.active?.requestId)
+        sessions.endAll()
+        assertEquals(REJECTED, sessions.resume("watch", newer))
+    }
+
+    @Test fun closingThePhonePreservesOnlyItsConfirmedRelationship() {
+        val sessions = WatchControlSessions()
+        val link = checkNotNull(sessions.begin("watch", UUID.randomUUID(), acceptsEarlyControl = true))
+        assertNull(sessions.remembered)
+        assertTrue(sessions.confirm(link))
+        val confirmed = sessions.remembered
+        val pending = checkNotNull(sessions.begin("watch", UUID.randomUUID(), acceptsEarlyControl = false))
+
+        assertEquals(listOf(pending, link), sessions.pause())
+        assertNull(sessions.active)
+        assertNull(sessions.pending)
+        assertEquals(confirmed, sessions.remembered)
+        assertEquals(REJECTED, sessions.resume("watch", WatchResumeRequest.create(pending.linkId)))
+        assertEquals(ACCEPTED, sessions.resume("watch", WatchResumeRequest.create(link.linkId)))
+        assertFalse(checkNotNull(sessions.active).allows("watch", link.requestId, Long.MAX_VALUE))
+    }
+
+    @Test fun aNewPhoneProcessRestoresTheRelationshipAndRequiresAFreshHandshake() {
+        var now = 100_000L
+        val prefs = mutablePreferencesOf()
+        val original = WatchControlSessions({ RememberedWatchLink.write(prefs, it) }) { now }
+        val initial = checkNotNull(original.begin("watch", UUID.randomUUID(), acceptsEarlyControl = false))
+        assertTrue(original.confirm(initial))
+        val oldResume = WatchResumeRequest.create(initial.linkId, now)
+        assertEquals(ACCEPTED, original.resume("watch", oldResume))
+        original.pause()
+
+        val reopened = WatchControlSessions({ RememberedWatchLink.write(prefs, it) }) { now }
+        reopened.restore(RememberedWatchLink.read(prefs))
+        assertNull(reopened.active)
+        assertEquals(RETRY, reopened.resume("watch", oldResume))
+        val freshResume = WatchResumeRequest.create(initial.linkId, ++now)
+        assertEquals(REJECTED, reopened.resume("other", freshResume))
+        assertEquals(ACCEPTED, reopened.resume("watch", freshResume))
+        assertEquals(freshResume.commandId, reopened.active?.requestId)
+        assertFalse(checkNotNull(reopened.active).allows("watch", oldResume.commandId, 1))
+
+        reopened.pause()
+        assertTrue(reopened.forget("watch", initial.linkId))
+        assertNull(RememberedWatchLink.read(prefs))
+        val afterDisconnect = WatchControlSessions { now }
+        afterDisconnect.restore(RememberedWatchLink.read(prefs))
+        assertEquals(REJECTED, afterDisconnect.resume("watch", WatchResumeRequest.create(initial.linkId, ++now)))
+    }
+
+    @Test fun malformedSavedWatchIdentityCannotRestoreControl() {
+        val prefs = preferencesOf(
+            stringPreferencesKey("linked_watch_node") to "watch",
+            stringPreferencesKey("linked_watch_id") to "invalid-id"
+        )
+        assertNull(RememberedWatchLink.read(prefs))
     }
 
     @Test fun localChangeDuringPendingHandoffAndFailedStartPreserveState() = runTest {

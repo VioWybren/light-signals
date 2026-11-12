@@ -3,9 +3,14 @@ package nodomain.greensnowapps.lightsignals.model
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.google.android.horologist.annotations.ExperimentalHorologistApi
+import com.google.android.horologist.datalayer.watch.WearDataLayerAppHelper
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -13,9 +18,15 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.WearConstants
@@ -23,10 +34,15 @@ import nodomain.greensnowapps.lightsignals.core.signal.SOS_UNIT_MS
 import nodomain.greensnowapps.lightsignals.core.signal.runSosSignal
 import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
 import nodomain.greensnowapps.lightsignals.core.sync.PhoneSignalState
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.ACCEPTED
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.REJECTED
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.RETRY
 import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionRequest
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControl
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControlCommand
 import nodomain.greensnowapps.lightsignals.core.sync.WatchModeChange
+import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeRequest
 import nodomain.greensnowapps.lightsignals.utils.WearUtils
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -44,7 +60,10 @@ internal val KEY_FREQUENCY_PROGRESS = floatPreferencesKey(WearConstants.PREFEREN
 internal val KEY_ACTIVE_SCREEN = intPreferencesKey(WearConstants.PREFERENCE_ACTIVE_SCREEN)
 internal val KEY_VOLUME = floatPreferencesKey(WearConstants.PREFERENCE_VOLUME)
 internal val KEY_ACTIVE_COLOR = intPreferencesKey("active_btn")
+private val KEY_LINKED_PHONE_NODE = stringPreferencesKey("linked_phone_node")
+private val KEY_LINKED_PHONE_SETTINGS = byteArrayPreferencesKey("linked_phone_settings")
 
+@OptIn(ExperimentalHorologistApi::class)
 @Singleton
 class WearControlRepository internal constructor(
     private val dataStore: DataStore<Preferences>,
@@ -54,18 +73,23 @@ class WearControlRepository internal constructor(
     private val onPreferenceError: (IOException) -> Unit = {
         Log.w("WearControlRepository", "Unable to access saved settings", it)
     },
-    private val sendLinkedCommand: suspend (String, WatchControlCommand) -> Boolean = { _, _ -> false }
+    private val sendLinkedCommand: suspend (String, WatchControlCommand) -> Boolean = { _, _ -> false },
+    private val reachablePhones: Flow<Set<String>> = emptyFlow(),
+    private val requestPhoneLink: suspend (String, String, ByteArray) -> WatchConnectionReply? = { _, _, _ -> RETRY }
 ) {
     @Inject constructor(
         dataStore: DataStore<Preferences>,
         soundPool: WearSoundPoolPlayer,
-        syncRepository: WearSyncStateRepository
+        syncRepository: WearSyncStateRepository,
+        appHelper: WearDataLayerAppHelper
     ) : this(
         dataStore,
         soundPool::stopAll,
         { CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate) },
         CoroutineScope(SupervisorJob() + Dispatchers.IO),
-        sendLinkedCommand = syncRepository::sendCommand
+        sendLinkedCommand = syncRepository::sendCommand,
+        reachablePhones = appHelper.connectedAndInstalledNodes.map { nodes -> nodes.map { it.id }.toSet() },
+        requestPhoneLink = syncRepository::requestLink
     )
     private val _flashOn = MutableStateFlow(false)
     private val _colorBlinkActive = MutableStateFlow(false)
@@ -115,10 +139,20 @@ class WearControlRepository internal constructor(
         val changes = ArrayDeque<Pair<WatchControl, Int>>()
     }
 
+    private data class RememberedPhone(val nodeId: String, val linkId: UUID) {
+        fun matches(nodeId: String, linkId: UUID): Boolean =
+            this.nodeId == nodeId && this.linkId == linkId
+    }
+
+    private var rememberedPhone: RememberedPhone? = null
+    private var linkedSettingsToRestore: PhoneSignalState? = null
+    private var linkMonitor: Job? = null
+    private data class LinkedControl(val command: WatchControlCommand, val settings: PhoneSignalState?)
+
     private var pendingHandoff: PendingHandoff? = null
     private var linkedPhone: LinkedPhone? = null
     private var standaloneBeforeImport: PhoneSignalState? = null
-    private var linkedCommands: Channel<WatchControlCommand>? = null
+    private var linkedCommands: Channel<LinkedControl>? = null
     private var linkedSender: Job? = null
 
     // Writes outlive an Activity stop and retain user-action order.
@@ -137,10 +171,6 @@ class WearControlRepository internal constructor(
         val scope = newSessionScope()
         sessionScope = scope
         _isForeground.value = true
-        linkedPhone?.let { phone ->
-            startLinkedSender(phone)
-            sendControl(WatchControl.CHECK, 0)
-        }
         scope.launch {
             if (!_isInitialized.value) {
                 val prefs = dataStore.safeData(onPreferenceError).first()
@@ -158,9 +188,11 @@ class WearControlRepository internal constructor(
                 applyColor(prefs[KEY_COLOR_PROGRESS] ?: WearConstants.DEFAULT_COLOR_PROGRESS)
                 // A previous process's remote torch selection is not an active connection.
                 _flashOn.value = false
+                restoreRememberedPhone(prefs)
                 _isInitialized.value = true
             }
             restartSignal()
+            restartLinkMonitor()
         }
     }
 
@@ -168,7 +200,9 @@ class WearControlRepository internal constructor(
         if (!foregroundOwners.remove(owner) || foregroundOwners.isNotEmpty()) return
         _isForeground.value = false
         pendingHandoff = null
-        stopLinkedSender()
+        linkMonitor?.cancel()
+        linkMonitor = null
+        if (rememberedPhone != null) pausePhoneLink()
         sessionScope?.cancel()
         sessionScope = null
         signalJob = null
@@ -272,16 +306,26 @@ class WearControlRepository internal constructor(
 
     fun togglePhoneConnection(isConnect: Boolean) {
         val previous = linkedPhone
+        val saved = rememberedPhone
         pendingHandoff = null
         disarmPhoneLink()
         manualLinkStartedAt = if (isConnect) System.currentTimeMillis() else null
         _manualPhoneConnection.value = isConnect
         _phoneConnection.value = isConnect
-        if (previous != null) {
+        if (saved != null) {
             sessionScope?.launch {
-                sendLinkedCommand(previous.nodeId, previous.command(WatchControl.DISCONNECT, 0))
+                val result = requestPhoneLink(
+                    saved.nodeId, WatchConnectionRequest.RELEASE_PATH, WatchConnectionRequest.encodeId(saved.linkId)
+                )
+                if (result == null && previous != null) {
+                    sendLinkedCommand(previous.nodeId, previous.command(WatchControl.DISCONNECT, 0))
+                }
             }
         }
+    }
+
+    internal fun forgetSuspendedPhoneLink() {
+        if (rememberedPhone != null && !_phoneConnection.value) togglePhoneConnection(false)
     }
 
     internal fun enableLegacyPhoneLink(): Boolean {
@@ -320,7 +364,7 @@ class WearControlRepository internal constructor(
     internal fun connectFromPhone(phoneNodeId: String, request: WatchConnectionRequest): Boolean {
         if (!_isForeground.value || !_isInitialized.value || !request.isFresh()) return false
         if (hasPhoneLink(phoneNodeId, request.id)) return true
-        if (linkedPhone?.let { it.nodeId != phoneNodeId } == true) return false
+        if (_phoneConnection.value && linkedPhone?.nodeId?.let { it != phoneNodeId } == true) return false
 
         // Imported controls are the linked session's baseline. Keep standalone preferences intact.
         pendingHandoff = null
@@ -357,7 +401,21 @@ class WearControlRepository internal constructor(
     }
 
     internal fun hasPhoneLink(nodeId: String, requestId: UUID): Boolean =
-        linkedPhone?.let { it.nodeId == nodeId && it.requestId == requestId } == true
+        rememberedPhone?.matches(nodeId, requestId) == true
+
+    internal fun phoneAvailable(nodeId: String, linkId: UUID): Boolean {
+        if (!_isForeground.value || !_isInitialized.value || !hasPhoneLink(nodeId, linkId)) return false
+        if (!_phoneConnection.value) restartLinkMonitor()
+        return true
+    }
+
+    internal fun phonePaused(nodeId: String, commandId: UUID): Boolean {
+        val phone = linkedPhone ?: return false
+        if (phone.nodeId != nodeId || phone.requestId != commandId) return false
+        pausePhoneLink()
+        restartLinkMonitor()
+        return true
+    }
 
     internal fun revokePhoneLink(nodeId: String, requestId: UUID): Boolean {
         if (hasPhoneLink(nodeId, requestId)) {
@@ -374,18 +432,147 @@ class WearControlRepository internal constructor(
     private fun establishPhoneLink(nodeId: String, requestId: UUID) {
         _manualPhoneConnection.value = false
         manualLinkStartedAt = null
-        val phone = LinkedPhone(nodeId, requestId)
+        saveRememberedPhone(RememberedPhone(nodeId, requestId))
+        activatePhoneLink(LinkedPhone(nodeId, requestId))
+        restartLinkMonitor()
+    }
+
+    private fun activatePhoneLink(phone: LinkedPhone) {
         linkedPhone = phone
         startLinkedSender(phone)
         _phoneConnection.value = true
     }
 
-    private fun disarmPhoneLink() {
-        linkedPhone = null
+    private fun pausePhoneLink() {
         stopLinkedSender()
+        _phoneConnection.value = false
+    }
+
+    private fun restoreRememberedPhone(prefs: Preferences) {
+        val nodeId = prefs[KEY_LINKED_PHONE_NODE]?.takeIf { it.isNotBlank() } ?: return
+        val saved = prefs[KEY_LINKED_PHONE_SETTINGS]?.let(WatchConnectionRequest::decode) ?: return
+        rememberedPhone = RememberedPhone(nodeId, saved.id)
+        linkedSettingsToRestore = saved.signal
+    }
+
+    private fun saveRememberedPhone(phone: RememberedPhone?) {
+        rememberedPhone = phone
+        linkedSettingsToRestore = null
+        if (phone == null) {
+            preferenceWrites.trySend { prefs ->
+                prefs.remove(KEY_LINKED_PHONE_NODE)
+                prefs.remove(KEY_LINKED_PHONE_SETTINGS)
+            }
+        } else {
+            saveLinkedSettings(phone, currentSignal())
+        }
+    }
+
+    private fun saveLinkedSettings(phone: RememberedPhone, settings: PhoneSignalState) {
+        val snapshot = WatchConnectionRequest.create(settings, id = phone.linkId).encode()
+        preferenceWrites.trySend { prefs ->
+            prefs[KEY_LINKED_PHONE_NODE] = phone.nodeId
+            prefs[KEY_LINKED_PHONE_SETTINGS] = snapshot
+        }
+    }
+
+    private fun restartLinkMonitor() {
+        linkMonitor?.cancel()
+        val saved = rememberedPhone ?: return
+        linkMonitor = sessionScope?.launch {
+            reachablePhones.retryWhen { error, _ ->
+                if (error is CancellationException) throw error
+                Log.w("WearControlRepository", "Phone discovery failed", error)
+                emit(emptySet())
+                delay(LINK_CHECK_INTERVAL_MS)
+                true
+            }.map { saved.nodeId in it }.distinctUntilChanged().collectLatest { reachable ->
+                if (reachable) monitorReachablePhone(saved) else pausePhoneLink()
+            }
+        }
+    }
+
+    private suspend fun monitorReachablePhone(saved: RememberedPhone) {
+        var useLegacyStatus = false
+        var retryDelay = LINK_CHECK_INTERVAL_MS
+        while (true) {
+            if (!_phoneConnection.value) {
+                if (!resumePhoneLink(saved)) {
+                    if (rememberedPhone != saved) return
+                    delay(retryDelay)
+                    retryDelay = (retryDelay * 2).coerceAtMost(MAX_LINK_RETRY_INTERVAL_MS)
+                    continue
+                }
+                retryDelay = LINK_CHECK_INTERVAL_MS
+                useLegacyStatus = false
+            }
+            delay(LINK_CHECK_INTERVAL_MS)
+            val phone = linkedPhone ?: return
+            if (_phoneConnection.value) {
+                if (useLegacyStatus) {
+                    sendControl(WatchControl.CHECK, 0)
+                    continue
+                }
+                when (requestPhoneLink(
+                    phone.nodeId, WatchConnectionRequest.STATUS_PATH, WatchConnectionRequest.encodeId(phone.requestId)
+                )) {
+                    ACCEPTED -> if (_phoneConnection.value) continue
+                    REJECTED -> {
+                        disarmPhoneLink()
+                        return
+                    }
+                    null -> {
+                        // Verify with the old protocol before trusting a response without a status.
+                        useLegacyStatus = true
+                        if (_phoneConnection.value) {
+                            sendControl(WatchControl.CHECK, 0)
+                            continue
+                        }
+                    }
+                    RETRY -> Unit
+                }
+            }
+            pausePhoneLink()
+        }
+    }
+
+    private suspend fun resumePhoneLink(saved: RememberedPhone): Boolean {
+        val request = WatchResumeRequest.create(saved.linkId)
+        val payload = request.encode()
+        var result = requestPhoneLink(saved.nodeId, WatchConnectionRequest.RESUME_PATH, payload)
+        if (result == RETRY) {
+            delay(LINK_RETRY_DELAY_MS)
+            result = requestPhoneLink(saved.nodeId, WatchConnectionRequest.RESUME_PATH, payload)
+        }
+        when (result) {
+            ACCEPTED -> {
+                linkedSettingsToRestore?.let { signal ->
+                    standaloneBeforeImport = currentSignal().copy(torchOn = false)
+                    applySignal(signal)
+                    linkedSettingsToRestore = null
+                }
+                activatePhoneLink(LinkedPhone(saved.nodeId, request.commandId))
+            }
+            REJECTED -> disarmPhoneLink()
+            null -> {
+                // A v3 phone without resume support can still verify an in-memory link.
+                val previous = linkedPhone ?: return false
+                if (!sendLinkedCommand(previous.nodeId, previous.command(WatchControl.CHECK, 0))) return false
+                activatePhoneLink(previous)
+            }
+            RETRY -> Unit
+        }
+        return _phoneConnection.value
+    }
+
+    private fun disarmPhoneLink() {
+        linkMonitor?.cancel()
+        linkMonitor = null
+        if (rememberedPhone != null) saveRememberedPhone(null)
+        linkedPhone = null
+        pausePhoneLink()
         manualLinkStartedAt = null
         _manualPhoneConnection.value = false
-        _phoneConnection.value = false
         val standalone = standaloneBeforeImport
         standaloneBeforeImport = null
         if (standalone != null) {
@@ -413,23 +600,24 @@ class WearControlRepository internal constructor(
             return
         }
         val commands = linkedCommands ?: return
-        if (commands.trySend(phone.command(control, value)).isFailure) togglePhoneConnection(false)
+        val settings = if (control == WatchControl.CHECK) null else currentSignal()
+        val queued = LinkedControl(phone.command(control, value), settings)
+        if (commands.trySend(queued).isFailure) pausePhoneLink()
     }
 
     private fun startLinkedSender(phone: LinkedPhone) {
         stopLinkedSender()
         val scope = sessionScope ?: return
-        val commands = Channel<WatchControlCommand>(capacity = MAX_QUEUED_CONTROLS)
+        val commands = Channel<LinkedControl>(capacity = MAX_QUEUED_CONTROLS)
         linkedCommands = commands
         linkedSender = scope.launch {
-            for (command in commands) {
+            for ((command, settings) in commands) {
                 if (!command.isFresh() || !sendLinkedCommand(phone.nodeId, command)) {
-                    if (linkedPhone === phone) {
-                        if (command.control == WatchControl.CHECK) disarmPhoneLink()
-                        else togglePhoneConnection(false)
-                    }
+                    if (linkedPhone === phone) pausePhoneLink()
                     break
                 }
+                val saved = rememberedPhone
+                if (settings != null && saved != null && linkedPhone === phone) saveLinkedSettings(saved, settings)
             }
         }
     }
@@ -453,5 +641,8 @@ class WearControlRepository internal constructor(
 
     private companion object {
         const val MAX_QUEUED_CONTROLS = 16
+        const val LINK_CHECK_INTERVAL_MS = 5_000L
+        const val LINK_RETRY_DELAY_MS = 500L
+        const val MAX_LINK_RETRY_INTERVAL_MS = 30_000L
     }
 }
