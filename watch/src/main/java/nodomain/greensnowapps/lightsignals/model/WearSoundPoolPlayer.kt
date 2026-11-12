@@ -22,7 +22,7 @@ class WearSoundPoolPlayer @Inject constructor(
     private var pendingSampleId: Int? = null
     private var currentStreamId = 0
     private var lastPlayTime = 0L
-    private val volumeLevel = 0.5f
+    private val volumeLevel = 1.0f
     private val soundPool = SoundPool.Builder()
         .setMaxStreams(1)
         .setAudioAttributes(

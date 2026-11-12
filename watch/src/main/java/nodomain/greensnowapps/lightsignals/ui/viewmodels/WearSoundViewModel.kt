@@ -38,7 +38,7 @@ class WearSoundViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             wearCtrl.colorBlinkActive.filter { it }.collect {
-                if (wearCtrl.isForeground.value) soundPool.playOnce(activeSound.value)
+                if (wearCtrl.canPlayLocalSound) soundPool.playOnce(activeSound.value)
             }
         }
     }

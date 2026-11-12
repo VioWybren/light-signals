@@ -112,7 +112,7 @@ fun WearMainScreen(
     val phoneConnection by viewModel.phoneConnection.collectAsStateWithLifecycle()
     val isPhoneAppAvailable by viewModel.isPhoneAppAvailable.collectAsStateWithLifecycle()
     val isLaunchingOnPhone by viewModel.isLaunchingOnPhone.collectAsStateWithLifecycle()
-    val activeSound by viewModel.activeSound.collectAsStateWithLifecycle()
+    val isSoundOn by viewModel.isSoundOn.collectAsStateWithLifecycle()
     val checkedFlash = flashOn
     val checkedBlink = blinkOn && !sosOn
     val checkedSOS = sosOn
@@ -201,7 +201,6 @@ fun WearMainScreen(
     }
 
     val showSoundSelector by soundViewModel.showSoundSelector.collectAsStateWithLifecycle()
-    val isSoundOn = activeSound != 0
 
     if (showSoundSelector) {
 

@@ -130,6 +130,16 @@ class WearControlRepository internal constructor(
     val isInitialized = _isInitialized.asStateFlow()
     val isForeground = _isForeground.asStateFlow()
 
+    private val _localSoundSuppressed = MutableStateFlow(false)
+    internal val localSoundSuppressed = _localSoundSuppressed.asStateFlow()
+    internal val canPlayLocalSound: Boolean
+        get() = _isInitialized.value && _isForeground.value && !_localSoundSuppressed.value
+
+    private fun suppressLocalSound() {
+        _localSoundSuppressed.value = true
+        stopSounds()
+    }
+
     private var sessionScope: CoroutineScope? = null
     private var signalJob: Job? = null
     private val foregroundOwners = mutableSetOf<Any>()
@@ -295,9 +305,12 @@ class WearControlRepository internal constructor(
 
     fun setActiveSound(n: Int) {
         val sound = n.coerceIn(0, 3)
+        val localPlayback = !_phoneConnection.value
+        if (localPlayback) _localSoundSuppressed.value = false
         _activeSound.value = sound
         writePref(KEY_ACTIVE_SOUND, sound)
         if (sound == 0) stopSounds()
+        if (localPlayback && sound != 0 && _flashOn.value && rememberedPhone != null) updateFlash(false)
         sendControl(WatchControl.SOUND, sound)
     }
 
@@ -317,6 +330,7 @@ class WearControlRepository internal constructor(
         manualLinkStartedAt = if (isConnect) System.currentTimeMillis() else null
         _manualPhoneConnection.value = isConnect
         _phoneConnection.value = isConnect
+        if (isConnect) suppressLocalSound()
         if (saved != null) {
             sessionScope?.launch {
                 val result = requestPhoneLink(
@@ -376,6 +390,7 @@ class WearControlRepository internal constructor(
         _manualPhoneConnection.value = false
         manualLinkStartedAt = null
         if (standaloneBeforeImport == null) standaloneBeforeImport = currentSignal().copy(torchOn = false)
+        suppressLocalSound()
         applySignal(request.signal)
         establishPhoneLink(phoneNodeId, request.id)
         return true
@@ -443,6 +458,7 @@ class WearControlRepository internal constructor(
     }
 
     private fun activatePhoneLink(phone: LinkedPhone) {
+        suppressLocalSound()
         linkedPhone = phone
         startLinkedSender(phone)
         _phoneConnection.value = true
@@ -458,6 +474,7 @@ class WearControlRepository internal constructor(
         val saved = prefs[KEY_LINKED_PHONE_SETTINGS]?.let(WatchConnectionRequest::decode) ?: return
         rememberedPhone = RememberedPhone(nodeId, saved.id)
         linkedSettingsToRestore = saved.signal
+        suppressLocalSound()
     }
 
     private fun saveRememberedPhone(phone: RememberedPhone?) {
@@ -550,6 +567,7 @@ class WearControlRepository internal constructor(
         }
         when (result?.status) {
             ACCEPTED -> {
+                suppressLocalSound()
                 val signal = result.signal ?: linkedSettingsToRestore
                 if (signal != null) {
                     if (standaloneBeforeImport == null) standaloneBeforeImport = currentSignal().copy(torchOn = false)
@@ -587,6 +605,7 @@ class WearControlRepository internal constructor(
         } else if (_flashOn.value) {
             updateFlash(false)
         }
+        _localSoundSuppressed.value = false
     }
 
     internal fun commitColor(progress: Float) {
