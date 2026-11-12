@@ -67,6 +67,158 @@ class WearControlRepositoryTest {
             })
     }
 
+    @Test fun phoneControlSuppressesWatchPlaybackUntilAnExplicitDisconnect() = runTest {
+        val f = Fixture(this, preferencesOf(sound to 1))
+        f.repo.start(Any())
+        runCurrent()
+        assertTrue(f.repo.canPlayLocalSound)
+        val beforeConnection = f.soundStops
+        val signal = PhoneSignalState(false, true, false, 350L, activeSound = 3)
+        assertTrue(f.repo.connectFromPhone("phone", WatchConnectionRequest.create(signal)))
+        runCurrent()
+        assertFalse(f.repo.canPlayLocalSound)
+        assertTrue(f.soundStops > beforeConnection)
+        assertEquals(3, f.repo.activeSound.value)
+        assertEquals(1, f.store.snapshot[sound])
+
+        f.repo.setActiveSound(2)
+        runCurrent()
+        assertEquals(WatchControl.SOUND, f.linkedCommands.single().second.control)
+        assertEquals(2, f.linkedCommands.single().second.value)
+        assertFalse(f.repo.canPlayLocalSound)
+
+        f.reachablePhones.value = emptySet()
+        runCurrent()
+        assertFalse(f.repo.phoneConnection.value)
+        assertFalse(f.repo.canPlayLocalSound)
+        f.resumeSignal = signal.copy(activeSound = 2)
+        f.reachablePhones.value = setOf("phone")
+        runCurrent()
+        assertTrue(f.repo.phoneConnection.value)
+        assertFalse(f.repo.canPlayLocalSound)
+        assertEquals(2, f.repo.activeSound.value)
+
+        f.repo.togglePhoneConnection(false)
+        runCurrent()
+        assertTrue(f.repo.canPlayLocalSound)
+        assertEquals(1, f.repo.activeSound.value)
+    }
+
+    @Test fun enablingWatchSoundOfflineRunsALocalSignalAndReconnectionReturnsAudioToThePhone() = runTest {
+        val f = Fixture(this)
+        f.repo.start(Any())
+        runCurrent()
+        val signal = PhoneSignalState(true, true, false, 350L, activeSound = 3)
+        val request = WatchConnectionRequest.create(signal)
+        assertTrue(f.repo.connectFromPhone("phone", request))
+        runCurrent()
+        assertFalse(f.repo.canPlayLocalSound)
+        assertFalse(f.repo.colorBlinkActive.value)
+
+        f.reply = { RETRY }
+        assertTrue(f.repo.phonePaused("phone", request.id))
+        runCurrent()
+        f.repo.setActiveSound(3) // Reselecting the same sound must enable local playback too.
+        runCurrent()
+        assertTrue(f.repo.canPlayLocalSound)
+        assertFalse(f.repo.localSoundSuppressed.value)
+        assertFalse(f.repo.flashOn.value)
+        assertTrue(f.repo.colorBlinkActive.value)
+        assertEquals(3, f.repo.activeSound.value)
+        assertFalse(f.repo.phoneConnection.value)
+        assertTrue(f.linkedCommands.isEmpty())
+
+        val beforeReconnect = f.soundStops
+        f.reply = { ACCEPTED }
+        f.resumeSignal = signal.copy(activeSound = 2)
+        assertTrue(f.repo.phoneAvailable("phone", request.id))
+        runCurrent()
+        assertTrue(f.repo.phoneConnection.value)
+        assertFalse(f.repo.canPlayLocalSound)
+        assertTrue(f.repo.localSoundSuppressed.value)
+        assertTrue(f.repo.flashOn.value)
+        assertEquals(2, f.repo.activeSound.value)
+        assertTrue(f.soundStops > beforeReconnect)
+        assertTrue(f.linkedCommands.isEmpty())
+    }
+
+    @Test fun watchSoundRemainsUsableWhenThePhoneStaysClosed() = runTest {
+        val f = Fixture(this)
+        f.repo.start(Any())
+        runCurrent()
+        val request = WatchConnectionRequest.create(PhoneSignalState(false, true, false, 400L, activeSound = 3))
+        assertTrue(f.repo.connectFromPhone("phone", request))
+        f.reply = { RETRY }
+        assertTrue(f.repo.phonePaused("phone", request.id))
+        runCurrent()
+        f.repo.setActiveSound(2)
+        advanceTimeBy(60_000)
+        runCurrent()
+        assertFalse(f.repo.phoneConnection.value)
+        assertTrue(f.repo.canPlayLocalSound)
+        assertFalse(f.repo.localSoundSuppressed.value)
+        assertEquals(2, f.repo.activeSound.value)
+        assertTrue(f.linkedCommands.isEmpty())
+
+        val beforeOff = f.soundStops
+        f.repo.setActiveSound(0)
+        assertEquals(0, f.repo.activeSound.value)
+        assertTrue(f.soundStops > beforeOff)
+        assertTrue(f.repo.phoneAvailable("phone", request.id))
+    }
+
+    @Test fun watchInitiatedAndLegacyPhoneLinksSuppressOnlyLocalPlayback() = runTest {
+        val f = Fixture(this)
+        f.repo.start(Any())
+        runCurrent()
+        f.repo.setActiveSound(2)
+        val request = checkNotNull(f.repo.preparePhoneHandoff("phone"))
+        assertEquals(2, request.signal.activeSound)
+        val beforeConnection = f.soundStops
+        assertTrue(f.repo.finishPhoneHandoff("phone", request.id))
+        assertFalse(f.repo.canPlayLocalSound)
+        assertTrue(f.soundStops > beforeConnection)
+        assertEquals(2, f.repo.activeSound.value)
+
+        f.repo.togglePhoneConnection(false)
+        assertTrue(f.repo.canPlayLocalSound)
+        assertTrue(f.repo.enableLegacyPhoneLink())
+        assertFalse(f.repo.canPlayLocalSound)
+        assertEquals(2, f.repo.activeSound.value)
+        f.repo.togglePhoneConnection(false)
+        assertTrue(f.repo.canPlayLocalSound)
+    }
+
+    @Test fun restoringASavedPhoneLinkKeepsWatchAudioSuppressedWhileWaitingForThePhone() = runTest {
+        val original = Fixture(this, preferencesOf(sound to 1))
+        val owner = Any()
+        original.repo.start(owner)
+        runCurrent()
+        val request = WatchConnectionRequest.create(PhoneSignalState(false, true, false, 400L, activeSound = 3))
+        assertTrue(original.repo.connectFromPhone("phone", request))
+        runCurrent()
+        original.repo.stop(owner)
+        assertFalse(original.repo.canPlayLocalSound)
+
+        val reopened = Fixture(this, original.store.snapshot)
+        val preferencesReady = CompletableDeferred<Unit>()
+        reopened.store.readGate = preferencesReady
+        reopened.reply = { RETRY }
+        reopened.repo.start(Any())
+        runCurrent()
+        assertFalse(reopened.repo.canPlayLocalSound)
+        preferencesReady.complete(Unit)
+        runCurrent()
+        assertTrue(reopened.repo.isInitialized.value)
+        assertFalse(reopened.repo.phoneConnection.value)
+        assertFalse(reopened.repo.canPlayLocalSound)
+        assertTrue(reopened.soundStops > 0)
+
+        reopened.repo.togglePhoneConnection(false)
+        assertTrue(reopened.repo.canPlayLocalSound)
+        assertEquals(1, reopened.repo.activeSound.value)
+    }
+
     @Test fun phoneInitiatedConnectSeedsAllControlsWithoutSendingCommands() = runTest {
         val f = Fixture(this, preferencesOf(KEY_COLOR_PROGRESS to 99f, sound to 1))
         val owner = Any()

@@ -54,6 +54,11 @@ class WearMainViewModel @Inject constructor(
     val isForeground = wearCtrl.isForeground
     val isInitialized = wearCtrl.isInitialized
 
+    val isSoundOn: StateFlow<Boolean> = combine(activeSound, phoneConnection, wearCtrl.localSoundSuppressed) {
+            sound, connected, suppressed ->
+        sound != 0 && (connected || !suppressed)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     val controlMessageFlow = wearPhoneOperations.controlMessageFlow
     val isLaunchingOnPhone = wearPhoneOperations.isLaunchingOnPhone
 
