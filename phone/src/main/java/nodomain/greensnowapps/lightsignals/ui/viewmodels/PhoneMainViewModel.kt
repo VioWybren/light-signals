@@ -69,6 +69,7 @@ class PhoneMainViewModel @Inject constructor(
         phoneCtrl.initFromPrefs()
         phoneSyncStateRepository.initFromViewModel(
             isReady = { phoneCtrl.initialized.value },
+            currentSignal = phoneCtrl::connectionSignal,
             applyHandoff = phoneCtrl::applyWatchHandoff,
             applyControl = phoneCtrl::applyWatchControl,
         )

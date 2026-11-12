@@ -51,6 +51,7 @@ data class WatchConnectionRequest private constructor(
         const val PAUSE_PATH = WATCH_PREFIX + "pause"
         const val AVAILABLE_PATH = WATCH_PREFIX + "available"
         const val RESUME_PATH = PHONE_PREFIX + "resume"
+        const val RESUME_STATE_PATH = PHONE_PREFIX + "resume_state"
         const val STATUS_PATH = PHONE_PREFIX + "status"
         const val RELEASE_PATH = PHONE_PREFIX + "release"
         const val CAPABILITY = "light_signals_watch_connect_v3"
@@ -112,7 +113,7 @@ data class WatchConnectionRequest private constructor(
     }
 }
 
-/** Resumes a confirmed link with a fresh command ID, without importing signal settings. */
+/** Resumes a confirmed link with a fresh command ID. */
 @ConsistentCopyVisibility
 data class WatchResumeRequest private constructor(
     val linkId: UUID,
@@ -138,6 +139,30 @@ data class WatchResumeRequest private constructor(
             if (payload.size != SIZE) return null
             val buffer = ByteBuffer.wrap(payload)
             return WatchResumeRequest(UUID(buffer.long, buffer.long), UUID(buffer.long, buffer.long), buffer.long)
+        }
+    }
+}
+
+/** A successful resume carries the current phone configuration for the new command session. */
+data class WatchResumeReply(val status: WatchConnectionReply, val signal: PhoneSignalState? = null) {
+    fun encode(commandId: UUID, nowMillis: Long = System.currentTimeMillis()): ByteArray {
+        val snapshot = signal?.takeIf { status == WatchConnectionReply.ACCEPTED }
+            ?.let { WatchConnectionRequest.create(it, nowMillis, commandId).encode() }
+        return status.encode() + (snapshot ?: byteArrayOf())
+    }
+
+    companion object {
+        fun decode(payload: ByteArray?, commandId: UUID, nowMillis: Long = System.currentTimeMillis()): WatchResumeReply {
+            if (payload == null || payload.isEmpty()) return WatchResumeReply(WatchConnectionReply.RETRY)
+            val status = WatchConnectionReply.decode(byteArrayOf(payload[0]))
+            if (status != WatchConnectionReply.ACCEPTED) {
+                return WatchResumeReply(if (payload.size == 1) status else WatchConnectionReply.RETRY)
+            }
+            val snapshot = WatchConnectionRequest.decode(payload.copyOfRange(1, payload.size))
+            if (snapshot == null || snapshot.id != commandId || !snapshot.isFresh(nowMillis)) {
+                return WatchResumeReply(WatchConnectionReply.RETRY)
+            }
+            return WatchResumeReply(status, snapshot.signal)
         }
     }
 }
