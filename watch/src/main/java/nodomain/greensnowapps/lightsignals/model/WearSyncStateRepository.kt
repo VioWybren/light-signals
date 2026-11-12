@@ -11,13 +11,18 @@ import kotlinx.coroutines.withTimeoutOrNull
 import nodomain.greensnowapps.lightsignals.core.sync.ControlStateWire
 import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControlCommand
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionRequest
+import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeReply
+import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeRequest
 import javax.inject.Inject
 
 class WearSyncStateRepository internal constructor(
     private val publish: suspend (String, DataMap) -> Unit,
     private val nowMillis: () -> Long,
     private val onFailure: (Exception) -> Unit,
-    private val messageClient: MessageClient? = null
+    private val sendRequest: suspend (String, String, ByteArray) -> ByteArray = { _, _, _ ->
+        error("Message transport is unavailable")
+    }
 ) {
     @Inject constructor(dataClient: DataClient, messageClient: MessageClient) : this(
         publish = { path, values ->
@@ -29,7 +34,7 @@ class WearSyncStateRepository internal constructor(
         },
         nowMillis = System::currentTimeMillis,
         onFailure = { Log.w("WearSyncState", "Unable to synchronize controls", it) },
-        messageClient = messageClient
+        sendRequest = { nodeId, path, payload -> messageClient.sendRequest(nodeId, path, payload).await() }
     )
 
     suspend fun sendState(update: WearControlState, manualLinkStartedAt: Long? = null): Boolean {
@@ -60,14 +65,23 @@ class WearSyncStateRepository internal constructor(
     }
 
     private suspend fun request(nodeId: String, path: String, payload: ByteArray): ByteArray? {
-        val client = checkNotNull(messageClient)
         return try {
-            withTimeoutOrNull(2_500) { client.sendRequest(nodeId, path, payload).await() }
+            withTimeoutOrNull(2_500) { sendRequest(nodeId, path, payload) }
         } catch (error: CancellationException) {
             throw error
         } catch (error: Exception) {
             onFailure(error)
             null
         }
+    }
+
+    internal suspend fun resumeLink(nodeId: String, invitation: WatchResumeRequest): WatchResumeReply? {
+        val payload = invitation.encode()
+        val reply = request(nodeId, WatchConnectionRequest.RESUME_STATE_PATH, payload)
+        if (reply?.isEmpty() == true) {
+            // Older phones support the original connection-only resume response.
+            return requestLink(nodeId, WatchConnectionRequest.RESUME_PATH, payload)?.let { WatchResumeReply(it) }
+        }
+        return WatchResumeReply.decode(reply, invitation.commandId)
     }
 }

@@ -10,10 +10,57 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.test.runTest
 import nodomain.greensnowapps.lightsignals.testing.ContractFixtures
+import nodomain.greensnowapps.lightsignals.core.sync.PhoneSignalState
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply
+import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionRequest
+import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeReply
+import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeRequest
+import java.util.UUID
 import org.junit.Assert.*
 import org.junit.Test
 
 class WearSyncStateRepositoryTest {
+    @Test fun resumeFetchesTheCompletePhoneStateForTheNewCommandSession() = runTest {
+        val invitation = WatchResumeRequest.create(UUID.randomUUID())
+        val current = PhoneSignalState(true, false, true, 725L, 1450f, 3, 1, 2)
+        val paths = mutableListOf<String>()
+        val repo = WearSyncStateRepository({ _, _ -> fail("Resume must not publish watch settings") },
+            System::currentTimeMillis, { throw AssertionError(it) },
+            { node, path, payload ->
+                assertEquals("phone", node)
+                assertEquals(invitation, WatchResumeRequest.decode(payload))
+                paths += path
+                WatchResumeReply(WatchConnectionReply.ACCEPTED, current).encode(invitation.commandId)
+            })
+        assertEquals(WatchResumeReply(WatchConnectionReply.ACCEPTED, current), repo.resumeLink("phone", invitation))
+        assertEquals(listOf(WatchConnectionRequest.RESUME_STATE_PATH), paths)
+    }
+
+    @Test fun anOlderPhoneCanUseTheOriginalResumeEndpoint() = runTest {
+        val invitation = WatchResumeRequest.create(UUID.randomUUID())
+        val paths = mutableListOf<String>()
+        val repo = WearSyncStateRepository({ _, _ -> }, System::currentTimeMillis, { throw AssertionError(it) },
+            { _, path, _ ->
+                paths += path
+                if (path == WatchConnectionRequest.RESUME_STATE_PATH) byteArrayOf()
+                else WatchConnectionReply.ACCEPTED.encode()
+            })
+        assertEquals(WatchResumeReply(WatchConnectionReply.ACCEPTED), repo.resumeLink("phone", invitation))
+        assertEquals(listOf(WatchConnectionRequest.RESUME_STATE_PATH, WatchConnectionRequest.RESUME_PATH), paths)
+    }
+
+    @Test fun anIncompleteSnapshotKeepsTheWatchWaitingForACompleteReply() = runTest {
+        val paths = mutableListOf<String>()
+        val repo = WearSyncStateRepository({ _, _ -> }, System::currentTimeMillis, { throw AssertionError(it) },
+            { _, path, _ ->
+                paths += path
+                WatchConnectionReply.ACCEPTED.encode()
+            })
+        assertEquals(WatchResumeReply(WatchConnectionReply.RETRY),
+            repo.resumeLink("phone", WatchResumeRequest.create(UUID.randomUUID())))
+        assertEquals(listOf(WatchConnectionRequest.RESUME_STATE_PATH), paths)
+    }
+
     @Test fun senderUsesTheSharedWirePathTypesAndValues() = runTest {
         val fixture = ContractFixtures.wireState("control-state-v1.properties")
         val sent = mutableListOf<Pair<String, DataMap>>()

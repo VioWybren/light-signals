@@ -43,6 +43,7 @@ import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionRequest
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControl
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControlCommand
 import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeRequest
+import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeReply
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -65,6 +66,7 @@ class PhoneSyncStateRepository @Inject constructor(
 
     private class ControlCallbacks(
         val isReady: () -> Boolean,
+        val currentSignal: () -> PhoneSignalState,
         val applyHandoff: (PhoneSignalState) -> Boolean,
         val applyControl: (WatchControl, Int) -> Boolean
     )
@@ -103,10 +105,11 @@ class PhoneSyncStateRepository @Inject constructor(
     @MainThread
     internal fun initFromViewModel(
         isReady: () -> Boolean,
+        currentSignal: () -> PhoneSignalState,
         applyHandoff: (PhoneSignalState) -> Boolean,
         applyControl: (WatchControl, Int) -> Boolean
     ) = synchronized(listenerLock) {
-        callbacks = ControlCallbacks(isReady, applyHandoff, applyControl)
+        callbacks = ControlCallbacks(isReady, currentSignal, applyHandoff, applyControl)
         ensureRpcRegistration()
         if (listener != null) return@synchronized
         val token = Any()
@@ -269,6 +272,8 @@ class PhoneSyncStateRepository @Inject constructor(
                 WatchControlCommand.PATH -> Tasks.forResult(handleWatchControl(token, nodeId, payload))
                 WatchConnectionRequest.PHONE_PATH -> handleWatchHandoff(token, scope, nodeId, payload)
                 WatchConnectionRequest.RESUME_PATH -> Tasks.forResult(handleWatchResume(token, nodeId, payload))
+                WatchConnectionRequest.RESUME_STATE_PATH ->
+                    Tasks.forResult(handleWatchResume(token, nodeId, payload, includeSignal = true))
                 WatchConnectionRequest.STATUS_PATH -> Tasks.forResult(handleWatchStatus(token, nodeId, payload))
                 WatchConnectionRequest.RELEASE_PATH -> Tasks.forResult(handleWatchRelease(token, nodeId, payload))
                 else -> Tasks.forResult(byteArrayOf())
@@ -317,7 +322,12 @@ class PhoneSyncStateRepository @Inject constructor(
         byteArrayOf(WatchControlCommand.ACCEPTED)
     }
 
-    private fun handleWatchResume(token: Any, nodeId: String, payload: ByteArray): ByteArray =
+    private fun handleWatchResume(
+        token: Any,
+        nodeId: String,
+        payload: ByteArray,
+        includeSignal: Boolean = false
+    ): ByteArray =
         synchronized(listenerLock) {
             if (rpcRegistration?.token !== token || !linkRestored || callbacks?.isReady?.invoke() != true) {
                 return@synchronized RETRY.encode()
@@ -328,7 +338,12 @@ class PhoneSyncStateRepository @Inject constructor(
             if (reply == ACCEPTED && sessions.active !== previousConnection) {
                 watchConnectedChannel.trySend(Unit)
             }
-            reply.encode()
+            if (includeSignal) {
+                val signal = if (reply == ACCEPTED) callbacks?.currentSignal?.invoke() else null
+                WatchResumeReply(reply, signal).encode(request.commandId)
+            } else {
+                reply.encode()
+            }
         }
 
     private fun handleWatchStatus(token: Any, nodeId: String, payload: ByteArray): ByteArray =

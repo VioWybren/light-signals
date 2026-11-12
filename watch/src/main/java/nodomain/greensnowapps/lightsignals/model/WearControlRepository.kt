@@ -43,6 +43,7 @@ import nodomain.greensnowapps.lightsignals.core.sync.WatchControl
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControlCommand
 import nodomain.greensnowapps.lightsignals.core.sync.WatchModeChange
 import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeRequest
+import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeReply
 import nodomain.greensnowapps.lightsignals.utils.WearUtils
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -75,7 +76,10 @@ class WearControlRepository internal constructor(
     },
     private val sendLinkedCommand: suspend (String, WatchControlCommand) -> Boolean = { _, _ -> false },
     private val reachablePhones: Flow<Set<String>> = emptyFlow(),
-    private val requestPhoneLink: suspend (String, String, ByteArray) -> WatchConnectionReply? = { _, _, _ -> RETRY }
+    private val requestPhoneLink: suspend (String, String, ByteArray) -> WatchConnectionReply? = { _, _, _ -> RETRY },
+    private val requestPhoneResume: suspend (String, WatchResumeRequest) -> WatchResumeReply? = { _, _ ->
+        WatchResumeReply(RETRY)
+    }
 ) {
     @Inject constructor(
         dataStore: DataStore<Preferences>,
@@ -89,7 +93,8 @@ class WearControlRepository internal constructor(
         CoroutineScope(SupervisorJob() + Dispatchers.IO),
         sendLinkedCommand = syncRepository::sendCommand,
         reachablePhones = appHelper.connectedAndInstalledNodes.map { nodes -> nodes.map { it.id }.toSet() },
-        requestPhoneLink = syncRepository::requestLink
+        requestPhoneLink = syncRepository::requestLink,
+        requestPhoneResume = syncRepository::resumeLink
     )
     private val _flashOn = MutableStateFlow(false)
     private val _colorBlinkActive = MutableStateFlow(false)
@@ -538,18 +543,19 @@ class WearControlRepository internal constructor(
 
     private suspend fun resumePhoneLink(saved: RememberedPhone): Boolean {
         val request = WatchResumeRequest.create(saved.linkId)
-        val payload = request.encode()
-        var result = requestPhoneLink(saved.nodeId, WatchConnectionRequest.RESUME_PATH, payload)
-        if (result == RETRY) {
+        var result = requestPhoneResume(saved.nodeId, request)
+        if (result?.status == RETRY) {
             delay(LINK_RETRY_DELAY_MS)
-            result = requestPhoneLink(saved.nodeId, WatchConnectionRequest.RESUME_PATH, payload)
+            result = requestPhoneResume(saved.nodeId, request)
         }
-        when (result) {
+        when (result?.status) {
             ACCEPTED -> {
-                linkedSettingsToRestore?.let { signal ->
-                    standaloneBeforeImport = currentSignal().copy(torchOn = false)
+                val signal = result.signal ?: linkedSettingsToRestore
+                if (signal != null) {
+                    if (standaloneBeforeImport == null) standaloneBeforeImport = currentSignal().copy(torchOn = false)
                     applySignal(signal)
                     linkedSettingsToRestore = null
+                    saveLinkedSettings(saved, signal)
                 }
                 activatePhoneLink(LinkedPhone(saved.nodeId, request.commandId))
             }

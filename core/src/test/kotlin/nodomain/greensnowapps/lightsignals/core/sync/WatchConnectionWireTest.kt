@@ -50,6 +50,35 @@ class WatchConnectionWireTest {
         assertNull(WatchConnectionRequest.decodeId(ByteArray(15)))
     }
 
+    @Test fun aResumeReplyCarriesTheCompleteCurrentStateForItsCommandSession() {
+        val now = 100_000L
+        val commandId = UUID.randomUUID()
+        val signal = PhoneSignalState(true, false, true, 625L, 1234f, 3, 1, 2)
+        val reply = WatchResumeReply(WatchConnectionReply.ACCEPTED, signal)
+        assertEquals(reply, WatchResumeReply.decode(reply.encode(commandId, now), commandId, now))
+        for (status in listOf(WatchConnectionReply.RETRY, WatchConnectionReply.REJECTED)) {
+            assertEquals(WatchResumeReply(status),
+                WatchResumeReply.decode(WatchResumeReply(status).encode(commandId, now), commandId, now))
+        }
+    }
+
+    @Test fun resumeRequiresAFreshCompleteSnapshotBoundToItsCommandSession() {
+        val now = 100_000L
+        val commandId = UUID.randomUUID()
+        val reply = WatchResumeReply(WatchConnectionReply.ACCEPTED, PhoneSignalState(false, true, false, 350L))
+        val encoded = reply.encode(commandId, now)
+        assertEquals(WatchConnectionReply.RETRY, WatchResumeReply.decode(encoded, UUID.randomUUID(), now).status)
+        assertEquals(WatchConnectionReply.RETRY,
+            WatchResumeReply.decode(encoded, commandId, now + WatchConnectionRequest.LIFETIME_MS + 1).status)
+        assertEquals(WatchConnectionReply.RETRY,
+            WatchResumeReply.decode(encoded.copyOf(encoded.size - 1), commandId, now).status)
+        assertEquals(WatchConnectionReply.RETRY,
+            WatchResumeReply.decode(WatchConnectionReply.ACCEPTED.encode(), commandId, now).status)
+        assertEquals(WatchConnectionReply.RETRY,
+            WatchResumeReply.decode(reply.copy(signal = reply.signal?.copy(color = Float.NaN)).encode(commandId, now),
+                commandId, now).status)
+    }
+
     @Test fun explicitControlCarriesSessionAndSequence() {
         val now = 100_000L
         val command = WatchControlCommand(UUID.randomUUID(), 7L, WatchControl.COLOR, 17f.toBits(), now)

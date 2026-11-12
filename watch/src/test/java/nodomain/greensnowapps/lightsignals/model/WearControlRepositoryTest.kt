@@ -29,6 +29,7 @@ import nodomain.greensnowapps.lightsignals.core.sync.WatchControl
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControlCommand
 import nodomain.greensnowapps.lightsignals.core.sync.WatchModeChange
 import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeRequest
+import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeReply
 import nodomain.greensnowapps.lightsignals.testing.FakePreferencesDataStore
 import org.junit.Assert.*
 import org.junit.Test
@@ -47,6 +48,7 @@ class WearControlRepositoryTest {
         val reachablePhones = MutableStateFlow(setOf("phone"))
         val requests = mutableListOf<Triple<String, String, ByteArray>>()
         var reply: suspend (String) -> WatchConnectionReply? = { ACCEPTED }
+        var resumeSignal: PhoneSignalState? = null
         var commandAccepted = true
         var soundStops = 0
         val repo = WearControlRepository(store, { soundStops++ },
@@ -57,6 +59,11 @@ class WearControlRepositoryTest {
             { node, path, payload ->
                 requests += Triple(node, path, payload)
                 reply(path)
+            },
+            { node, request ->
+                val path = WatchConnectionRequest.RESUME_STATE_PATH
+                requests += Triple(node, path, request.encode())
+                reply(path)?.let { WatchResumeReply(it, resumeSignal) }
             })
     }
 
@@ -193,7 +200,7 @@ class WearControlRepositoryTest {
         runCurrent()
         val (phone, path, payload) = reopened.requests.single()
         assertEquals("phone", phone)
-        assertEquals(WatchConnectionRequest.RESUME_PATH, path)
+        assertEquals(WatchConnectionRequest.RESUME_STATE_PATH, path)
         val resume = checkNotNull(WatchResumeRequest.decode(payload))
         assertEquals(request.id, resume.linkId)
         assertFalse(reopened.repo.phoneConnection.value)
@@ -229,8 +236,75 @@ class WearControlRepositoryTest {
         f.reachablePhones.value = setOf("phone")
         runCurrent()
         assertTrue(f.repo.phoneConnection.value)
-        assertEquals(WatchConnectionRequest.RESUME_PATH, f.requests.single().second)
+        assertEquals(WatchConnectionRequest.RESUME_STATE_PATH, f.requests.single().second)
         assertTrue(f.linkedCommands.isEmpty())
+    }
+
+    @Test fun reconnectAdoptsEverySharedPhoneSettingBeforeEnablingRemoteControls() = runTest {
+        val f = Fixture(this, preferencesOf(KEY_COLOR_PROGRESS to 99f, sound to 1))
+        f.repo.start(Any())
+        runCurrent()
+        val initial = WatchConnectionRequest.create(PhoneSignalState(false, true, false, 350L, 789f, 2, 0, 1))
+        assertTrue(f.repo.connectFromPhone("phone", initial))
+        runCurrent()
+        f.reachablePhones.value = emptySet()
+        runCurrent()
+        f.repo.switchSOS(true)
+        f.repo.commitColor(17f)
+
+        f.resumeSignal = PhoneSignalState(true, false, false, 725L, 1450f, 3, 1, 2)
+        val acknowledgment = CompletableDeferred<WatchConnectionReply>()
+        f.reply = { acknowledgment.await() }
+        f.reachablePhones.value = setOf("phone")
+        runCurrent()
+        assertFalse(f.repo.phoneConnection.value)
+        acknowledgment.complete(ACCEPTED)
+        runCurrent()
+
+        assertTrue(f.repo.phoneConnection.value)
+        assertTrue(f.repo.flashOn.value)
+        assertFalse(f.repo.blinkOn.value)
+        assertFalse(f.repo.sosOn.value)
+        assertEquals(725L, f.repo.blinkDelay.value)
+        assertEquals(1450f, f.repo.colorProgress.value)
+        assertEquals(3, f.repo.activeSound.value)
+        assertEquals(1, f.repo.screenIndex.value)
+        assertEquals(2, f.repo.activeColorButton.value)
+        assertTrue(f.linkedCommands.isEmpty())
+
+        f.repo.switchSOS(true)
+        runCurrent()
+        assertEquals(WatchModeChange.ENABLE_ON_TORCH.wireValue, f.linkedCommands.single().second.value)
+        f.repo.togglePhoneConnection(false)
+        runCurrent()
+        assertEquals(99f, f.repo.colorProgress.value)
+        assertEquals(1, f.repo.activeSound.value)
+    }
+
+    @Test fun reopeningTheWatchUsesTheCurrentPhoneStateInsteadOfItsSavedTorchSelection() = runTest {
+        val original = Fixture(this)
+        val owner = Any()
+        original.repo.start(owner)
+        runCurrent()
+        val handoff = WatchConnectionRequest.create(PhoneSignalState(true, true, false, 350L, 789f, 2, 1, 2))
+        assertTrue(original.repo.connectFromPhone("phone", handoff))
+        runCurrent()
+        original.repo.stop(owner)
+
+        val reopened = Fixture(this, original.store.snapshot)
+        reopened.resumeSignal = PhoneSignalState(false, false, true, 900L, 123f, 1, 0, 0)
+        reopened.repo.start(Any())
+        runCurrent()
+        assertTrue(reopened.repo.phoneConnection.value)
+        assertFalse(reopened.repo.flashOn.value)
+        assertFalse(reopened.repo.blinkOn.value)
+        assertTrue(reopened.repo.sosOn.value)
+        assertEquals(900L, reopened.repo.blinkDelay.value)
+        assertEquals(123f, reopened.repo.colorProgress.value)
+        assertEquals(1, reopened.repo.activeSound.value)
+        assertEquals(0, reopened.repo.screenIndex.value)
+        assertEquals(0, reopened.repo.activeColorButton.value)
+        assertTrue(reopened.linkedCommands.isEmpty())
     }
 
     @Test fun explicitPhoneRejectionClearsTheSavedLink() = runTest {
@@ -263,9 +337,9 @@ class WearControlRepositoryTest {
 
         advanceTimeBy(20_000)
         runCurrent()
-        assertEquals(listOf(WatchConnectionRequest.STATUS_PATH, WatchConnectionRequest.RESUME_PATH,
-            WatchConnectionRequest.RESUME_PATH, WatchConnectionRequest.RESUME_PATH,
-            WatchConnectionRequest.RESUME_PATH), f.requests.map { it.second })
+        assertEquals(listOf(WatchConnectionRequest.STATUS_PATH, WatchConnectionRequest.RESUME_STATE_PATH,
+            WatchConnectionRequest.RESUME_STATE_PATH, WatchConnectionRequest.RESUME_STATE_PATH,
+            WatchConnectionRequest.RESUME_STATE_PATH), f.requests.map { it.second })
         assertFalse(f.repo.phoneConnection.value)
         assertTrue(f.linkedCommands.isEmpty())
     }
@@ -367,7 +441,7 @@ class WearControlRepositoryTest {
         f.reachablePhones.value = setOf("phone")
         advanceTimeBy(15_000)
         runCurrent()
-        assertEquals(listOf(WatchConnectionRequest.RESUME_PATH, WatchConnectionRequest.RELEASE_PATH),
+        assertEquals(listOf(WatchConnectionRequest.RESUME_STATE_PATH, WatchConnectionRequest.RELEASE_PATH),
             f.requests.map { it.second })
         assertFalse(f.repo.phoneConnection.value)
     }
