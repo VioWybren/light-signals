@@ -1,7 +1,5 @@
 package nodomain.greensnowapps.lightsignals.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -17,7 +14,6 @@ import androidx.wear.compose.foundation.pager.HorizontalPager
 import androidx.wear.compose.foundation.pager.rememberPagerState
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material3.AnimatedPage
-import androidx.wear.compose.material3.CircularProgressIndicator
 import androidx.wear.compose.material3.HorizontalPageIndicator
 import androidx.wear.compose.material3.HorizontalPagerScaffold
 import androidx.wear.compose.material3.PagerScaffoldDefaults
@@ -31,12 +27,8 @@ fun WearScreenHost() {
     val mainVm: WearMainViewModel = hiltViewModel()
     val soundVm: WearSoundViewModel = hiltViewModel()
     val initialized by mainVm.isInitialized.collectAsStateWithLifecycle()
-    if (!initialized) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
+    // The Activity retains the splash screen while settings are loading.
+    if (!initialized) return
     val screenIndex by mainVm.screenIndex.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(initialPage = screenIndex) { 2 }
     val scrollScope = rememberCoroutineScope()

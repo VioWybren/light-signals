@@ -17,6 +17,7 @@ import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.core.app.ActivityCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import nodomain.greensnowapps.lightsignals.ui.screens.PhoneScreenHost
@@ -38,7 +39,10 @@ class PhoneMainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        // Keep the launch icon visible until saved controls are restored.
+        splashScreen.setKeepOnScreenCondition { !viewModel.isReady.value }
         Log.d(TAG, "Light Signals ${BuildConfig.VERSION_NAME} (versionCode=${BuildConfig.VERSION_CODE})")
         notificationPermissionRequested = savedInstanceState?.getBoolean(NOTIFICATIONS_REQUESTED) ?: false
         enableEdgeToEdge()

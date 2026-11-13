@@ -20,8 +20,10 @@ class WearMainActivity : ComponentActivity() {
     private val foregroundOwner = Any()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        // onStart restores settings asynchronously, independently of drawing.
+        splashScreen.setKeepOnScreenCondition { !controlRepository.isInitialized.value }
         Log.d(TAG, "Light Signals ${BuildConfig.VERSION_NAME} (versionCode=${BuildConfig.VERSION_CODE})")
         setContent {
             LightSignalNewTheme {
