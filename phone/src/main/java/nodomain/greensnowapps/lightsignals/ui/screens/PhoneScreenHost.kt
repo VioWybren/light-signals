@@ -18,7 +18,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -48,12 +47,8 @@ import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 fun PhoneScreenHost() {
     val mainVm: PhoneMainViewModel = hiltViewModel()
     val isReady by mainVm.isReady.collectAsStateWithLifecycle()
-    if (!isReady) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
+    // The Activity retains the splash screen while settings are loading.
+    if (!isReady) return
     val screenIndex by mainVm.screenIndex.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val lifecycleOwner = LocalLifecycleOwner.current

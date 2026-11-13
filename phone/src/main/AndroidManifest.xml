@@ -39,7 +39,7 @@
             android:name="PhoneMainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.LightSignalNew">
+            android:theme="@style/Theme.LightSignalNew.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
