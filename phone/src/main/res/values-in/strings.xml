@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">Izin diperlukan</string>
-    <string name="dialog_message_pre_explain_base">Mengapa kami membutuhkan izin ini:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Kamera — hanya digunakan untuk menyalakan senter. Light Signals tidak mengambil foto atau merekam video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Notifikasi — memungkinkan aplikasi menampilkan peringatan dan memberi akses cepat saat berjalan di latar belakang.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Izin diperlukan</string>
-    <string name="confirm_button_rationale_dialog">Minta lagi</string>
-    <string name="dialog_message_rationale_dialog_base">Untuk melanjutkan, aplikasi membutuhkan:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Kamera — untuk mengontrol senter.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Notifikasi — untuk menampilkan peringatan latar belakang dan tindakan cepat.\n</string>
-
-    <string name="dialog_title_setting_dialog">Aktifkan izin di Pengaturan</string>
-    <string name="confirm_button_setting_dialog">Buka Pengaturan</string>
-    <string name="dialog_message_setting_dialog_base">Satu atau lebih izin ditolak secara permanen. Buka pengaturan aplikasi untuk mengaktifkannya:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Kamera (senter)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Notifikasi\n</string>
-
     <string name="_ok">OK</string>
     <string name="_cancel">Batal</string>
-    <string name="_continue">Lanjut</string>
-    <string name="_later">Nanti</string>
 
     <string name="dialog_title_wear_api_unavailable">Fitur Wear tidak tersedia</string>
     <string name="dialog_message_wear_api_unavailable">Perangkat ini tidak mendukung fitur wearable</string>
@@ -35,16 +16,20 @@
     <string name="snackbar_app_installed_on_watch_success">Instalasi pada jam telah dimulai</string>
     <string name="snackbar_installation_on_watch_failed">Instalasi pada jam gagal. Silakan coba lagi nanti</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Gagal meluncurkan aplikasi di jam</string>
-    <string name="snackbar_app_launched_on_watch">Diluncurkan di jam tangan. Kendalikan aplikasi dari jam tangan Anda</string>
+    <string name="snackbar_watch_connection_unconfirmed">Aplikasi terbuka di jam tangan. Ketuk ikon ponsel di jam tangan untuk menghubungkan.</string>
     <string name="snackbar_no_connected_watches">Tidak ada jam tangan yang terhubung</string>
 
-    <string name="notification_title">Buka Light Signals</string>
-    <string name="notification_text">Gunakan senter atau layar untuk menampilkan sinyal. Ketuk untuk membuka</string>
+    <string name="notification_title">Senter aktif</string>
+    <string name="notification_text">Ketuk untuk membuka</string>
 
     <string name="notification_channel_name">Saluran notifikasi Light Signals</string>
     <string name="notification_channel_description">Akses cepat ke sinyal senter dan layar</string>
 
     <string name="menu_item_synchronize_with_watch">Sinkronkan dengan jam</string>
+    <string name="menu_item_add_quick_settings_tile">Tambahkan ke Setelan Cepat</string>
+    <string name="quick_settings_tile_help_title">Akses cepat ke Light Signals</string>
+    <string name="quick_settings_tile_instructions">Buka Setelan Cepat, ketuk ikon edit, lalu tambahkan ubin %1$s.</string>
+    <string name="quick_settings_tile_usage">Ketuk ubin untuk membuka Light Signals</string>
 
     <string name="no_sound">Tidak ada</string>
     <string name="sound_1">Suara 1</string>
@@ -53,4 +38,5 @@
 
     <string name="circular_indicator_text">Meluncurkan di jam tangan</string>
 
+    <string name="snackbar_watch_control_available">Anda dapat mengontrol aplikasi dari jam tangan Anda</string>
 </resources>

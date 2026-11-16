@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Σύνδεση με το τηλέφωνο</string>
+    <string name="control_phone_flashlight">Φακός τηλεφώνου</string>
+    <string name="control_red_light">Κόκκινο σήμα</string>
+    <string name="control_custom_light">Σήμα προσαρμοσμένου χρώματος</string>
+    <string name="control_green_light">Πράσινο σήμα</string>
+    <string name="control_blinking">Σήμα που αναβοσβήνει</string>
+    <string name="control_sos">Σήμα SOS</string>
+    <string name="sound_number">Ήχος %1$d</string>
+    <string name="control_increase_frequency">Αύξηση συχνότητας αναβοσβησίματος</string>
+    <string name="control_decrease_frequency">Μείωση συχνότητας αναβοσβησίματος</string>
+    <string name="control_increase_volume">Αύξηση έντασης</string>
+    <string name="control_decrease_volume">Μείωση έντασης</string>
+</resources>

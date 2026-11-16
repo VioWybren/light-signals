@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Conectar ao telefone</string>
+    <string name="control_phone_flashlight">Lanterna do telefone</string>
+    <string name="control_red_light">Sinal vermelho</string>
+    <string name="control_custom_light">Sinal de cor personalizada</string>
+    <string name="control_green_light">Sinal verde</string>
+    <string name="control_blinking">Sinal intermitente</string>
+    <string name="control_sos">Sinal SOS</string>
+    <string name="sound_number">Som %1$d</string>
+    <string name="control_increase_frequency">Aumentar a frequência de intermitência</string>
+    <string name="control_decrease_frequency">Diminuir a frequência de intermitência</string>
+    <string name="control_increase_volume">Aumentar o volume</string>
+    <string name="control_decrease_volume">Diminuir o volume</string>
+</resources>

@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">अनुमतियाँ आवश्यक</string>
-    <string name="dialog_message_pre_explain_base">हमें इन अनुमतियों की आवश्यकता है:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• कैमरा — केवल टॉर्च (फ्लैश) को चालू/बंद करने के लिए उपयोग किया जाता है। Light Signals फ़ोटो या वीडियो नहीं लेता।\n</string>
-    <string name="dialog_message_pre_explain_notification">• सूचनाएँ — ऐप को बैकग्राउंड में अलर्ट दिखाने और त्वरित पहुँच प्रदान करने देती हैं।\n</string>
-
-    <string name="dialog_title_rationale_dialog">अनुमतियाँ आवश्यक</string>
-    <string name="confirm_button_rationale_dialog">फिर से अनुरोध करें</string>
-    <string name="dialog_message_rationale_dialog_base">जारी रखने के लिए, ऐप को निम्न अनुमतियों की आवश्यकता है:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• कैमरा — टॉर्च को चलाने के लिए।</string>
-    <string name="dialog_message_rationale_dialog_notification">• सूचनाएँ — बैकग्राउंड अलर्ट और त्वरित क्रियाएँ दिखाने के लिए।\n</string>
-
-    <string name="dialog_title_setting_dialog">सेटिंग्स में अनुमतियाँ सक्षम करें</string>
-    <string name="confirm_button_setting_dialog">सेटिंग्स खोलें</string>
-    <string name="dialog_message_setting_dialog_base">एक या अधिक अनुमतियों को स्थायी रूप से अस्वीकार कर दिया गया है। इन्हें सक्षम करने के लिए ऐप सेटिंग्स खोलें:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• कैमरा (टॉर्च)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• सूचनाएँ\n</string>
-
     <string name="_ok">ठीक है</string>
     <string name="_cancel">रद्द करें</string>
-    <string name="_continue">जारी रखें</string>
-    <string name="_later">बाद में</string>
 
     <string name="dialog_title_wear_api_unavailable">Wear सुविधाएँ उपलब्ध नहीं</string>
     <string name="dialog_message_wear_api_unavailable">इस डिवाइस में पहनने योग्य सुविधाओं के लिए समर्थन नहीं है।</string>
@@ -35,16 +16,20 @@
     <string name="snackbar_app_installed_on_watch_success">घड़ी पर इंस्टॉलेशन शुरू कर दिया गया है</string>
     <string name="snackbar_installation_on_watch_failed">घड़ी पर इंस्टॉलेशन विफल हुआ। कृपया बाद में पुनः प्रयास करें।</string>
     <string name="snackbar_app_failed_to_launch_on_watch">घड़ी पर ऐप लॉन्च करने में विफल रहा</string>
-    <string name="snackbar_app_launched_on_watch">घड़ी पर लॉन्च हो गया। आप अपनी घड़ी से ऐप नियंत्रित कर सकते हैं।</string>
+    <string name="snackbar_watch_connection_unconfirmed">ऐप आपकी घड़ी पर खुल गया है। कनेक्ट करने के लिए घड़ी पर फ़ोन आइकॉन पर टैप करें।</string>
     <string name="snackbar_no_connected_watches">कोई कनेक्टेड घड़ियाँ नहीं</string>
 
-    <string name="notification_title">Light Signals खोलें</string>
-    <string name="notification_text">टॉर्च या स्क्रीन का उपयोग करके संकेत दिखाएँ। खोलने के लिए टैप करें।</string>
+    <string name="notification_title">टॉर्च सक्रिय है</string>
+    <string name="notification_text">खोलने के लिए टैप करें</string>
 
     <string name="notification_channel_name">Light Signals सूचनाएँ</string>
     <string name="notification_channel_description">टॉर्च और स्क्रीन संकेतों के त्वरित एक्सेस</string>
 
     <string name="menu_item_synchronize_with_watch">घड़ी के साथ सिंक करें</string>
+    <string name="menu_item_add_quick_settings_tile">क्विक सेटिंग में जोड़ें</string>
+    <string name="quick_settings_tile_help_title">Light Signals तुरंत खोलें</string>
+    <string name="quick_settings_tile_instructions">क्विक सेटिंग खोलें, बदलाव करने वाले आइकॉन पर टैप करें और %1$s की टाइल जोड़ें।</string>
+    <string name="quick_settings_tile_usage">Light Signals खोलने के लिए टाइल पर टैप करें</string>
 
     <string name="no_sound">कोई नहीं</string>
     <string name="sound_1">साउंड 1</string>
@@ -53,4 +38,5 @@
 
     <string name="circular_indicator_text">घड़ी पर शुरू हो रहा है</string>
 
+    <string name="snackbar_watch_control_available">आप अपनी घड़ी से ऐप को नियंत्रित कर सकते हैं</string>
 </resources>

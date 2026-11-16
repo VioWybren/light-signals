@@ -26,4 +26,17 @@
 
     <string name="_cancel">Cancel</string>
 
+    <string name="control_connect_phone">Connect to phone</string>
+    <string name="sound_number">Sound %1$d</string>
+    <string name="control_phone_flashlight">Phone flashlight</string>
+    <string name="control_red_light">Red light</string>
+    <string name="control_custom_light">Custom light color</string>
+    <string name="control_green_light">Green light</string>
+    <string name="control_increase_frequency">Increase blinking frequency</string>
+    <string name="control_decrease_frequency">Decrease blinking frequency</string>
+    <string name="control_increase_volume">Increase volume</string>
+    <string name="control_decrease_volume">Decrease volume</string>
+    <string name="control_blinking">Blinking light</string>
+    <string name="control_sos">SOS signal</string>
+    <string name="sos_text" translatable="false">SOS</string>
 </resources>

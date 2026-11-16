@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">ไฟฉาย</string>
+    <string name="red_signal">สัญญาณสีแดง</string>
+    <string name="custom_color_signal">สัญญาณสีที่กำหนดเอง</string>
+    <string name="green_signal">สัญญาณสีเขียว</string>
+    <string name="blink_signal">สัญญาณไฟกะพริบ</string>
+    <string name="sos_signal">สัญญาณ SOS</string>
+    <string name="sound_selection">เสียงสัญญาณ</string>
+    <string name="signal_interval">ช่วงเวลาสัญญาณ</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">เมนู</string>
+</resources>

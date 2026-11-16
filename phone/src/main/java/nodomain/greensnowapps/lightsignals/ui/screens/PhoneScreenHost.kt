@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -16,13 +17,16 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -32,31 +36,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 
+/**
+ * Hosts the phone controls/signal pager and its navigation, lifecycle-aware state and snackbar
+ * feedback.
+ */
 @Composable
-fun PhoneScreenHost(
-    onToggleClick: () -> Unit,
-
-    showPreExplain: Boolean,
-    preExplainMessage: String,
-    onPreExplainContinue: () -> Unit,
-    onDismissPreExplain: () -> Unit,
-
-    showRationale: Boolean,
-    rationaleMessage: String,
-    onRequestAgain: () -> Unit,
-    onDismissRationale: () -> Unit,
-
-    showSettings: Boolean,
-    settingsMessage: String,
-    onOpenSettings: () -> Unit,
-    onDismissSettings: () -> Unit,
-) {
+fun PhoneScreenHost() {
     val mainVm: PhoneMainViewModel = hiltViewModel()
-    val screenIndex by mainVm.screenIndex.collectAsState()
+    val isReady by mainVm.isReady.collectAsStateWithLifecycle()
+    // The Activity retains the splash screen while settings are loading.
+    if (!isReady) return
+    val screenIndex by mainVm.screenIndex.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val watchConnectedMessage = stringResource(R.string.snackbar_watch_control_available)
+
+    LaunchedEffect(mainVm, lifecycleOwner, watchConnectedMessage) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            mainVm.watchConnectedEvents.collect {
+                snackbarHostState.showSnackbar(watchConnectedMessage, duration = SnackbarDuration.Short)
+            }
+        }
+    }
 
     val pagerState = rememberPagerState(
         initialPage = screenIndex,
@@ -77,91 +85,76 @@ fun PhoneScreenHost(
     }
 
 
-    val scrollScope = rememberCoroutineScope()
-
-    HorizontalPager(
-        state = pagerState,
-        beyondViewportPageCount = 1,
-        modifier = Modifier
-            .fillMaxWidth()
-    ) { page ->
-        when (page) {
-            0 -> PhoneMainScreen(mainVm, onNext = { scrollScope.launch { pagerState.animateScrollToPage(1) } })
-            1 -> PhoneSignalScreen(mainVm, onBack = { scrollScope.launch { pagerState.animateScrollToPage(0) } })
+    LaunchedEffect(pagerState, mainVm) {
+        mainVm.openControlsRequests.collect {
+            pagerState.scrollToPage(0)
         }
     }
 
-    val statusBarHeightDp = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val scrollScope = rememberCoroutineScope()
 
-    Column(
-        Modifier
-            .padding(top = (statusBarHeightDp + 30.dp))
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            Modifier
-                .wrapContentHeight()
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            repeat(pagerState.pageCount) { iteration ->
-                val color = if (pagerState.currentPage == iteration) Color.White else Color.DarkGray
-                Box(
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(10.dp)
+    Box(Modifier.fillMaxSize()) {
+        HorizontalPager(
+            state = pagerState,
+            beyondViewportPageCount = 1,
+            modifier = Modifier.fillMaxWidth(),
+        ) { page ->
+            when (page) {
+                0 -> PhoneMainScreen(
+                    viewModel = mainVm,
+                    onNext = { scrollScope.launch { pagerState.animateScrollToPage(1) } },
+                    snackbarHostState = snackbarHostState,
+                )
+                1 -> PhoneSignalScreen(
+                    viewModel = mainVm,
+                    onBack = { scrollScope.launch { pagerState.animateScrollToPage(0) } },
                 )
             }
         }
-    }
 
-    if (showPreExplain) {
-        AlertDialog(
-            onDismissRequest = onDismissPreExplain,
-            title = { Text(stringResource(R.string.dialog_title_pre_explain)) },
-            text = { Text(preExplainMessage) },
-            confirmButton = { TextButton(onClick = onPreExplainContinue) { Text(stringResource(R.string._continue)) } },
-            dismissButton = { TextButton(onClick = onDismissPreExplain) { Text(stringResource(R.string._cancel)) } }
-        )
-    }
+        val statusBarHeightDp = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
-    if (showRationale) {
-        AlertDialog(
-            onDismissRequest = onDismissRationale,
-            title = { Text(stringResource(R.string.dialog_title_rationale_dialog)) },
-            text = { Text(rationaleMessage) },
-            confirmButton = {
-                TextButton(onClick = {
-                    onDismissRationale()
-                    onRequestAgain()
-                }) { Text(stringResource(R.string.confirm_button_rationale_dialog)) }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismissRationale)
-                { Text(stringResource(R.string._cancel)) }
+        Column(
+            Modifier
+                .padding(top = (statusBarHeightDp + 30.dp))
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                repeat(pagerState.pageCount) { iteration ->
+                    val color = if (pagerState.currentPage == iteration) Color.White else Color.DarkGray
+                    Box(
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .size(10.dp)
+                    )
+                }
             }
-        )
-    }
+        }
 
-    if (showSettings) {
-        AlertDialog(
-            onDismissRequest = onDismissSettings,
-            title = { Text(stringResource(R.string.dialog_title_setting_dialog)) },
-            text = { Text(settingsMessage) },
-            confirmButton = {
-                TextButton(onClick = {
-                    onDismissSettings()
-                    onOpenSettings()
-                }) { Text(stringResource(R.string.confirm_button_setting_dialog)) }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            snackbar = { snackbarData ->
+                Snackbar(
+                    snackbarData = snackbarData,
+                    shape = RoundedCornerShape(12.dp),
+                    containerColor = Color.Black,
+                    contentColor = Color.White,
+                )
             },
-            dismissButton = {
-                TextButton(onClick = onDismissSettings) { Text(stringResource(R.string._later)) }
-            }
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 16.dp, start = 10.dp, end = 10.dp),
         )
     }
 }

@@ -13,14 +13,33 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import nodomain.greensnowapps.lightsignals.R
+import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
 
-private const val MAX_PROGRESS = 255 * 7
-
+/**
+ * Displays the ordered shared colour track for the watch.
+ *
+ * Hoists encoded drag values and drag completion; the caller decides when to persist and
+ * synchronize.
+ *
+ * @param progress Encoded shared palette position shown by the custom-colour slider.
+ * @param onProgressChanged Hoisted callback receiving an encoded shared palette position while
+ *     dragging.
+ * @param onValueChangeFinished Hoisted callback invoked when the user finishes adjusting the
+ *     slider.
+ * @param modifier Modifier applied to the custom thumb and track elements.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WearColorPicker(
@@ -29,24 +48,23 @@ fun WearColorPicker(
     onValueChangeFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colorLabel = stringResource(R.string.control_custom_light)
 
-    val gradientColors = listOf(
-        Color.Black,
-        Color.Blue,
-        Color.Green,
-        Color.Cyan,
-        Color.Red,
-        Color.Magenta,
-        Color.Yellow,
-        Color.White
-    )
+    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val gradientBrush = remember(isRtl) {
+        val colors = SignalColorPalette.argbStops.map { Color(it) }
+        Brush.horizontalGradient(if (isRtl) colors.asReversed() else colors)
+    }
+
+    val sliderProgress = remember(progress) { SignalColorPalette.toSliderProgress(progress) }
 
     Slider(
-        value = progress,
-        onValueChange = onProgressChanged,
+        value = sliderProgress,
+        onValueChange = { onProgressChanged(SignalColorPalette.fromSliderProgress(it)) },
         onValueChangeFinished = onValueChangeFinished,
-        valueRange = 0f..MAX_PROGRESS.toFloat(),
+        valueRange = 0f..SignalColorPalette.MAX_SLIDER_PROGRESS.toFloat(),
         modifier = Modifier
+            .semantics { contentDescription = colorLabel }
             .fillMaxWidth()
             .padding(start = 0.dp, end = 0.dp, top = 0.dp, bottom = 0.dp),
         thumb = {
@@ -69,9 +87,8 @@ fun WearColorPicker(
                     .fillMaxWidth()
                     .height(10.dp)
                     .background(
-                        Brush.horizontalGradient(
-                            gradientColors
-                        ), RoundedCornerShape(10.dp)
+                        brush = gradientBrush,
+                        shape = RoundedCornerShape(10.dp)
                     )
                     .border(
                         width = 1.dp,

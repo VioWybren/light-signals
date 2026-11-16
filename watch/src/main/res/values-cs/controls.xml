@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Připojit k telefonu</string>
+    <string name="control_phone_flashlight">Svítilna telefonu</string>
+    <string name="control_red_light">Červený signál</string>
+    <string name="control_custom_light">Signál vlastní barvy</string>
+    <string name="control_green_light">Zelený signál</string>
+    <string name="control_blinking">Blikající signál</string>
+    <string name="control_sos">Signál SOS</string>
+    <string name="sound_number">Zvuk %1$d</string>
+    <string name="control_increase_frequency">Zvýšit frekvenci blikání</string>
+    <string name="control_decrease_frequency">Snížit frekvenci blikání</string>
+    <string name="control_increase_volume">Zvýšit hlasitost</string>
+    <string name="control_decrease_volume">Snížit hlasitost</string>
+</resources>

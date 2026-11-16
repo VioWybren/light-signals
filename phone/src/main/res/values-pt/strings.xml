@@ -3,23 +3,7 @@
 
     <string name="_ok">OK</string>
     <string name="_cancel">Cancel</string>
-    <string name="_continue">Continue</string>
-    <string name="_later">Later</string>
 
-    <string name="dialog_title_pre_explain">Permissions required</string>
-    <string name="dialog_message_pre_explain_base">Why we need these permissions:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Câmera — used only to toggle the flashlight. Light Signals does not take photos or record video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Notifications — let the app show alerts and provide quick access while running in the background</string>
-    <string name="dialog_title_rationale_dialog">Permissions required</string>
-    <string name="confirm_button_rationale_dialog">Request again</string>
-    <string name="dialog_message_rationale_dialog_base">To continue, the app needs:\n\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Câmera — to toggle the flashlight \n</string>
-    <string name="dialog_message_rationale_dialog_notification">• Notifications — to show background alerts and provide quick actions</string>
-    <string name="dialog_title_setting_dialog">Enable permissions in Settings</string>
-    <string name="confirm_button_setting_dialog">Open Settings</string>
-    <string name="dialog_message_setting_dialog_base">One or more permissions were permanently denied. Open the app settings to enable them:\n\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Câmera (flashlight)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Notifications\n</string>
     <string name="dialog_title_wear_api_unavailable">Wear features unavailable</string>
     <string name="dialog_message_wear_api_unavailable">This device does not support wearable features</string>
 
@@ -32,16 +16,20 @@
     <string name="snackbar_app_installed_on_watch_success">The installation has started on the watch</string>
     <string name="snackbar_installation_on_watch_failed">Installation on the watch failed. Please try again later</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Failed to launch the app on the watch</string>
-    <string name="snackbar_app_launched_on_watch">Launched on watch. Control the app from your watch</string>
+    <string name="snackbar_watch_connection_unconfirmed">O app foi aberto no relógio. Toque no ícone do telefone no relógio para conectar.</string>
     <string name="snackbar_no_connected_watches">Nenhum relógio conectado</string>
 
-    <string name="notification_title">Open Light Signals</string>
-    <string name="notification_text">Use the flashlight or screen to show signals. Tap to open.</string>
+    <string name="notification_title">Lanterna ativa</string>
+    <string name="notification_text">Toque para abrir</string>
 
     <string name="notification_channel_name">Light Signals notification channel</string>
     <string name="notification_channel_description">Quick access to flashlight and screen signals</string>
 
     <string name="menu_item_synchronize_with_watch">Synchronize with the watch</string>
+    <string name="menu_item_add_quick_settings_tile">Adicionar às Configurações rápidas</string>
+    <string name="quick_settings_tile_help_title">Acesso rápido ao Light Signals</string>
+    <string name="quick_settings_tile_instructions">Abra as Configurações rápidas, toque no ícone de edição e adicione o bloco do %1$s.</string>
+    <string name="quick_settings_tile_usage">Toque no bloco para abrir o Light Signals</string>
 
     <string name="no_sound">None</string>
     <string name="sound_1">Sound 1</string>
@@ -50,4 +38,5 @@
 
     <string name="circular_indicator_text">Launching on watch</string>
 
+    <string name="snackbar_watch_control_available">Você pode controlar o app pelo relógio</string>
 </resources>

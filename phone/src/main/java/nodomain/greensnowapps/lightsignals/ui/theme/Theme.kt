@@ -10,18 +10,31 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+/**
+ * Dark Material colour fallback when dynamic colours are disabled or unavailable.
+ */
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
     tertiary = Pink80
 )
 
+/**
+ * Light Material colour fallback when dynamic colours are disabled or unavailable.
+ */
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40
 )
 
+/**
+ * Applies the app's Material colours and typography to the composable content slot.
+ *
+ * @param darkTheme Whether to select the dark colour scheme.
+ * @param dynamicColor Whether supported Android versions use the system-derived colour scheme.
+ * @param content Composable content slot rendered with this theme's colours and typography.
+ */
 @Composable
 fun LightSignalNewTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

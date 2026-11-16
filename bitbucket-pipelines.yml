@@ -1,0 +1,95 @@
+# Run manually through Pipelines > Run pipeline > verify. See CI.md.
+# The digest pins the official Temurin JDK 21 / Ubuntu 24.04 build image.
+image: eclipse-temurin:21-jdk-noble@sha256:114cabb73033ca4ce7ceec3deb62396bc1b716282bae051ed3c1d82e38fcab2d
+
+definitions:
+  caches:
+    gradle-wrapper: ~/.gradle/wrapper
+    gradle-jdks: ~/.gradle/jdks
+    android-sdk:
+      key:
+        files:
+          - bitbucket-pipelines.yml
+          - phone/build.gradle.kts
+          - watch/build.gradle.kts
+      path: /opt/android-sdk
+
+pipelines:
+  custom:
+    verify:
+      - step:
+          name: Verify phone and watch
+          size: 2x
+          max-time: 60
+          caches:
+            - gradle
+            - gradle-wrapper
+            - gradle-jdks
+            - android-sdk
+          script:
+            - |
+              set -euo pipefail
+              apt-get update
+              DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends unzip
+
+              export ANDROID_HOME=/opt/android-sdk
+              android_tools_build=15859902
+              android_tools_sha256=4e4c464f145a7512b57d088ac6c278c03c9eea610886b35a5e0804e74eedf583
+              sdk_manager="$ANDROID_HOME/cmdline-tools/$android_tools_build/bin/sdkmanager"
+
+              if [ ! -x "$sdk_manager" ]; then
+                sdk_download_dir="$(mktemp -d)"
+                curl --fail --location --retry 3 --proto '=https' --tlsv1.2 \
+                  --output "$sdk_download_dir/tools.zip" \
+                  "https://dl.google.com/android/repository/commandlinetools-linux-${android_tools_build}_latest.zip"
+                printf '%s  %s\n' "$android_tools_sha256" "$sdk_download_dir/tools.zip" | sha256sum --check --strict
+                unzip -q "$sdk_download_dir/tools.zip" -d "$sdk_download_dir"
+                mkdir -p "$ANDROID_HOME/cmdline-tools"
+                mv "$sdk_download_dir/cmdline-tools" "$ANDROID_HOME/cmdline-tools/$android_tools_build"
+              fi
+
+              # Ignore the producer's SIGPIPE when sdkmanager closes its input.
+              # With pipefail disabled, a failing sdkmanager still stops this script.
+              set +o pipefail
+              yes | "$sdk_manager" --sdk_root="$ANDROID_HOME" --licenses > /dev/null
+              set -o pipefail
+              # Use the exact repository package ID, including the base SDK's .0 suffix.
+              "$sdk_manager" --sdk_root="$ANDROID_HOME" \
+                "platform-tools" "platforms;android-37.0" "build-tools;37.0.0"
+
+              # The checked-in daemon criteria provision JetBrains JDK 21 through Gradle.
+              # bash also works when the Windows checkout has no executable bit on gradlew.
+              # Budget memory within the 8 GB step: give D8 more heap and avoid concurrent merges.
+              # Bound the Kotlin daemon separately so it does not inherit Gradle's larger heap.
+              bash ./gradlew --no-daemon --console=plain --stacktrace \
+                "-Dorg.gradle.jvmargs=-Xmx4096m -Dfile.encoding=UTF-8" \
+                -Pkotlin.daemon.jvmargs=-Xmx1536m \
+                --max-workers=1 --no-parallel --continue \
+                :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest \
+                :phone:lintDebug :watch:lintDebug \
+                :phone:assembleDebug :watch:assembleDebug \
+                :phone:assembleUitest :phone:assembleUitestAndroidTest \
+                :watch:assembleUitest :watch:assembleUitestAndroidTest
+          artifacts:
+            upload:
+              - name: unit-test-results
+                type: test-reports
+                capture-on: always
+                paths:
+                  - core/build/test-results/test/TEST-*.xml
+                  - phone/build/test-results/testDebugUnitTest/TEST-*.xml
+                  - watch/build/test-results/testDebugUnitTest/TEST-*.xml
+              - name: verification-reports
+                type: scoped
+                capture-on: always
+                paths:
+                  - core/build/reports/**
+                  - phone/build/reports/**
+                  - watch/build/reports/**
+                  - build/reports/**
+              - name: debug-and-test-apks
+                type: scoped
+                capture-on: success
+                paths:
+                  - phone/build/outputs/apk/**
+                  - watch/build/outputs/apk/**

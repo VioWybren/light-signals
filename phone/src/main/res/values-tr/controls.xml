@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">El feneri</string>
+    <string name="red_signal">Kırmızı sinyal</string>
+    <string name="custom_color_signal">Özel renkli sinyal</string>
+    <string name="green_signal">Yeşil sinyal</string>
+    <string name="blink_signal">Yanıp sönen sinyal</string>
+    <string name="sos_signal">SOS sinyali</string>
+    <string name="sound_selection">Sinyal sesi</string>
+    <string name="signal_interval">Sinyal aralığı</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">Menü</string>
+</resources>

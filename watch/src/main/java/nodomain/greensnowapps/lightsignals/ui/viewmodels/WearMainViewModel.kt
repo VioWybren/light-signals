@@ -1,295 +1,306 @@
 package nodomain.greensnowapps.lightsignals.ui.viewmodels
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import com.google.android.horologist.datalayer.watch.WearDataLayerAppHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import nodomain.greensnowapps.lightsignals.WearConstants.DEFAULT_COLOR_PROGRESS
-import nodomain.greensnowapps.lightsignals.model.KEY_COLOR_PROGRESS
-import nodomain.greensnowapps.lightsignals.model.KEY_FREQUENCY_PROGRESS
 import nodomain.greensnowapps.lightsignals.model.WearControlRepository
 import nodomain.greensnowapps.lightsignals.model.WearControlState
 import nodomain.greensnowapps.lightsignals.model.WearPhoneOperations
 import nodomain.greensnowapps.lightsignals.model.WearSyncStateRepository
-import javax.inject.Inject
+import nodomain.greensnowapps.lightsignals.model.statesToSynchronize
 
-
-private val KEY_ACTIVE_COLOR = intPreferencesKey("active_btn")
-
+/**
+ * Owns watch control-screen events, companion discovery and legacy state publication.
+ *
+ * Exposes StateFlows for modes, selected colours, sound, readiness and phone connectivity,
+ * plus companion messages. Main-thread events update the repository; viewModelScope owns
+ * derived UI flows, discovery retries and legacy synchronization.
+ *
+ * @param wearDataLayerAppHelper Horologist helper for watch-to-phone discovery and companion
+ *     operations.
+ * @property wearCtrl Owner of the watch signal and companion-link state.
+ * @property wearSyncStateRepository Watch transport for legacy state publication and
+ *     acknowledged commands.
+ * @property wearPhoneOperations Watch-to-phone launch, installation and connection operations.
+ */
 @HiltViewModel
-class WearMainViewModel @OptIn(ExperimentalHorologistApi::class)
-@Inject constructor(
-    private val wearDataLayerAppHelper: WearDataLayerAppHelper,
+@OptIn(ExperimentalHorologistApi::class)
+class WearMainViewModel @Inject constructor(
+    wearDataLayerAppHelper: WearDataLayerAppHelper,
     private val wearCtrl: WearControlRepository,
-    private val dataStore: DataStore<Preferences>,
     private val wearSyncStateRepository: WearSyncStateRepository,
     private val wearPhoneOperations: WearPhoneOperations
 ) : ViewModel() {
-
-    enum class Active { RED, MIDDLE, GREEN, FLASH }
-
-    private val initialIndex: Int = runBlocking {
-        dataStore.data
-            .map { preference -> preference[KEY_ACTIVE_COLOR] ?: 0 }
-            .first()
+    /**
+     * Identifies the selected red, custom-colour, green or phone-torch control.
+     */
+    enum class Active {
+        /**
+         * Selects the red screen-colour control.
+         */
+        RED,
+        /**
+         * Selects the custom colour shown by the shared palette slider.
+         */
+        MIDDLE,
+        /**
+         * Selects the green screen-colour control.
+         */
+        GREEN,
+        /**
+         * Selects the companion phone's LED output.
+         */
+        FLASH
     }
 
-    private val _active = MutableStateFlow(
-        Active.entries.getOrNull(initialIndex) ?: Active.MIDDLE
-    )
-    val activeButton: StateFlow<Active> = _active.asStateFlow()
+    /**
+     * Read-only selected colour or phone-torch control.
+     */
+    val activeButton: StateFlow<Active> = wearCtrl.activeColorButton
+        .map { Active.entries.getOrNull(it) ?: Active.RED }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Active.RED)
 
-    private val initialFrequency: Float = runBlocking(Dispatchers.IO) {
-        dataStore.data
-            .map { prefs -> prefs[KEY_FREQUENCY_PROGRESS] ?: 400f }
-            .first()
-    }
+    /**
+     * Read-only blink interval represented as a Float for the frequency slider.
+     */
+    val progressFrequency: StateFlow<Float> = wearCtrl.blinkDelay
+        .map(Long::toFloat)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 400f)
 
-    val progressFrequency: StateFlow<Float> = dataStore.data
-        .catch { emit(emptyPreferences()) }
-        .map { prefs -> prefs[KEY_FREQUENCY_PROGRESS] ?: initialFrequency }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000L),
-            initialValue = initialFrequency
-        )
-
-    private val initialProgressColor: Float = runBlocking(Dispatchers.IO) {
-        dataStore.data
-            .map { prefs -> prefs[KEY_COLOR_PROGRESS] ?: DEFAULT_COLOR_PROGRESS }
-            .first()
-    }
-
-    val progressColor: StateFlow<Float> = dataStore.data
-        .catch { emit(emptyPreferences()) }
-        .map { preferences ->
-            preferences[KEY_COLOR_PROGRESS] ?: initialProgressColor
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5000),
-            initialValue = initialProgressColor
-        )
-
+    /**
+     * Read-only encoded palette position displayed by the colour slider.
+     */
+    val progressColor = wearCtrl.colorProgress
+    /**
+     * Read-only selection state of the phone-torch control; this is not the instantaneous LED
+     * phase.
+     */
     val flashOn = wearCtrl.flashOn
+    /**
+     * Read-only selection state of the Blink control.
+     */
     val blinkOn = wearCtrl.blinkOn
+    /**
+     * Read-only lit/dark phase used to render and sonify timed screen signals.
+     */
     val colorBlinkActive = wearCtrl.colorBlinkActive
+    /**
+     * Read-only blink half-period in milliseconds.
+     */
     val blinkDelay = wearCtrl.blinkDelay
+    /**
+     * Read-only Compose colour displayed by the custom-colour button.
+     */
     val middleColor = wearCtrl.middleColor
+    /**
+     * Read-only selected sample number: 0 for silence, 1..3 for a signal sample.
+     */
     val activeSound = wearCtrl.activeSound
+    /**
+     * Read-only pager selection: 0 for controls, 1 for the signal display.
+     */
     val screenIndex = wearCtrl.screenIndex
-    val sosOn: StateFlow<Boolean> = wearCtrl.sosOn
+    /**
+     * Read-only selection state of the SOS control.
+     */
+    val sosOn = wearCtrl.sosOn
+    /**
+     * Read-only confirmed or legacy connection state displayed by the watch Phone icon.
+     */
     val phoneConnection = wearCtrl.phoneConnection
+    /**
+     * Read-only state indicating at least one active watch foreground owner.
+     */
+    val isForeground = wearCtrl.isForeground
+    /**
+     * Read-only readiness state used to enable controls after preference restoration.
+     */
+    val isInitialized = wearCtrl.isInitialized
 
+    /**
+     * Read-only sound-icon state derived from sample selection and local/remote routing
+     * eligibility.
+     *
+     * A nonzero sample appears enabled when connected or when local suppression is off. This
+     * describes UI selection and routing, not an active audible stream.
+     */
+    val isSoundOn: StateFlow<Boolean> = combine(activeSound, phoneConnection, wearCtrl.localSoundSuppressed) {
+            sound, connected, suppressed ->
+        sound != 0 && (connected || !suppressed)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    /**
+     * Companion-operation message events translated into user feedback by the UI.
+     */
     val controlMessageFlow = wearPhoneOperations.controlMessageFlow
+    /**
+     * Read-only progress state that prevents overlapping phone launch/install operations.
+     */
     val isLaunchingOnPhone = wearPhoneOperations.isLaunchingOnPhone
 
-    private val _controlState = MutableStateFlow(WearControlState())
-    val controlState: StateFlow<WearControlState> = _controlState.asStateFlow()
-
-    @OptIn(ExperimentalHorologistApi::class)
-    val installedPhoneNodes = wearDataLayerAppHelper.connectedAndInstalledNodes
-
+    /**
+     * Read-only discovery state indicating a reachable phone with the companion installed.
+     */
     val isPhoneAppAvailable: StateFlow<Boolean> =
-        installedPhoneNodes
+        wearDataLayerAppHelper.connectedAndInstalledNodes
+            .retryWhen { error, attempt ->
+                if (error is CancellationException) throw error
+                Log.w("WearMainViewModel", "Device discovery failed", error)
+                emit(emptySet())
+                delay(1_000L * (attempt + 1).coerceAtMost(10L))
+                true
+            }
             .map { it.isNotEmpty() }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
+    /**
+     * Cold combination of selected modes, timing and sound, excluding transient on/off signal
+     * phases.
+     */
+    private val controlModes = combine(blinkOn, sosOn, flashOn, blinkDelay, activeSound) {
+            blink, sos, torch, frequency, sound ->
+        WearControlState(
+            blinkEnabled = blink,
+            sosEnabled = sos,
+            torchOn = torch,
+            frequency = frequency,
+            activeSound = sound
+        )
+    }
+
+    /**
+     * Cold complete-control snapshots assembled for the gated legacy DataItem publisher.
+     */
+    private val legacyState = combine(
+        controlModes,
+        progressColor,
+        screenIndex,
+        wearCtrl.activeColorButton
+    ) { modes, color, screen, active ->
+        modes.copy(color = color, screenIndex = screen, activeColorButton = active)
+    }
+
+    /**
+     * Read-only Compose colour used by the selected screen signal.
+     */
+    val activeColor: StateFlow<Color> = combine(activeButton, middleColor) { active, middle ->
+        when (active) {
+            Active.RED -> Color.Red
+            Active.MIDDLE -> middle
+            Active.GREEN -> Color.Green
+            Active.FLASH -> Color.Black
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, Color.Red)
+
     init {
         viewModelScope.launch {
-            wearCtrl.initFromPrefs()
-        }
-
-        viewModelScope.launch {
-            progressColor.collect { prog ->
-                wearCtrl.calcMiddleColor(prog)
-            }
-        }
-
-        viewModelScope.launch {
-            blinkOn.collect { newBlink ->
-                _controlState.update { it.copy(blinkEnabled = newBlink) }
-            }
-        }
-        viewModelScope.launch {
-            sosOn.collect { newSos ->
-                _controlState.update { it.copy(sosEnabled = newSos) }
-            }
-        }
-        viewModelScope.launch {
-            flashOn.collect { newFlash ->
-                _controlState.update { it.copy(torchOn = newFlash) }
-            }
-        }
-        viewModelScope.launch {
-            blinkDelay.collect { newDelay ->
-                _controlState.update { it.copy(frequency = newDelay) }
-            }
-        }
-        viewModelScope.launch {
-            activeSound.collect { newSound ->
-                _controlState.update { it.copy(activeSound = newSound) }
-            }
-        }
-        viewModelScope.launch {
-            colorBlinkActive.collect { newColorBlink ->
-                _controlState.update { it.copy(colorBlinkEnabled = newColorBlink) }
-            }
-        }
-
-        viewModelScope.launch {
-            progressColor.collect { newColor ->
-                _controlState.update { it.copy(color = newColor) }
-            }
-        }
-
-        viewModelScope.launch {
-            screenIndex.collect { newIndex ->
-                _controlState.update { it.copy(screenIndex = newIndex) }
-            }
-        }
-
-        viewModelScope.launch {
-            activeButton.collect { activeBtn ->
-                _controlState.update {
-                    it.copy(activeColorButton = activeBtn.ordinal)
-                }
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            controlState
+            statesToSynchronize(legacyState, wearCtrl.manualPhoneConnection, isForeground, isInitialized)
                 .collect { state ->
-                    if (phoneConnection.value) {
-                        wearSyncStateRepository.sendState(state)
-                    }
+                    val manualLinkStartedAt = wearCtrl.manualLinkStartedAt ?: return@collect
+                    wearSyncStateRepository.sendState(state, manualLinkStartedAt)
                 }
         }
     }
 
+    /**
+     * Selects a colour control or phone-torch output on Main.
+     *
+     * @param button Selected colour or torch control.
+     */
     fun select(button: Active) {
-        if (button == Active.FLASH) {
-            switchFlash(true)
-        } else {
-            _active.value = button
-            writePref(KEY_ACTIVE_COLOR, button.ordinal)
-            val s = sosOn.value
-            switchFlash(false)
-            if (s) {
-                toggleSos(true)
-            }
-        }
-
-        if (!sosOn.value) {
-            wearCtrl.setBlinking(blinkOn.value, blinkDelay.value)
-        } else {
-            toggleSos(true)
-        }
+        if (button == Active.FLASH) wearCtrl.setFlash(true)
+        else wearCtrl.selectColorButton(button.ordinal)
     }
 
-    fun switchFlash(isOn: Boolean) {
-        if (!isOn) {
-            if (sosOn.value) {
-                toggleSos(false)
-            }
-        }
-        wearCtrl.setFlash(isOn)
+    /**
+     * Changes the phone-torch selection on Main.
+     *
+     * @param isOn Whether the phone torch should be selected.
+     */
+    fun switchFlash(isOn: Boolean) = wearCtrl.setFlash(isOn)
+
+    /**
+     * Updates Blink selection on Main using the current blink interval.
+     *
+     * @param on Whether to select Blink mode.
+     */
+    fun toggleControl(on: Boolean) = wearCtrl.setBlinking(on, blinkDelay.value)
+
+    /**
+     * Updates the blink half-period on Main while preserving Blink selection.
+     *
+     * @param ms Blink half-period in milliseconds.
+     */
+    fun updateBlinkDelay(ms: Long) = wearCtrl.setBlinking(blinkOn.value, ms)
+
+    /**
+     * Updates SOS selection on Main through the control repository.
+     *
+     * @param on Whether to select SOS mode.
+     */
+    fun toggleSos(on: Boolean) = wearCtrl.switchSOS(on)
+
+    /**
+     * Updates the custom-colour selection on Main using a bounded shared palette position.
+     *
+     * @param newProgress Encoded shared palette position shown by the custom-colour slider.
+     */
+    fun updateColorProgress(newProgress: Float) = wearCtrl.commitColor(newProgress)
+
+    /**
+     * Updates the persisted frequency-slider value on Main after bounding non-finite or
+     * out-of-range input.
+     *
+     * Applies the bounded interval to the watch repository as well as its persisted frequency
+     * slider.
+     *
+     * @param newProgress Requested blink half-period from the frequency slider, in
+     *     milliseconds.
+     */
+    fun updateFrequencyProgress(newProgress: Float) {
+        val progress = newProgress.takeIf { it.isFinite() }?.coerceIn(100f, 1000f) ?: 400f
+        wearCtrl.setBlinkDelay(progress.toLong())
     }
 
-    fun toggleControl(on: Boolean) {
-        if (on) {
-            if (sosOn.value) {
-                val f = flashOn.value
-                toggleSos(false)
-                wearCtrl.setFlash(f)
-            }
-        }
-        wearCtrl.setBlinking(on, blinkDelay.value)
-    }
+    /**
+     * Updates and persists the selected controls/signal pager page on Main.
+     *
+     * @param newScreenIndex Pager index: 0 for controls, 1 for the signal display.
+     */
+    fun updateScreenIndex(newScreenIndex: Int) = wearCtrl.updateScreenIndex(newScreenIndex)
 
-    fun updateBlinkDelay(ms: Long) {
-        wearCtrl.setBlinking(blinkOn.value, ms)
-    }
+    /**
+     * Applies explicit disconnect or legacy-link selection through the watch repository on Main.
+     *
+     * Modern acknowledged connections use the handoff operations. A false value revokes the
+     * current relationship and disables automatic resume.
+     *
+     * @param isConnect True to select manual legacy control, or false to explicitly disconnect.
+     */
+    fun togglePhoneConnection(isConnect: Boolean) = wearCtrl.togglePhoneConnection(isConnect)
 
-    val activeColor: StateFlow<Color> = activeButton
-        .combine(middleColor) { activeBtn, midCol ->
-            when (activeBtn) {
-                Active.RED -> Color.Companion.Red
-                Active.MIDDLE -> midCol
-                Active.GREEN -> Color.Companion.Green
-                Active.FLASH -> Color.Companion.Black
-            }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.Eagerly,
-            initialValue = Color.Companion.Red
-        )
-
-    fun toggleSos(on: Boolean) {
-        wearCtrl.switchSOS(on)
-    }
-
-    fun updateColorProgress(newProgress: Float) {
-        viewModelScope.launch {
-            dataStore.edit { preferences ->
-                preferences[KEY_COLOR_PROGRESS] = newProgress
-            }
-        }
-    }
-
-    fun updateFrequencyProgress(newFrequencyProgress: Float) {
-        viewModelScope.launch {
-            dataStore.edit { preferences ->
-                preferences[KEY_FREQUENCY_PROGRESS] = newFrequencyProgress
-            }
-        }
-    }
-
-    fun updateScreenIndex(newScreenIndex: Int) {
-        wearCtrl.updateScreenIndex(newScreenIndex)
-    }
-
-    fun togglePhoneConnection(isConnect: Boolean) {
-        wearCtrl.togglePhoneConnection(isConnect)
-    }
-
-    private fun <T> writePref(key: Preferences.Key<T>, value: T) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dataStore.edit { prefs -> prefs[key] = value }
-        }
-    }
-
+    /**
+     * Launches phone discovery, connection or installation in viewModelScope on Main.
+     *
+     * @param command COMMAND_START_ON_PHONE or COMMAND_INSTALL_ON_PHONE.
+     */
     fun performWearOperations(command: String) {
         viewModelScope.launch {
             wearPhoneOperations.performWearOperations(command)
         }
     }
-
-    override fun onCleared() {
-        super.onCleared()
-        wearSyncStateRepository.clear()
-        wearCtrl.clearAll()
-    }
-
 }

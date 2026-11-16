@@ -4,25 +4,6 @@
 
     <string name="_ok">OK</string>
     <string name="_cancel">Avbryt</string>
-    <string name="_continue">Fortsätt</string>
-    <string name="_later">Senare</string>
-
-    <string name="dialog_title_pre_explain">Behörigheter krävs</string>
-    <string name="dialog_message_pre_explain_base">Varför vi behöver dessa behörigheter:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Kamera — används endast för att växla ficklampan. Light Signals tar inte bilder eller spelar in video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Aviseringar — låter appen visa aviseringar och ge snabb åtkomst medan den körs i bakgrunden</string>
-
-    <string name="dialog_title_rationale_dialog">Behörigheter krävs</string>
-    <string name="confirm_button_rationale_dialog">Begär igen</string>
-    <string name="dialog_message_rationale_dialog_base">För att fortsätta behöver appen:\n\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Kamera — för att växla ficklampan \n</string>
-    <string name="dialog_message_rationale_dialog_notification">• Aviseringar — för att visa bakgrundsvarningar och erbjuda snabba åtgärder</string>
-
-    <string name="dialog_title_setting_dialog">Aktivera behörigheter i Inställningar</string>
-    <string name="confirm_button_setting_dialog">Öppna inställningar</string>
-    <string name="dialog_message_setting_dialog_base">En eller flera behörigheter nekades permanent. Öppna appinställningarna för att aktivera dem:\n\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Kamera (ficklampa)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Aviseringar\n</string>
 
     <string name="dialog_title_wear_api_unavailable">Wear-funktioner ej tillgängliga</string>
     <string name="dialog_message_wear_api_unavailable">Denna enhet stöder inte funktioner för bärbara enheter</string>
@@ -36,16 +17,20 @@
     <string name="snackbar_app_installed_on_watch_success">Installation har startat på klockan</string>
     <string name="snackbar_installation_on_watch_failed">Installation på klockan misslyckades. Försök igen senare</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Misslyckades med att starta appen på klockan</string>
-    <string name="snackbar_app_launched_on_watch">Startad på klockan. Styr appen från din klocka</string>
+    <string name="snackbar_watch_connection_unconfirmed">Appen är öppen på klockan. Tryck på telefonikonen på klockan för att ansluta.</string>
     <string name="snackbar_no_connected_watches">Inga anslutna klockor hittades</string>
 
-    <string name="notification_title">Öppna Light Signals</string>
-    <string name="notification_text">Använd ficklampan eller skärmen för att visa signaler. Tryck för att öppna.</string>
+    <string name="notification_title">Ficklampan är aktiv</string>
+    <string name="notification_text">Tryck för att öppna</string>
 
     <string name="notification_channel_name">Light Signals aviseringar</string>
     <string name="notification_channel_description">Snabb åtkomst till ficklampa och skärmsignaler</string>
 
     <string name="menu_item_synchronize_with_watch">Synkronisera med klockan</string>
+    <string name="menu_item_add_quick_settings_tile">Lägg till i snabbinställningarna</string>
+    <string name="quick_settings_tile_help_title">Snabbåtkomst till Light Signals</string>
+    <string name="quick_settings_tile_instructions">Öppna snabbinställningarna, tryck på redigeringsikonen och lägg till rutan %1$s.</string>
+    <string name="quick_settings_tile_usage">Tryck på rutan för att öppna Light Signals</string>
 
     <string name="no_sound">Ingen</string>
     <string name="sound_1">Ljud 1</string>
@@ -54,4 +39,5 @@
 
     <string name="circular_indicator_text">Startar på klockan</string>
 
+    <string name="snackbar_watch_control_available">Du kan styra appen från din klocka</string>
 </resources>

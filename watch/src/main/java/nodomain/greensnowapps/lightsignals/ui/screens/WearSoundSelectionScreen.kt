@@ -1,29 +1,26 @@
 package nodomain.greensnowapps.lightsignals.ui.screens
 
 
-import android.annotation.SuppressLint
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.VolumeDown
-import androidx.compose.material.icons.automirrored.rounded.VolumeUp
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Chip
@@ -35,12 +32,26 @@ import androidx.wear.compose.material.SelectableChip
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import androidx.wear.compose.material3.ListHeader
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.TimeText
+import androidx.wear.compose.material3.Text as WearText
+import nodomain.greensnowapps.lightsignals.BuildConfig
 import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearSoundViewModel
 
 
-@SuppressLint("UnrememberedMutableState")
+/**
+ * Displays watch sound choices, media-volume controls and the app version.
+ *
+ * Collects selected sound and volume with the lifecycle. Hoists selection and close events
+ * through callbacks and also forwards the chosen sample to the sound ViewModel.
+ *
+ * @param wearSoundViewModel ViewModel exposing watch sound and volume state and handling their
+ *     edits.
+ * @param onSoundSelected Hoisted callback receiving the selected sample number before the
+ *     selector closes.
+ * @param onHideSoundSelector Hoisted callback that closes the sound-selection screen.
+ */
 @Composable
 fun WearSoundSelectionScreen(
     wearSoundViewModel: WearSoundViewModel = hiltViewModel<WearSoundViewModel>(),
@@ -48,17 +59,12 @@ fun WearSoundSelectionScreen(
     onHideSoundSelector: () -> Unit,
 ) {
 
-    val context = LocalContext.current
-
     val listOfSounds: List<Int> = listOf(0, 1, 2, 3)
 
-    val active by wearSoundViewModel.activeSound.collectAsState()
-    val volume by wearSoundViewModel.volumeFlow.collectAsState()
+    val active by wearSoundViewModel.activeSound.collectAsStateWithLifecycle()
+    val volume by wearSoundViewModel.volumeFlow.collectAsStateWithLifecycle()
 
     val listState = rememberScalingLazyListState()
-
-    val vignetteState = mutableStateOf(VignettePosition.TopAndBottom)
-    val showVignette = mutableStateOf(true)
 
     BackHandler(enabled = true) {
         onHideSoundSelector()
@@ -69,9 +75,7 @@ fun WearSoundSelectionScreen(
             PositionIndicator(scalingLazyListState = listState, modifier = Modifier)
         },
         vignette = {
-            if (showVignette.value) {
-                Vignette(vignettePosition = vignetteState.value)
-            }
+            Vignette(vignettePosition = VignettePosition.TopAndBottom)
         },
         timeText = { TimeText() },
     ) {
@@ -87,9 +91,9 @@ fun WearSoundSelectionScreen(
                 InlineSlider(
                     modifier = Modifier.height(30.dp),
                     value = volume,
-                    onValueChange = { wearSoundViewModel.setVolume(context, it) },
-                    increaseIcon = { Icon(Icons.AutoMirrored.Rounded.VolumeUp, "Increase", tint = Color.White) },
-                    decreaseIcon = { Icon(Icons.AutoMirrored.Rounded.VolumeDown, "Decrease", tint = Color.White) },
+                    onValueChange = wearSoundViewModel::setVolume,
+                    increaseIcon = { Icon(ImageVector.vectorResource(R.drawable.ic_automirrored_rounded_volume_up_24), stringResource(R.string.control_increase_volume), tint = Color.White) },
+                    decreaseIcon = { Icon(ImageVector.vectorResource(R.drawable.ic_automirrored_rounded_volume_down_24), stringResource(R.string.control_decrease_volume), tint = Color.White) },
                     valueRange = 0f..1f,
                     steps = 9,
                     segmented = false,
@@ -107,7 +111,7 @@ fun WearSoundSelectionScreen(
                     },
                     label = {
                         Text(
-                            text = if (soundNumber == 0) stringResource(R.string.no_sound) else "${stringResource(R.string.sound)} $soundNumber",
+                            text = if (soundNumber == 0) stringResource(R.string.no_sound) else stringResource(R.string.sound_number, soundNumber),
                             color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis
                         )
                     },
@@ -124,6 +128,14 @@ fun WearSoundSelectionScreen(
                     label = { Text(stringResource(R.string._cancel), color = Color.LightGray) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ChipDefaults.secondaryChipColors()
+                )
+            }
+            item {
+                WearText(
+                    text = BuildConfig.VERSION_NAME,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }

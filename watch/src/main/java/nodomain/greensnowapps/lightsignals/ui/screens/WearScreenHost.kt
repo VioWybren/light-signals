@@ -3,13 +3,13 @@ package nodomain.greensnowapps.lightsignals.ui.screens
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.foundation.pager.HorizontalPager
 import androidx.wear.compose.foundation.pager.rememberPagerState
 import androidx.wear.compose.material.Scaffold
@@ -21,12 +21,21 @@ import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearMainViewModel
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearSoundViewModel
 
+/**
+ * Hosts the watch controls/signal pager after preference initialization.
+ *
+ * Keeps the selected page in the ViewModel and supplies page-active state for brightness
+ * ownership.
+ */
 @Composable
 fun WearScreenHost() {
 
     val mainVm: WearMainViewModel = hiltViewModel()
     val soundVm: WearSoundViewModel = hiltViewModel()
-    val screenIndex by mainVm.screenIndex.collectAsState()
+    val initialized by mainVm.isInitialized.collectAsStateWithLifecycle()
+    // The Activity retains the splash screen while settings are loading.
+    if (!initialized) return
+    val screenIndex by mainVm.screenIndex.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(initialPage = screenIndex) { 2 }
     val scrollScope = rememberCoroutineScope()
 
@@ -68,7 +77,7 @@ fun WearScreenHost() {
                 AnimatedPage(pageIndex = pageIndex, pagerState = pagerState) {
                     when (pageIndex) {
                         0 -> WearMainScreen(mainVm, soundVm, onNext = { scrollScope.launch { pagerState.animateScrollToPage(1) } })
-                        1 -> WearSignalScreen(mainVm, soundVm, onBack = { scrollScope.launch { pagerState.animateScrollToPage(0) } })
+                        1 -> WearSignalScreen(mainVm, soundVm, isActive = pagerState.currentPage == pageIndex, onBack = { scrollScope.launch { pagerState.animateScrollToPage(0) } })
                     }
                 }
             }

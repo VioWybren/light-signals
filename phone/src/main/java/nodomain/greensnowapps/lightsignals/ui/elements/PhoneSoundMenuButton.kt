@@ -1,32 +1,42 @@
 package nodomain.greensnowapps.lightsignals.ui.elements
 
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material.icons.filled.MusicOff
-import androidx.compose.material.icons.filled.RadioButtonChecked
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneSoundViewModel
 
+/**
+ * Displays the phone sound menu and its selected sample from the sound ViewModel.
+ *
+ * Owns only menu expansion; sound choices are delegated to the ViewModel.
+ *
+ * @param toggleBtnWidth Width of the toggle button.
+ * @param toggleBtnHeight Height of the toggle button.
+ * @param iconSize Size of the icon inside the control.
+ * @param phoneSoundViewModel ViewModel supplying the selected sound and handling menu
+ *     selections.
+ */
 @Composable
 fun PhoneSoundMenuButton(
     toggleBtnWidth: Dp,
@@ -36,7 +46,7 @@ fun PhoneSoundMenuButton(
 ) {
 
     var expanded by remember { mutableStateOf(false) }
-    val active by phoneSoundViewModel.activeSound.collectAsState()
+    val active by phoneSoundViewModel.activeSound.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier
@@ -46,7 +56,8 @@ fun PhoneSoundMenuButton(
             toggleBtnHeight,
             checkedBtn = expanded,
             onCheckedChange = { expanded = it },
-            icon = if (active == 0) Icons.Filled.MusicOff else Icons.Filled.MusicNote,
+            icon = if (active == 0) ImageVector.vectorResource(R.drawable.ic_filled_music_off_24) else ImageVector.vectorResource(R.drawable.ic_filled_music_note_24),
+            contentDescriptionRes = R.string.sound_selection,
             modifier = Modifier.size(iconSize)
         )
     }
@@ -58,10 +69,11 @@ fun PhoneSoundMenuButton(
     ) {
         DropdownMenuItem(
             text = { Text(stringResource(R.string.no_sound)) },
+            modifier = Modifier.semantics { selected = active == 0 },
             leadingIcon = {
                 Icon(
-                    imageVector = if (active == 0) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = if (active == 0) "On" else "Off"
+                    imageVector = if (active == 0) ImageVector.vectorResource(R.drawable.ic_filled_radio_button_checked_24) else ImageVector.vectorResource(R.drawable.ic_filled_radio_button_unchecked_24),
+                    contentDescription = null
                 )
             },
             onClick = {
@@ -72,10 +84,11 @@ fun PhoneSoundMenuButton(
         HorizontalDivider()
         DropdownMenuItem(
             text = { Text(stringResource(R.string.sound_1)) },
+            modifier = Modifier.semantics { selected = active == 1 },
             leadingIcon = {
                 Icon(
-                    imageVector = if (active == 1) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = if (active == 1) "On" else "Off"
+                    imageVector = if (active == 1) ImageVector.vectorResource(R.drawable.ic_filled_radio_button_checked_24) else ImageVector.vectorResource(R.drawable.ic_filled_radio_button_unchecked_24),
+                    contentDescription = null
                 )
             },
             onClick = {
@@ -85,10 +98,11 @@ fun PhoneSoundMenuButton(
         )
         DropdownMenuItem(
             text = { Text(stringResource(R.string.sound_2)) },
+            modifier = Modifier.semantics { selected = active == 2 },
             leadingIcon = {
                 Icon(
-                    imageVector = if (active == 2) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = if (active == 2) "On" else "Off"
+                    imageVector = if (active == 2) ImageVector.vectorResource(R.drawable.ic_filled_radio_button_checked_24) else ImageVector.vectorResource(R.drawable.ic_filled_radio_button_unchecked_24),
+                    contentDescription = null
                 )
             },
             onClick = {
@@ -98,10 +112,11 @@ fun PhoneSoundMenuButton(
         )
         DropdownMenuItem(
             text = { Text(stringResource(R.string.sound_3)) },
+            modifier = Modifier.semantics { selected = active == 3 },
             leadingIcon = {
                 Icon(
-                    imageVector = if (active == 3) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = if (active == 3) "On" else "Off"
+                    imageVector = if (active == 3) ImageVector.vectorResource(R.drawable.ic_filled_radio_button_checked_24) else ImageVector.vectorResource(R.drawable.ic_filled_radio_button_unchecked_24),
+                    contentDescription = null
                 )
             },
             onClick = {

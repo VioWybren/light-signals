@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">휴대전화에 연결</string>
+    <string name="control_phone_flashlight">휴대전화 손전등</string>
+    <string name="control_red_light">빨간색 신호</string>
+    <string name="control_custom_light">사용자 지정 색상 신호</string>
+    <string name="control_green_light">초록색 신호</string>
+    <string name="control_blinking">깜박이는 신호</string>
+    <string name="control_sos">SOS 신호</string>
+    <string name="sound_number">소리 %1$d</string>
+    <string name="control_increase_frequency">깜박임 빈도 높이기</string>
+    <string name="control_decrease_frequency">깜박임 빈도 낮추기</string>
+    <string name="control_increase_volume">볼륨 높이기</string>
+    <string name="control_decrease_volume">볼륨 낮추기</string>
+</resources>

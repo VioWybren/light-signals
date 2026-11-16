@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
         tools:ignore="SystemPermissionTypo" />
@@ -40,12 +39,22 @@
             android:name="PhoneMainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.LightSignalNew">
+            android:theme="@style/Theme.LightSignalNew.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".LightSignalsTileService"
+            android:exported="true"
+            android:icon="@drawable/outline_traffic_24"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
 
         <service
             android:name=".model.FlashLightService"
@@ -61,13 +70,10 @@
                  Therefore, it logically follows that the use of a foreground service becomes necessary. The FlashLightService is a specialUse
                  type service used for these purposes.
 
-                 It should be noted, however, that users can only use the service after granting permission. Permission dialogs appear during
-                 runtime after providing rationale.
-
-                 There are two permissions required: camera and notification (after Android 14) permissions. The application does not utilize
-                 the phone camera in any capacity. However, it requires permission to access the camera for its flashlight feature and start
-                 foreground service.The service uses a notification to display its background work,
-                 thus notification permission is also necessary." />
+                 The flashlight is controlled through CameraManager.setTorchMode without opening a camera device.
+                 No camera permission is requested, and the application does not take photos or record video.
+                 The service always supplies a foreground notification. On Android 13 and later, notification permission is optional
+                 and controls whether that notification is displayed in the notification drawer." />
         </service>
 
     </application>

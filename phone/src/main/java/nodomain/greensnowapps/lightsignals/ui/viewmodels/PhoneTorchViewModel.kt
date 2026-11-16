@@ -1,53 +1,43 @@
 package nodomain.greensnowapps.lightsignals.ui.viewmodels
 
-import android.content.Context
-import android.content.pm.PackageManager
-import android.hardware.camera2.CameraAccessException
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import nodomain.greensnowapps.lightsignals.model.PhoneTorchAvailability
 import javax.inject.Inject
 
 
+/**
+ * Queries torch availability on IO and exposes hasTorch to the phone controls.
+ *
+ * viewModelScope owns the query; the UI observes the result without blocking the main thread.
+ *
+ * @property availability Permission-free hardware availability query.
+ */
 @HiltViewModel
 class PhoneTorchViewModel @Inject constructor(
-    @param: ApplicationContext private val appContext: Context
+    private val availability: PhoneTorchAvailability
 ) : ViewModel() {
 
+    /**
+     * Mutable rear-flash query result: null while pending, then true or false after the IO
+     * query.
+     */
     private val _hasTorch = MutableStateFlow<Boolean?>(null)
+    /**
+     * Read-only rear-flash availability: null before the IO query finishes, then its Boolean
+     * result.
+     */
     val hasTorch: StateFlow<Boolean?> = _hasTorch
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _hasTorch.value = checkHasTorch(appContext)
+            _hasTorch.value = availability.hasTorch()
         }
     }
 
-    fun getCameraManager(context: Context): CameraManager? =
-        ContextCompat.getSystemService(context, CameraManager::class.java)
-
-    private fun checkHasTorch(context: Context): Boolean {
-        val pm = context.packageManager
-        if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return true
-
-        try {
-            val cm = getCameraManager(context) ?: return false
-            for (id in cm.cameraIdList) {
-                val chars = cm.getCameraCharacteristics(id)
-                val available = chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
-                if (available) return true
-            }
-        } catch (_: CameraAccessException) {
-        } catch (_: Exception) {
-        }
-        return false
-    }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Connetti al telefono</string>
+    <string name="control_phone_flashlight">Torcia del telefono</string>
+    <string name="control_red_light">Segnale rosso</string>
+    <string name="control_custom_light">Segnale di colore personalizzato</string>
+    <string name="control_green_light">Segnale verde</string>
+    <string name="control_blinking">Segnale lampeggiante</string>
+    <string name="control_sos">Segnale SOS</string>
+    <string name="sound_number">Suono %1$d</string>
+    <string name="control_increase_frequency">Aumenta la frequenza del lampeggio</string>
+    <string name="control_decrease_frequency">Riduci la frequenza del lampeggio</string>
+    <string name="control_increase_volume">Aumenta il volume</string>
+    <string name="control_decrease_volume">Riduci il volume</string>
+</resources>

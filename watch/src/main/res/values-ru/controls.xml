@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Подключиться к телефону</string>
+    <string name="control_phone_flashlight">Фонарик телефона</string>
+    <string name="control_red_light">Красный сигнал</string>
+    <string name="control_custom_light">Сигнал выбранного цвета</string>
+    <string name="control_green_light">Зелёный сигнал</string>
+    <string name="control_blinking">Мигающий сигнал</string>
+    <string name="control_sos">Сигнал SOS</string>
+    <string name="sound_number">Звук %1$d</string>
+    <string name="control_increase_frequency">Увеличить частоту мигания</string>
+    <string name="control_decrease_frequency">Уменьшить частоту мигания</string>
+    <string name="control_increase_volume">Увеличить громкость</string>
+    <string name="control_decrease_volume">Уменьшить громкость</string>
+</resources>

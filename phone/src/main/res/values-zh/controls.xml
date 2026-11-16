@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">手电筒</string>
+    <string name="red_signal">红色信号</string>
+    <string name="custom_color_signal">自定义颜色信号</string>
+    <string name="green_signal">绿色信号</string>
+    <string name="blink_signal">闪烁信号</string>
+    <string name="sos_signal">SOS信号</string>
+    <string name="sound_selection">信号声音</string>
+    <string name="signal_interval">信号间隔</string>
+    <string name="interval_milliseconds">%1$d 毫秒</string>
+    <string name="menu">菜单</string>
+</resources>

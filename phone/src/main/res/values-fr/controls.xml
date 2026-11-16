@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">Lampe torche</string>
+    <string name="red_signal">Signal rouge</string>
+    <string name="custom_color_signal">Signal de couleur personnalisée</string>
+    <string name="green_signal">Signal vert</string>
+    <string name="blink_signal">Signal clignotant</string>
+    <string name="sos_signal">Signal SOS</string>
+    <string name="sound_selection">Son du signal</string>
+    <string name="signal_interval">Intervalle du signal</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">Menu</string>
+</resources>

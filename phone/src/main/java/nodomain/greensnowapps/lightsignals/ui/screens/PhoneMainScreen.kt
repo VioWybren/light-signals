@@ -1,8 +1,9 @@
 package nodomain.greensnowapps.lightsignals.ui.screens
 
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,13 +24,11 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Watch
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Label
@@ -38,16 +37,14 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +60,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -75,7 +73,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.APP_FAILED_TO_LAUNCH_ON_WATCH
 import nodomain.greensnowapps.lightsignals.APP_IS_NOT_INSTALLED_ON_WATCH
-import nodomain.greensnowapps.lightsignals.APP_LAUNCHED_ON_WATCH
+import nodomain.greensnowapps.lightsignals.BuildConfig
 import nodomain.greensnowapps.lightsignals.COMMAND_INSTALL_ON_WATCH
 import nodomain.greensnowapps.lightsignals.COMMAND_START_ON_WATCH
 import nodomain.greensnowapps.lightsignals.INSTALLATION_ON_WATCH_FAILED
@@ -83,6 +81,7 @@ import nodomain.greensnowapps.lightsignals.INSTALLATION_ON_WATCH_STARTED
 import nodomain.greensnowapps.lightsignals.NO_CONNECTED_WATCHES
 import nodomain.greensnowapps.lightsignals.PhoneMainActivity
 import nodomain.greensnowapps.lightsignals.R
+import nodomain.greensnowapps.lightsignals.WATCH_CONNECTION_UNCONFIRMED
 import nodomain.greensnowapps.lightsignals.WEARABLE_API_UNAVAILABLE
 import nodomain.greensnowapps.lightsignals.ui.elements.PhoneBlinkButton
 import nodomain.greensnowapps.lightsignals.ui.elements.PhoneColorButton
@@ -97,41 +96,60 @@ import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneTorchViewModel
 import nodomain.greensnowapps.lightsignals.utils.PhoneUtils
 import kotlin.math.roundToInt
 
+/**
+ * Minimum blink half-period accepted by this screen, in milliseconds.
+ */
 private const val MIN_TIME_MS = 100
+/**
+ * Maximum blink half-period accepted by this screen, in milliseconds.
+ */
 private const val MAX_TIME_MS = 1000
+/**
+ * Lower frequency-slider position, expressed as a blink half-period in milliseconds.
+ */
 private const val MIN_SLIDER_PROGRESS = 100f
+/**
+ * Upper frequency-slider position, expressed as a blink half-period in milliseconds.
+ */
 private const val MAX_SLIDER_PROGRESS = 1000f
 
 
+/**
+ * Displays phone color, timing, LED, SOS and sound controls with companion actions and version
+ * information.
+ *
+ * Collects ViewModel state with the lifecycle, hoists next-page navigation through onNext and
+ * uses snackbarHostState for connection and operation feedback.
+ *
+ * @param viewModel ViewModel supplying observable signal state and handling control events.
+ * @param onNext Hoisted callback that navigates to the signal display.
+ * @param snackbarHostState Host state used to display operation feedback and connection notices.
+ */
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhoneMainScreen(
     viewModel: PhoneMainViewModel,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    snackbarHostState: SnackbarHostState,
 ) {
 
     val phoneTorchViewModel: PhoneTorchViewModel = hiltViewModel()
-    val hasTorch by phoneTorchViewModel.hasTorch.collectAsState()
+    val hasTorch by phoneTorchViewModel.hasTorch.collectAsStateWithLifecycle()
 
 
     val context = LocalContext.current
+    val resources = LocalResources.current
 
-    val persistedFrequencyProgress by viewModel.progressFrequency.collectAsState()
+    val persistedFrequencyProgress by viewModel.progressFrequency.collectAsStateWithLifecycle()
 
     var sliderPositionFrequency by remember { mutableFloatStateOf(persistedFrequencyProgress) }
-
-    val blinkDelay = sliderPositionFrequency.toLong()
 
     LaunchedEffect(persistedFrequencyProgress) {
         sliderPositionFrequency = persistedFrequencyProgress
     }
 
-    LaunchedEffect(blinkDelay) {
-        viewModel.updateBlinkDelay(blinkDelay)
-    }
-
-    val persistedColorProgress by viewModel.progressColor.collectAsState()
+    val persistedColorProgress by viewModel.progressColor.collectAsStateWithLifecycle()
     var sliderPositionColor by remember { mutableFloatStateOf(persistedColorProgress) }
 
     LaunchedEffect(persistedColorProgress) {
@@ -142,13 +160,13 @@ fun PhoneMainScreen(
         PhoneUtils.computeSpecialColor(sliderPositionColor.toInt())
     }
 
-    val activeButton by viewModel.activeButton.collectAsState()
-    val flashOn by viewModel.flashOn.collectAsState()
-    val blinkOn by viewModel.blinkOn.collectAsState()
-    val colorBlinkActive by viewModel.colorBlinkActive.collectAsState()
-    val sosOn by viewModel.sosOn.collectAsState()
-    val controlMessage by viewModel.controlMessageFlow.collectAsState("")
-    val isLaunchingOnWear by viewModel.isLaunchingOnWear.collectAsState()
+    val activeButton by viewModel.activeButton.collectAsStateWithLifecycle()
+    val flashOn by viewModel.flashOn.collectAsStateWithLifecycle()
+    val blinkOn by viewModel.blinkOn.collectAsStateWithLifecycle()
+    val colorBlinkActive by viewModel.colorBlinkActive.collectAsStateWithLifecycle()
+    val sosOn by viewModel.sosOn.collectAsStateWithLifecycle()
+    val controlMessage by viewModel.controlMessageFlow.collectAsStateWithLifecycle(initialValue = "")
+    val isLaunchingOnWear by viewModel.isLaunchingOnWear.collectAsStateWithLifecycle()
 
     var checkedFlash by remember { mutableStateOf(flashOn) }
     LaunchedEffect(flashOn) { checkedFlash = flashOn }
@@ -195,14 +213,22 @@ fun PhoneMainScreen(
 
     var showInstallOnWatchDialog by rememberSaveable { mutableStateOf(false) }
 
-    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    fun showSnack(msg: String) {
+    /**
+     * Launches localized phone feedback in the composition-owned coroutine scope.
+     *
+     * Call from a UI event on Main. Returns before snackbar display completes; leaving the
+     * owning composition cancels its pending coroutine.
+     *
+     * @param msg Already localized message displayed by the supplied snackbar host.
+     * @param duration Requested snackbar display duration.
+     */
+    fun showSnack(msg: String, duration: SnackbarDuration = SnackbarDuration.Short) {
         scope.launch {
             snackbarHostState.showSnackbar(
                 message = msg,
-                duration = SnackbarDuration.Short
+                duration = duration
             )
         }
     }
@@ -214,12 +240,15 @@ fun PhoneMainScreen(
                 APP_IS_NOT_INSTALLED_ON_WATCH -> {
                     showInstallOnWatchDialog = true
                 }
-                INSTALLATION_ON_WATCH_STARTED -> showSnack(context.getString(R.string.snackbar_app_installed_on_watch_success))
-                INSTALLATION_ON_WATCH_FAILED -> showSnack(context.getString(R.string.snackbar_installation_on_watch_failed))
-                APP_FAILED_TO_LAUNCH_ON_WATCH -> showSnack(context.getString(R.string.snackbar_app_failed_to_launch_on_watch))
-                APP_LAUNCHED_ON_WATCH -> showSnack(context.getString(R.string.snackbar_app_launched_on_watch))
+                INSTALLATION_ON_WATCH_STARTED -> showSnack(resources.getString(R.string.snackbar_app_installed_on_watch_success))
+                INSTALLATION_ON_WATCH_FAILED -> showSnack(resources.getString(R.string.snackbar_installation_on_watch_failed))
+                APP_FAILED_TO_LAUNCH_ON_WATCH -> showSnack(resources.getString(R.string.snackbar_app_failed_to_launch_on_watch))
+                WATCH_CONNECTION_UNCONFIRMED -> showSnack(
+                    resources.getString(R.string.snackbar_watch_connection_unconfirmed),
+                    duration = SnackbarDuration.Long,
+                )
                 WEARABLE_API_UNAVAILABLE -> showWearApiNotAvailableDialog = true
-                NO_CONNECTED_WATCHES -> showSnack(context.getString(R.string.snackbar_no_connected_watches))
+                NO_CONNECTED_WATCHES -> showSnack(resources.getString(R.string.snackbar_no_connected_watches))
                 else -> showSnack(inputCommand)
             }
         }
@@ -239,8 +268,23 @@ fun PhoneMainScreen(
         )
     }
 
-    val activity = context as ComponentActivity
+    val activity = context as PhoneMainActivity
+    val quickSettingsUsage = stringResource(R.string.quick_settings_tile_usage)
+    var showQuickSettingsInstructions by rememberSaveable { mutableStateOf(false) }
+    if (showQuickSettingsInstructions) {
+        val tileLabel = remember(activity) { activity.applicationInfo.loadLabel(activity.packageManager) }
+        val instructions = stringResource(R.string.quick_settings_tile_instructions, tileLabel)
+        UniversalDialog(
+            title = stringResource(R.string.quick_settings_tile_help_title),
+            message = "$instructions\n\n$quickSettingsUsage",
+            confirmText = stringResource(R.string._ok),
+            onConfirm = { showQuickSettingsInstructions = false },
+            onDismiss = { showQuickSettingsInstructions = false },
+        )
+    }
+
     val iconSize = 30.dp
+    val intervalDescription = stringResource(R.string.signal_interval)
 
     Scaffold(
         topBar = {
@@ -257,18 +301,19 @@ fun PhoneMainScreen(
 
                     IconButton(onClick = { expanded = true }) {
                         Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Menu",
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_filled_more_vert_24),
+                            contentDescription = stringResource(R.string.menu),
                             tint = Color.White
                         )
                     }
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.menu_item_synchronize_with_watch)) },
+                            enabled = !isLaunchingOnWear,
                             leadingIcon = {
                                 Icon(
-                                    Icons.Outlined.Watch,
-                                    contentDescription = "Watch icon"
+                                    ImageVector.vectorResource(R.drawable.ic_outlined_watch_24),
+                                    contentDescription = null
                                 )
                             },
                             onClick = {
@@ -276,29 +321,36 @@ fun PhoneMainScreen(
                                 expanded = false
                             }
                         )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_item_add_quick_settings_tile)) },
+                            leadingIcon = {
+                                Icon(
+                                    ImageVector.vectorResource(R.drawable.outline_traffic_24),
+                                    contentDescription = null,
+                                )
+                            },
+                            onClick = {
+                                expanded = false
+                                activity.requestQuickSettingsTile(
+                                    onAvailable = { showSnack(quickSettingsUsage) },
+                                    onManualSetup = { scope.launch { showQuickSettingsInstructions = true } },
+                                )
+                            },
+                        )
+                        HorizontalDivider()
+                        Text(
+                            text = BuildConfig.VERSION_NAME,
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
                 }
             )
         },
         contentWindowInsets = WindowInsets(0),
-        snackbarHost = {
-            Box(modifier = Modifier.fillMaxSize()) {
-                SnackbarHost(
-                    hostState = snackbarHostState,
-                    snackbar = { snackbarData ->
-                        Snackbar(
-                            snackbarData = snackbarData,
-                            shape = RoundedCornerShape(12.dp),
-                            containerColor = Color.Black,
-                            contentColor = Color.White,
-                        )
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 40.dp, start = 10.dp, end = 10.dp)
-                )
-            }
-        },
     )
     { innerPadding ->
         BoxWithConstraints(
@@ -388,12 +440,16 @@ fun PhoneMainScreen(
                         Spacer(Modifier.weight(7f))
 
                         if (hasTorch == true) {
-                            PhoneFlashButton(toggleBtnWidth, toggleBtnHeight, checkedFlash, viewModel, activity as PhoneMainActivity, iconSize)
+                            PhoneFlashButton(
+                                toggleBtnWidth, toggleBtnHeight, checkedFlash, viewModel, activity, iconSize,
+                            )
                         }
 
                         Spacer(Modifier.weight(1f))
 
-                        PhoneSosButton(toggleBtnWidth, toggleBtnHeight, checkedSOS, viewModel, iconSize)
+                        PhoneSosButton(
+                            toggleBtnWidth, toggleBtnHeight, checkedSOS, viewModel, iconSize,
+                        )
 
                         Spacer(Modifier.weight(1f))
                     }
@@ -422,6 +478,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.RED,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.red_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.RED) }
                                     )
@@ -432,6 +489,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.MIDDLE,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.custom_color_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.MIDDLE) }
                                     )
@@ -442,6 +500,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.GREEN,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.green_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.GREEN) }
                                     )
@@ -459,6 +518,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.RED,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.red_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.RED) }
                                     )
@@ -469,6 +529,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.MIDDLE,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.custom_color_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.MIDDLE) }
                                     )
@@ -479,6 +540,7 @@ fun PhoneMainScreen(
                                         activeButton == Active.GREEN,
                                         blinkOn,
                                         colorBlinkActive,
+                                        labelRes = R.string.green_signal,
                                         size = colorButtonSize,
                                         onClick = { viewModel.select(Active.GREEN) }
                                     )
@@ -502,7 +564,9 @@ fun PhoneMainScreen(
 
                         Spacer(Modifier.weight(1f))
 
-                        PhoneBlinkButton(toggleBtnWidth, toggleBtnHeight, checkedBlink, sosOn, viewModel, iconSize)
+                        PhoneBlinkButton(
+                            toggleBtnWidth, toggleBtnHeight, checkedBlink, sosOn, viewModel, iconSize,
+                        )
 
                         Spacer(Modifier.weight(1f))
                     }
@@ -513,14 +577,15 @@ fun PhoneMainScreen(
                 Slider(
                     value = MIN_TIME_MS + MAX_TIME_MS - sliderPositionFrequency,
                     onValueChange = { newValue ->
-                        sliderPositionFrequency =
-                            MIN_TIME_MS + MAX_TIME_MS - newValue
+                        val delay = MIN_TIME_MS + MAX_TIME_MS - newValue
+                        sliderPositionFrequency = delay
+                        viewModel.updateBlinkDelay(delay.toLong())
                     },
                     interactionSource = interactionSource,
                     valueRange = MIN_SLIDER_PROGRESS..MAX_SLIDER_PROGRESS,
                     steps = 8,
                     modifier = Modifier
-                        .semantics { contentDescription = "Localized Description" },
+                        .semantics { contentDescription = intervalDescription },
                     colors = SliderDefaults.colors(
                         thumbColor = Color.Cyan,
                         activeTickColor = Color.Green
@@ -541,7 +606,7 @@ fun PhoneMainScreen(
                                 )
                                 {
                                     Text(
-                                        text = "${sliderPositionFrequency.roundToInt()} ms",
+                                        text = stringResource(R.string.interval_milliseconds, sliderPositionFrequency.roundToInt()),
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                 }

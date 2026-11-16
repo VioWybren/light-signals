@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">الاتصال بالهاتف</string>
+    <string name="control_phone_flashlight">مصباح الهاتف</string>
+    <string name="control_red_light">إشارة حمراء</string>
+    <string name="control_custom_light">إشارة بلون مخصص</string>
+    <string name="control_green_light">إشارة خضراء</string>
+    <string name="control_blinking">إشارة وامضة</string>
+    <string name="control_sos">إشارة استغاثة SOS</string>
+    <string name="sound_number">الصوت %1$d</string>
+    <string name="control_increase_frequency">زيادة تردد الوميض</string>
+    <string name="control_decrease_frequency">تقليل تردد الوميض</string>
+    <string name="control_increase_volume">رفع مستوى الصوت</string>
+    <string name="control_decrease_volume">خفض مستوى الصوت</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Telefona bağlan</string>
+    <string name="control_phone_flashlight">Telefonun el feneri</string>
+    <string name="control_red_light">Kırmızı sinyal</string>
+    <string name="control_custom_light">Özel renkli sinyal</string>
+    <string name="control_green_light">Yeşil sinyal</string>
+    <string name="control_blinking">Yanıp sönen sinyal</string>
+    <string name="control_sos">SOS sinyali</string>
+    <string name="sound_number">Ses %1$d</string>
+    <string name="control_increase_frequency">Yanıp sönme sıklığını artır</string>
+    <string name="control_decrease_frequency">Yanıp sönme sıklığını azalt</string>
+    <string name="control_increase_volume">Sesi artır</string>
+    <string name="control_decrease_volume">Sesi azalt</string>
+</resources>

@@ -1,8 +1,9 @@
 package nodomain.greensnowapps.lightsignals.ui.elements
 
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.PhonelinkErase
+import nodomain.greensnowapps.lightsignals.R
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -13,6 +14,13 @@ import androidx.wear.compose.material3.AlertDialogDefaults.ConfirmIcon
 import androidx.wear.compose.material3.Text
 
 
+/**
+ * Shows watch failure feedback while showDialog is true and hoists dismissal through onDismiss.
+ *
+ * @param showDialog Whether the confirmation overlay is visible.
+ * @param message Body text displayed in the dialog.
+ * @param onDismiss Hoisted callback invoked when the dialog is dismissed.
+ */
 @Composable
 fun WearFailureConfirmationDialog(
     showDialog: Boolean,
@@ -25,7 +33,7 @@ fun WearFailureConfirmationDialog(
         onDismissRequest = { onDismiss() },
         title = {},
         text = { Text(text = message, style = androidx.wear.compose.material3.MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center) },
-        icon = { Icon(Icons.Outlined.PhonelinkErase, "IconLinkErase", tint = Color(0xffff6f00)) },
+        icon = { Icon(ImageVector.vectorResource(R.drawable.ic_outlined_phonelink_erase_24), contentDescription = null, tint = Color(0xffff6f00)) },
         confirmButton = {
             AlertDialogDefaults.ConfirmButton(
                 onClick = onDismiss,

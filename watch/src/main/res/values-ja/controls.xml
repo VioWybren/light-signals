@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">スマートフォンに接続</string>
+    <string name="control_phone_flashlight">スマートフォンの懐中電灯</string>
+    <string name="control_red_light">赤色の信号</string>
+    <string name="control_custom_light">カスタム色の信号</string>
+    <string name="control_green_light">緑色の信号</string>
+    <string name="control_blinking">点滅信号</string>
+    <string name="control_sos">SOS信号</string>
+    <string name="sound_number">サウンド %1$d</string>
+    <string name="control_increase_frequency">点滅の頻度を上げる</string>
+    <string name="control_decrease_frequency">点滅の頻度を下げる</string>
+    <string name="control_increase_volume">音量を上げる</string>
+    <string name="control_decrease_volume">音量を下げる</string>
+</resources>

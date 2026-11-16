@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Yhdistä puhelimeen</string>
+    <string name="control_phone_flashlight">Puhelimen taskulamppu</string>
+    <string name="control_red_light">Punainen signaali</string>
+    <string name="control_custom_light">Mukautetun värinen signaali</string>
+    <string name="control_green_light">Vihreä signaali</string>
+    <string name="control_blinking">Vilkkuva signaali</string>
+    <string name="control_sos">SOS-signaali</string>
+    <string name="sound_number">Ääni %1$d</string>
+    <string name="control_increase_frequency">Lisää vilkkumistaajuutta</string>
+    <string name="control_decrease_frequency">Vähennä vilkkumistaajuutta</string>
+    <string name="control_increase_volume">Lisää äänenvoimakkuutta</string>
+    <string name="control_decrease_volume">Vähennä äänenvoimakkuutta</string>
+</resources>

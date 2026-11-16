@@ -2,27 +2,8 @@
 
 <resources>
 
-    <string name="dialog_title_pre_explain">Permisos necesarios</string>
-    <string name="dialog_message_pre_explain_base">Por qué necesitamos estos permisos:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Cámara — se usa solo para activar la linterna. Light Signals no toma fotos ni graba vídeo.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Notificaciones — permiten que la app muestre alertas y ofrezca acceso rápido en segundo plano.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Permisos necesarios</string>
-    <string name="confirm_button_rationale_dialog">Solicitar de nuevo</string>
-    <string name="dialog_message_rationale_dialog_base">Para continuar, la app necesita:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Cámara — para activar la linterna.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Notificaciones — para mostrar alertas en segundo plano y acciones rápidas.\n</string>
-
-    <string name="dialog_title_setting_dialog">Habilitar permisos en Ajustes</string>
-    <string name="confirm_button_setting_dialog">Abrir Ajustes</string>
-    <string name="dialog_message_setting_dialog_base">Uno o más permisos fueron denegados permanentemente. Abra los ajustes de la app para habilitarlos:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Cámara (linterna)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Notificaciones\n</string>
-
     <string name="_ok">OK</string>
     <string name="_cancel">Cancelar</string>
-    <string name="_continue">Continuar</string>
-    <string name="_later">Más tarde</string>
 
     <string name="dialog_title_wear_api_unavailable">Funciones Wear no disponibles</string>
     <string name="dialog_message_wear_api_unavailable">Este dispositivo no es compatible con funciones para wearables.</string>
@@ -36,16 +17,20 @@
     <string name="snackbar_app_installed_on_watch_success">La instalación en el reloj se ha iniciado</string>
     <string name="snackbar_installation_on_watch_failed">La instalación en el reloj falló. Por favor, inténtelo más tarde</string>
     <string name="snackbar_app_failed_to_launch_on_watch">No se pudo iniciar la app en el reloj</string>
-    <string name="snackbar_app_launched_on_watch">Iniciado en el reloj. Controla la aplicación desde tu reloj</string>
+    <string name="snackbar_watch_connection_unconfirmed">La app se abrió en el reloj. Toque el icono del teléfono en el reloj para conectar.</string>
     <string name="snackbar_no_connected_watches">No hay relojes conectados</string>
 
-    <string name="notification_title">Abrir Light Signals</string>
-    <string name="notification_text">Use la linterna o la pantalla para mostrar señales. Toque para abrir.</string>
+    <string name="notification_title">Linterna activa</string>
+    <string name="notification_text">Toque para abrir</string>
 
     <string name="notification_channel_name">Canal de notificaciones Light Signals</string>
     <string name="notification_channel_description">Acceso rápido a señales por linterna y pantalla</string>
 
     <string name="menu_item_synchronize_with_watch">Sincronizar con el reloj</string>
+    <string name="menu_item_add_quick_settings_tile">Añadir a Ajustes rápidos</string>
+    <string name="quick_settings_tile_help_title">Acceso rápido a Light Signals</string>
+    <string name="quick_settings_tile_instructions">Abra Ajustes rápidos, toque el icono de edición y añada el acceso de %1$s.</string>
+    <string name="quick_settings_tile_usage">Toque el acceso para abrir Light Signals</string>
 
     <string name="no_sound">Ninguno</string>
     <string name="sound_1">Sonido 1</string>
@@ -54,4 +39,5 @@
 
     <string name="circular_indicator_text">Iniciando en el reloj</string>
 
+    <string name="snackbar_watch_control_available">Puedes controlar la aplicación desde tu reloj</string>
 </resources>

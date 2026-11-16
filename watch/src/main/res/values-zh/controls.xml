@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">连接手机</string>
+    <string name="control_phone_flashlight">手机手电筒</string>
+    <string name="control_red_light">红色信号</string>
+    <string name="control_custom_light">自定义颜色信号</string>
+    <string name="control_green_light">绿色信号</string>
+    <string name="control_blinking">闪烁信号</string>
+    <string name="control_sos">SOS信号</string>
+    <string name="sound_number">声音 %1$d</string>
+    <string name="control_increase_frequency">提高闪烁频率</string>
+    <string name="control_decrease_frequency">降低闪烁频率</string>
+    <string name="control_increase_volume">增大音量</string>
+    <string name="control_decrease_volume">减小音量</string>
+</resources>

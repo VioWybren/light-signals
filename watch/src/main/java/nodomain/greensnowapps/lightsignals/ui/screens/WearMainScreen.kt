@@ -1,5 +1,7 @@
 package nodomain.greensnowapps.lightsignals.ui.screens
 
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,36 +17,29 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material.icons.filled.MusicOff
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Sos
-import androidx.compose.material.icons.outlined.FlashlightOn
-import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.wear.compose.foundation.CurvedAlignment
 import androidx.wear.compose.foundation.CurvedDirection
 import androidx.wear.compose.foundation.CurvedLayout
@@ -69,14 +64,42 @@ import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearMainViewModel
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearSoundViewModel
 import nodomain.greensnowapps.lightsignals.utils.WearUtils
 
+/**
+ * ARGB container colour configured for selected watch controls.
+ */
 private const val COLOR_CHECKED_BUTTON = 0xFFc43e00
+/**
+ * ARGB border colour configured for watch controls.
+ */
 private const val COLOR_BUTTON_BORDER = 0xffff6f00
 
+/**
+ * Minimum blink half-period accepted by this screen, in milliseconds.
+ */
 private const val MIN_TIME_MS = 100
+/**
+ * Maximum blink half-period accepted by this screen, in milliseconds.
+ */
 private const val MAX_TIME_MS = 1000
+/**
+ * Lower frequency-slider position, expressed as a blink half-period in milliseconds.
+ */
 private const val MIN_SLIDER_PROGRESS = 100f
+/**
+ * Upper frequency-slider position, expressed as a blink half-period in milliseconds.
+ */
 private const val MAX_SLIDER_PROGRESS = 1000f
 
+/**
+ * Displays watch colour, timing, phone connection, LED, SOS and sound controls.
+ *
+ * Collects ViewModel state with the lifecycle, delegates control actions to the supplied
+ * ViewModels and hoists signal-page navigation through onNext.
+ *
+ * @param viewModel ViewModel supplying observable signal state and handling control events.
+ * @param soundViewModel ViewModel that owns sound selection and selector visibility.
+ * @param onNext Hoisted callback that navigates to the signal display.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WearMainScreen(
@@ -85,28 +108,20 @@ fun WearMainScreen(
     onNext: () -> Unit,
 ) {
 
-    val context = LocalContext.current
-
     val btnSize = dimensionResource(R.dimen.btn_size)
     val columnHeight = dimensionResource(R.dimen.column_height)
     val phoneTorchBtnSpacing = dimensionResource(R.dimen.phone_torch_btn_spacing)
     val colorBtnsSliderSpacing = dimensionResource(R.dimen.color_btns_slider_spacing)
     val sliderSpacing = dimensionResource(R.dimen.slider_spacing)
 
-    val persistedFrequencyProgress by viewModel.progressFrequency.collectAsState()
+    val persistedFrequencyProgress by viewModel.progressFrequency.collectAsStateWithLifecycle()
     var sliderPositionFrequency by remember { mutableFloatStateOf(persistedFrequencyProgress) }
-
-    val blinkDelay = sliderPositionFrequency.toLong()
 
     LaunchedEffect(persistedFrequencyProgress) {
         sliderPositionFrequency = persistedFrequencyProgress
     }
 
-    LaunchedEffect(blinkDelay) {
-        viewModel.updateBlinkDelay(blinkDelay)
-    }
-
-    val persistedColorProgress by viewModel.progressColor.collectAsState()
+    val persistedColorProgress by viewModel.progressColor.collectAsStateWithLifecycle()
     var sliderPositionColor by remember { mutableFloatStateOf(persistedColorProgress) }
 
     LaunchedEffect(persistedColorProgress) {
@@ -117,43 +132,27 @@ fun WearMainScreen(
         WearUtils.computeSpecialColor(sliderPositionColor.toInt())
     }
 
-    val activeButton by viewModel.activeButton.collectAsState()
-    val flashOn by viewModel.flashOn.collectAsState()
-    val blinkOn by viewModel.blinkOn.collectAsState()
-    val colorBlinkActive by viewModel.colorBlinkActive.collectAsState()
-    val sosOn by viewModel.sosOn.collectAsState()
-    val phoneConnection by viewModel.phoneConnection.collectAsState()
-    val controlMessage by viewModel.controlMessageFlow.collectAsState("")
-    val isPhoneAppAvailable by viewModel.isPhoneAppAvailable.collectAsState()
-    val isLaunchingOnPhone by viewModel.isLaunchingOnPhone.collectAsState()
-    val activeSound by viewModel.activeSound.collectAsState()
-
-    var checkedFlash by remember { mutableStateOf(flashOn) }
-    LaunchedEffect(flashOn) { checkedFlash = flashOn }
-
-    var checkedBlink by remember { mutableStateOf(blinkOn && !sosOn) }
-    LaunchedEffect(blinkOn, sosOn) {
-        checkedBlink = when {
-            sosOn -> false
-            !sosOn -> blinkOn
-            else -> false
-        }
-    }
-    var checkedSOS by remember { mutableStateOf(sosOn) }
-    LaunchedEffect(sosOn) {
-        checkedSOS = sosOn
-    }
+    val activeButton by viewModel.activeButton.collectAsStateWithLifecycle()
+    val flashOn by viewModel.flashOn.collectAsStateWithLifecycle()
+    val blinkOn by viewModel.blinkOn.collectAsStateWithLifecycle()
+    val colorBlinkActive by viewModel.colorBlinkActive.collectAsStateWithLifecycle()
+    val sosOn by viewModel.sosOn.collectAsStateWithLifecycle()
+    val phoneConnection by viewModel.phoneConnection.collectAsStateWithLifecycle()
+    val isPhoneAppAvailable by viewModel.isPhoneAppAvailable.collectAsStateWithLifecycle()
+    val isLaunchingOnPhone by viewModel.isLaunchingOnPhone.collectAsStateWithLifecycle()
+    val isSoundOn by viewModel.isSoundOn.collectAsStateWithLifecycle()
+    val checkedFlash = flashOn
+    val checkedBlink = blinkOn && !sosOn
+    val checkedSOS = sosOn
 
     var showConnectToPhoneDialog by remember { mutableStateOf(false) }
 
     WearUniversalDialog(
         visible = showConnectToPhoneDialog,
         onConfirm = {
-            viewModel.performWearOperations(COMMAND_INSTALL_ON_PHONE)
             showConnectToPhoneDialog = false
         },
         onDismiss = {
-            viewModel.togglePhoneConnection(false)
             showConnectToPhoneDialog = false
         },
         title = stringResource(R.string.dialog_title_app_unavailable_on_phone),
@@ -169,7 +168,6 @@ fun WearMainScreen(
             showInstallOnPhoneDialog = false
         },
         onDismiss = {
-            viewModel.togglePhoneConnection(false)
             showInstallOnPhoneDialog = false
         },
         title = stringResource(R.string.dialog_title_install_on_phone),
@@ -177,67 +175,66 @@ fun WearMainScreen(
     )
 
     var showSuccess by remember { mutableStateOf(false) }
-    var successMessage by remember { mutableStateOf("") }
+    var successMessageRes by remember { mutableIntStateOf(R.string.dialog_success_open_on_phone) }
 
     var showFailure by remember { mutableStateOf(false) }
-    var failureMessage by remember { mutableStateOf("") }
+    var failureMessageRes by remember { mutableIntStateOf(R.string.dialog_fail_no_connected_phones) }
 
     WearSuccessConfirmationDialog(
         showDialog = showSuccess,
-        message = successMessage,
+        message = stringResource(successMessageRes),
         onDismiss = { showSuccess = false }
     )
 
     WearFailureConfirmationDialog(
         showDialog = showFailure,
-        message = failureMessage,
+        message = stringResource(failureMessageRes),
         onDismiss = { showFailure = false }
     )
 
-    LaunchedEffect(controlMessage) {
-        val inputCommand = Regex("[0-9]").replace(controlMessage, "")
-        if (inputCommand.isNotEmpty()) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(viewModel, lifecycleOwner) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.controlMessageFlow.collect { inputCommand ->
             when (inputCommand) {
                 WearConstants.APP_IS_NOT_INSTALLED_ON_PHONE -> {
                     showInstallOnPhoneDialog = true
                 }
                 WearConstants.INSTALLATION_HAS_BEEN_STARTED_ON_PHONE -> {
-                    successMessage = context.getString(R.string.dialog_success_installation_has_been_started_on_phone)
+                    successMessageRes = R.string.dialog_success_installation_has_been_started_on_phone
                     showSuccess = true
                 }
                 WearConstants.APP_LAUNCHED_ON_PHONE -> {
-                    successMessage = context.getString(R.string.dialog_success_open_on_phone)
+                    successMessageRes = R.string.dialog_success_open_on_phone
                     showSuccess = true
                 }
                 WearConstants.INSTALLATION_ON_PHONE_FAILED -> {
-                    viewModel.togglePhoneConnection(false)
-                    failureMessage = context.getString(R.string.dialog_fail_installation_on_phone_failed)
+                    failureMessageRes = R.string.dialog_fail_installation_on_phone_failed
                     showFailure = true
                 }
                 WearConstants.APP_FAILED_TO_LAUNCH_ON_PHONE -> {
-                    viewModel.togglePhoneConnection(false)
                     showConnectToPhoneDialog = true
                 }
-                WearConstants.NO_CONNECTED_PHONES -> {
-                    viewModel.togglePhoneConnection(false)
-                    failureMessage = context.getString(R.string.dialog_fail_no_connected_phones)
+                WearConstants.PHONE_CONNECTION_UNCONFIRMED -> {
+                    failureMessageRes = R.string.dialog_message_app_unavailable_on_phone
                     showFailure = true
                 }
+                WearConstants.NO_CONNECTED_PHONES -> {
+                    failureMessageRes = R.string.dialog_fail_no_connected_phones
+                    showFailure = true
+                }
+            }
             }
         }
     }
 
-    val showSoundSelector by soundViewModel.showSoundSelector.collectAsState()
-    var selectedSound by rememberSaveable { mutableIntStateOf(activeSound) }
-    var isSoundOn by remember { mutableStateOf(selectedSound != 0) }
+    val showSoundSelector by soundViewModel.showSoundSelector.collectAsStateWithLifecycle()
 
     if (showSoundSelector) {
 
         WearSoundSelectionScreen(
-            onSoundSelected = { newSound ->
-                selectedSound = newSound
-                isSoundOn = if (newSound == 0) false else true
-            },
+            wearSoundViewModel = soundViewModel,
+            onSoundSelected = {},
             onHideSoundSelector = { soundViewModel.setShowSoundSelector(false) }
         )
     } else {
@@ -259,14 +256,12 @@ fun WearMainScreen(
                 ) {
                     IconToggleButton(
                         checked = phoneConnection,
-                        onCheckedChange = {
-                            if (isPhoneAppAvailable) {
-                                if (!phoneConnection) {
-                                    viewModel.performWearOperations(WearConstants.COMMAND_START_ON_PHONE)
-                                }
-                                viewModel.togglePhoneConnection(!phoneConnection)
+                        enabled = !isLaunchingOnPhone,
+                        onCheckedChange = { checked ->
+                            if (!checked) {
+                                viewModel.togglePhoneConnection(false)
                             } else {
-                                showConnectToPhoneDialog = true
+                                viewModel.performWearOperations(WearConstants.COMMAND_START_ON_PHONE)
                             }
                         },
                         modifier = Modifier
@@ -281,8 +276,8 @@ fun WearMainScreen(
                         border = BorderStroke(width = 2.dp, color = Color(COLOR_BUTTON_BORDER))
                     ) {
                         Icon(
-                            Icons.Outlined.PhoneAndroid,
-                            contentDescription = "Localized description",
+                            ImageVector.vectorResource(R.drawable.ic_outlined_phone_android_24),
+                            contentDescription = stringResource(R.string.control_connect_phone),
                             tint = Color.White
                         )
                     }
@@ -295,7 +290,7 @@ fun WearMainScreen(
                                 if (!checkedFlash) viewModel.select(WearMainViewModel.Active.FLASH)
                                 else viewModel.switchFlash(false)
                             } else {
-                                failureMessage = context.getString(R.string.dialog_fail_connect_app_on_phone_for_torch)
+                                failureMessageRes = R.string.dialog_fail_connect_app_on_phone_for_torch
                                 showFailure = true
                             }
                         },
@@ -311,8 +306,8 @@ fun WearMainScreen(
                         border = BorderStroke(width = 2.dp, color = Color(COLOR_BUTTON_BORDER))
                     ) {
                         Icon(
-                            Icons.Outlined.FlashlightOn,
-                            contentDescription = "Localized description",
+                            ImageVector.vectorResource(R.drawable.ic_outlined_flashlight_on_24),
+                            contentDescription = stringResource(R.string.control_phone_flashlight),
                             tint = Color.White
                         )
                     }
@@ -324,13 +319,13 @@ fun WearMainScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    WearColorButton(sosOn, flashOn, Color.Red, activeButton == WearMainViewModel.Active.RED, blinkOn, colorBlinkActive)
+                    WearColorButton(sosOn, flashOn, Color.Red, activeButton == WearMainViewModel.Active.RED, blinkOn, colorBlinkActive, stringResource(R.string.control_red_light))
                     { viewModel.select(WearMainViewModel.Active.RED) }
 
-                    WearColorButton(sosOn, flashOn, liveMiddleColor, activeButton == WearMainViewModel.Active.MIDDLE, blinkOn, colorBlinkActive)
+                    WearColorButton(sosOn, flashOn, liveMiddleColor, activeButton == WearMainViewModel.Active.MIDDLE, blinkOn, colorBlinkActive, stringResource(R.string.control_custom_light))
                     { viewModel.select(WearMainViewModel.Active.MIDDLE) }
 
-                    WearColorButton(sosOn, flashOn, Color.Green, activeButton == WearMainViewModel.Active.GREEN, blinkOn, colorBlinkActive)
+                    WearColorButton(sosOn, flashOn, Color.Green, activeButton == WearMainViewModel.Active.GREEN, blinkOn, colorBlinkActive, stringResource(R.string.control_green_light))
                     { viewModel.select(WearMainViewModel.Active.GREEN) }
                 }
 
@@ -343,8 +338,8 @@ fun WearMainScreen(
                             MIN_TIME_MS + MAX_TIME_MS - newValue
                         viewModel.updateFrequencyProgress(sliderPositionFrequency)
                     },
-                    increaseIcon = { Icon(InlineSliderDefaults.Increase, "Increase", tint = Color.White) },
-                    decreaseIcon = { Icon(InlineSliderDefaults.Decrease, "Decrease", tint = Color.White) },
+                    increaseIcon = { Icon(InlineSliderDefaults.Increase, stringResource(R.string.control_increase_frequency), tint = Color.White) },
+                    decreaseIcon = { Icon(InlineSliderDefaults.Decrease, stringResource(R.string.control_decrease_frequency), tint = Color.White) },
                     valueRange = MIN_SLIDER_PROGRESS..MAX_SLIDER_PROGRESS,
                     steps = 8,
                     segmented = true,
@@ -385,9 +380,6 @@ fun WearMainScreen(
                         IconToggleButton(
                             checked = checkedBlink,
                             onCheckedChange = {
-                                if (!sosOn) {
-                                    checkedBlink
-                                }
                                 if (checkedBlink) {
                                     viewModel.toggleControl(false)
                                 } else {
@@ -406,8 +398,8 @@ fun WearMainScreen(
                             border = BorderStroke(width = 2.dp, color = Color(COLOR_BUTTON_BORDER)),
                         ) {
                             Icon(
-                                if (checkedBlink) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                contentDescription = "Localized description",
+                                if (checkedBlink) ImageVector.vectorResource(R.drawable.ic_filled_pause_24) else ImageVector.vectorResource(R.drawable.ic_filled_play_arrow_24),
+                                contentDescription = stringResource(R.string.control_blinking),
                                 tint = Color.White
                             )
                         }
@@ -433,8 +425,8 @@ fun WearMainScreen(
                                 .clip(CircleShape)
                         ) {
                             Icon(
-                                if (isSoundOn) Icons.Filled.MusicNote else Icons.Filled.MusicOff,
-                                contentDescription = "Localized description",
+                                if (isSoundOn) ImageVector.vectorResource(R.drawable.ic_filled_music_note_24) else ImageVector.vectorResource(R.drawable.ic_filled_music_off_24),
+                                contentDescription = stringResource(R.string.sound_settings),
                                 tint = Color.White
                             )
                         }
@@ -460,8 +452,8 @@ fun WearMainScreen(
                             border = BorderStroke(width = 2.dp, color = Color(COLOR_BUTTON_BORDER)),
                         ) {
                             Icon(
-                                if (checkedSOS) Icons.Filled.Sos else Icons.Filled.Sos,
-                                contentDescription = "Localized description",
+                                if (checkedSOS) ImageVector.vectorResource(R.drawable.ic_filled_sos_24) else ImageVector.vectorResource(R.drawable.ic_filled_sos_24),
+                                contentDescription = stringResource(R.string.control_sos),
                                 tint = Color.White
                             )
                         }

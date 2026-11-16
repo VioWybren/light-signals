@@ -8,6 +8,7 @@
         tools:ignore="UnusedResources">
         <item>data_layer_app_helper_device_watch</item>
         <item>horologist_watch</item>
+        <item>light_signals_watch_connect_v3</item>
     </string-array>
 
 </resources>

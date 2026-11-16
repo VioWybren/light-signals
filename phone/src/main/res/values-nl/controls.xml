@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">Zaklamp</string>
+    <string name="red_signal">Rood signaal</string>
+    <string name="custom_color_signal">Signaal met aangepaste kleur</string>
+    <string name="green_signal">Groen signaal</string>
+    <string name="blink_signal">Knipperend signaal</string>
+    <string name="sos_signal">SOS-signaal</string>
+    <string name="sound_selection">Signaalgeluid</string>
+    <string name="signal_interval">Signaalinterval</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">Menu</string>
+</resources>

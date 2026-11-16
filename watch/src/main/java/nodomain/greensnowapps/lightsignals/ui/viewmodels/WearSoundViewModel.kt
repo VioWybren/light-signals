@@ -1,128 +1,128 @@
 package nodomain.greensnowapps.lightsignals.ui.viewmodels
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import nodomain.greensnowapps.lightsignals.WearConstants.DEFAULT_VOLUME
 import nodomain.greensnowapps.lightsignals.model.KEY_VOLUME
 import nodomain.greensnowapps.lightsignals.model.WearControlRepository
 import nodomain.greensnowapps.lightsignals.model.WearSoundPoolPlayer
+import nodomain.greensnowapps.lightsignals.model.editSafely
+import nodomain.greensnowapps.lightsignals.model.safeData
 import javax.inject.Inject
 
-
+/**
+ * Owns the watch sound-selection screen, persisted volume and local signal playback.
+ *
+ * Exposes [activeSound], [volumeFlow] and [showSoundSelector] StateFlows. Main-thread events
+ * change sound, selector visibility and volume; viewModelScope owns collection and
+ * persistence. Playback follows foreground and remote-routing eligibility from the repository.
+ *
+ * @property dataStore Preferences store used to read and persist settings.
+ * @property wearCtrl Owner of the watch signal and companion-link state.
+ * @property soundPool Signal-sample player used for local playback.
+ */
 @HiltViewModel
 class WearSoundViewModel @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val wearCtrl: WearControlRepository,
     private val soundPool: WearSoundPoolPlayer
-) : ViewModel(), LifecycleEventObserver {
-
-    val colorBlinkActive = wearCtrl.colorBlinkActive
+) : ViewModel() {
+    /**
+     * Read-only selected sample number: 0 for silence, 1..3 for a signal sample.
+     */
     val activeSound = wearCtrl.activeSound
 
-    private val initialVolume: Float = runBlocking(Dispatchers.IO) {
-        dataStore.data
-            .map { prefs -> prefs[KEY_VOLUME] ?: DEFAULT_VOLUME }
-            .first()
-    }
+    /**
+     * Eager StateFlow of the bounded saved media-volume fraction used by the sound slider.
+     *
+     * Owned by viewModelScope. Represents the stored selection, not external volume changes made
+     * through system controls or another app.
+     */
+    val volumeFlow = dataStore.safeData()
+        .map { prefs -> safeVolume(prefs[KEY_VOLUME] ?: DEFAULT_VOLUME) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, DEFAULT_VOLUME)
 
-    val volumeFlow: StateFlow<Float> = dataStore.data
-        .drop(1)
-        .map { prefs -> prefs[KEY_VOLUME] ?: initialVolume }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, initialVolume)
-
-
-    private var blinkJob: Job? = null
-    private var isAppInForeground = true
+    /**
+     * Main-confined visibility state for the watch sound-selection screen, initially hidden.
+     */
+    private val _showSoundSelector = MutableStateFlow(false)
+    /**
+     * Read-only visibility state for the watch sound-selection screen.
+     */
+    val showSoundSelector = _showSoundSelector.asStateFlow()
 
     init {
-        ProcessLifecycleOwner.Companion.get().lifecycle.addObserver(this)
-        startCollectingBlinks()
+        viewModelScope.launch {
+            wearCtrl.colorBlinkActive.filter { it }.collect {
+                if (wearCtrl.canPlayLocalSound) soundPool.playOnce(activeSound.value)
+            }
+        }
     }
 
-    private val _showSoundSelector = MutableStateFlow(false)
-    val showSoundSelector: StateFlow<Boolean> = _showSoundSelector.asStateFlow()
+    /**
+     * Updates watch sound-selector visibility on Main.
+     *
+     * @param show Whether the sound selector should be visible.
+     */
     fun setShowSoundSelector(show: Boolean) {
         _showSoundSelector.value = show
     }
 
-    private fun startCollectingBlinks() {
-        blinkJob?.cancel()
-        blinkJob = viewModelScope.launch {
-            colorBlinkActive
-                .filter { it && activeSound.value != 0 }
-                .drop(1)
-                .collect {
-                    if (isAppInForeground) {
-                        soundPool.playOnce(activeSound.value)
-                    }
-                }
-        }
-    }
+    /**
+     * Selects sound through the watch repository on Main, including its offline playback policy.
+     *
+     * The repository bounds the value, routes linked playback to the phone and allows an
+     * explicit offline choice to re-enable local watch sound.
+     *
+     * @param n Selected sample number: 0 for silence, 1..3 for a signal sound.
+     */
+    fun setActiveSound(n: Int) = wearCtrl.setActiveSound(n)
 
-    private fun stopCollectingBlinks() {
-        blinkJob?.cancel()
-        blinkJob = null
-    }
-
-    override fun onStateChanged(
-        source: LifecycleOwner,
-        event: Lifecycle.Event
-    ) {
-        when (event) {
-            Lifecycle.Event.ON_START -> {
-                isAppInForeground = true
-                startCollectingBlinks()
-            }
-            Lifecycle.Event.ON_STOP -> {
-                isAppInForeground = false
-                stopCollectingBlinks()
-                soundPool.stopAll()
-            }
-            else -> {}
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        ProcessLifecycleOwner.Companion.get().lifecycle.removeObserver(this)
-    }
-
-    fun setActiveSound(n: Int) {
-        wearCtrl.setActiveSound(n.coerceIn(0, 3))
-    }
-
-    fun setVolume(context: Context? = null, v: Float) {
+    /**
+     * Applies a bounded media-volume selection and launches its preference write on Main.
+     *
+     * Normalizes through safeVolume, asks the player to update the shared media stream and
+     * persists the selected fraction in viewModelScope. The saved selection can remain even if
+     * the player logs a platform adjustment failure; clearing the ViewModel cancels an
+     * unfinished preference-write job.
+     *
+     * @param v Requested media-volume fraction in 0..1.
+     */
+    fun setVolume(v: Float) {
+        val volume = safeVolume(v)
+        soundPool.setVolume(volume)
         viewModelScope.launch {
-            val newVolume = v.coerceIn(0f, 1f)
-            soundPool.setVolumeBoth(context, newVolume)
-            saveVolume(newVolume)
+            dataStore.editSafely { prefs -> prefs[KEY_VOLUME] = volume }
         }
     }
 
-    suspend fun saveVolume(v: Float) {
-        dataStore.edit { prefs -> prefs[KEY_VOLUME] = v.coerceIn(0f, 1f) }
+    /**
+     * Stops active and pending watch sample playback when this ViewModel is cleared on Main.
+     *
+     * ViewModel scope cleanup cancels its phase collector and preference jobs. The
+     * application-owned sound pool remains available for later use.
+     */
+    override fun onCleared() {
+        soundPool.stopAll()
+        super.onCleared()
     }
 
+    /**
+     * Bounds a finite volume fraction and substitutes DEFAULT_VOLUME for non-finite input.
+     *
+     * @param value Requested or stored media-volume fraction.
+     * @return A finite fraction in 0..1.
+     */
+    private fun safeVolume(value: Float) =
+        value.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: DEFAULT_VOLUME
 }

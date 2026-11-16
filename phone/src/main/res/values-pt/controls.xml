@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">Lanterna</string>
+    <string name="red_signal">Sinal vermelho</string>
+    <string name="custom_color_signal">Sinal de cor personalizada</string>
+    <string name="green_signal">Sinal verde</string>
+    <string name="blink_signal">Sinal intermitente</string>
+    <string name="sos_signal">Sinal SOS</string>
+    <string name="sound_selection">Som do sinal</string>
+    <string name="signal_interval">Intervalo do sinal</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">Menu</string>
+</resources>

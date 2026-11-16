@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Mit Smartphone verbinden</string>
+    <string name="control_phone_flashlight">Taschenlampe des Smartphones</string>
+    <string name="control_red_light">Rotes Signal</string>
+    <string name="control_custom_light">Signal mit eigener Farbe</string>
+    <string name="control_green_light">Grünes Signal</string>
+    <string name="control_blinking">Blinksignal</string>
+    <string name="control_sos">SOS-Signal</string>
+    <string name="sound_number">Ton %1$d</string>
+    <string name="control_increase_frequency">Blinkfrequenz erhöhen</string>
+    <string name="control_decrease_frequency">Blinkfrequenz verringern</string>
+    <string name="control_increase_volume">Lautstärke erhöhen</string>
+    <string name="control_decrease_volume">Lautstärke verringern</string>
+</resources>

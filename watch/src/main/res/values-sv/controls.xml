@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Anslut till telefon</string>
+    <string name="control_phone_flashlight">Telefonens ficklampa</string>
+    <string name="control_red_light">Röd signal</string>
+    <string name="control_custom_light">Signal med egen färg</string>
+    <string name="control_green_light">Grön signal</string>
+    <string name="control_blinking">Blinkande signal</string>
+    <string name="control_sos">SOS-signal</string>
+    <string name="sound_number">Ljud %1$d</string>
+    <string name="control_increase_frequency">Öka blinkfrekvensen</string>
+    <string name="control_decrease_frequency">Minska blinkfrekvensen</string>
+    <string name="control_increase_volume">Höj volymen</string>
+    <string name="control_decrease_volume">Sänk volymen</string>
+</resources>

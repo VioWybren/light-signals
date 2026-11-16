@@ -1,6 +1,6 @@
 package nodomain.greensnowapps.lightsignals.ui.elements
 
-import androidx.compose.material3.MaterialTheme
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -9,6 +9,16 @@ import androidx.wear.compose.material3.ConfirmationDialogColors
 import androidx.wear.compose.material3.ConfirmationDialogDefaults
 import androidx.wear.compose.material3.Text
 
+/**
+ * Displays the watch success message and icon while showDialog is true.
+ *
+ * Uses the three-second confirmation duration and reports dismissal through onDismiss. The
+ * caller owns the visible state.
+ *
+ * @param showDialog Whether the confirmation overlay is visible.
+ * @param message Body text displayed in the dialog.
+ * @param onDismiss Hoisted callback invoked when the dialog is dismissed.
+ */
 @Composable
 fun WearSuccessConfirmationDialog(
     showDialog: Boolean,

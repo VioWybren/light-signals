@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="_ok">OK</string>
+    <string name="_cancel">Avbryt</string>
+
+    <string name="dialog_title_wear_api_unavailable">Wear-funksjoner utilgjengelig</string>
+    <string name="dialog_message_wear_api_unavailable">Denne enheten støtter ikke funksjoner for bærbare enheter</string>
+
+    <string name="dialog_title_connect_to_watch">Koble til klokke</string>
+    <string name="dialog_message_connect_to_watch">Vil du koble telefonappen til Light Signals-følgesvennappen på klokken din?</string>
+
+    <string name="dialog_title_install_on_watch">Installer Light Signals på klokken</string>
+    <string name="dialog_message_install_on_watch">Appen er ikke installert på den tilkoblede klokken din. Vil du installere den?</string>
+
+    <string name="snackbar_app_installed_on_watch_success">Installasjonen har startet på klokken</string>
+    <string name="snackbar_installation_on_watch_failed">Installasjonen på klokken mislyktes. Prøv igjen senere</string>
+    <string name="snackbar_app_failed_to_launch_on_watch">Kunne ikke starte appen på klokken</string>
+    <string name="snackbar_watch_connection_unconfirmed">Appen er åpen på klokken. Trykk på telefonikonet på klokken for å koble til.</string>
+    <string name="snackbar_no_connected_watches">Ingen tilkoblede klokker funnet</string>
+
+    <string name="notification_title">Lommelykt aktiv</string>
+    <string name="notification_text">Trykk for å åpne</string>
+
+    <string name="notification_channel_name">Light Signals varslingskanal</string>
+    <string name="notification_channel_description">Hurtig tilgang til lommelykt og skjermsignaler</string>
+
+    <string name="menu_item_synchronize_with_watch">Synkroniser med klokken</string>
+    <string name="menu_item_add_quick_settings_tile">Legg til i hurtiginnstillingene</string>
+    <string name="quick_settings_tile_help_title">Rask tilgang til Light Signals</string>
+    <string name="quick_settings_tile_instructions">Åpne hurtiginnstillingene, trykk på redigeringsikonet og legg til %1$s-flisen.</string>
+    <string name="quick_settings_tile_usage">Trykk på flisen for å åpne Light Signals</string>
+
+    <string name="no_sound">Ingen</string>
+    <string name="sound_1">Lyd 1</string>
+    <string name="sound_2">Lyd 2</string>
+    <string name="sound_3">Lyd 3</string>
+
+    <string name="circular_indicator_text">Starter på klokken</string>
+
+    <string name="snackbar_watch_control_available">Du kan styre appen fra klokken din</string>
+</resources>

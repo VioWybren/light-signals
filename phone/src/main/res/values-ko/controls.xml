@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashlight">손전등</string>
+    <string name="red_signal">빨간색 신호</string>
+    <string name="custom_color_signal">사용자 지정 색상 신호</string>
+    <string name="green_signal">초록색 신호</string>
+    <string name="blink_signal">깜박이는 신호</string>
+    <string name="sos_signal">SOS 신호</string>
+    <string name="sound_selection">신호음</string>
+    <string name="signal_interval">신호 간격</string>
+    <string name="interval_milliseconds">%1$d ms</string>
+    <string name="menu">메뉴</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="control_connect_phone">Підключитися до телефона</string>
+    <string name="control_phone_flashlight">Ліхтарик телефона</string>
+    <string name="control_red_light">Червоний сигнал</string>
+    <string name="control_custom_light">Сигнал вибраного кольору</string>
+    <string name="control_green_light">Зелений сигнал</string>
+    <string name="control_blinking">Миготливий сигнал</string>
+    <string name="control_sos">Сигнал SOS</string>
+    <string name="sound_number">Звук %1$d</string>
+    <string name="control_increase_frequency">Збільшити частоту миготіння</string>
+    <string name="control_decrease_frequency">Зменшити частоту миготіння</string>
+    <string name="control_increase_volume">Збільшити гучність</string>
+    <string name="control_decrease_volume">Зменшити гучність</string>
+</resources>

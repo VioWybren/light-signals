@@ -4,25 +4,6 @@
 
     <string name="_ok">OK</string>
     <string name="_cancel">Zrušit</string>
-    <string name="_continue">Pokračovat</string>
-    <string name="_later">Později</string>
-
-    <string name="dialog_title_pre_explain">Požadována oprávnění</string>
-    <string name="dialog_message_pre_explain_base">Proč potřebujeme tato oprávnění:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Fotoaparát — používá se pouze k ovládání svítilny. Light Signals nepořizuje fotografie ani nenahrává video.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Oznámení — umožňují aplikaci zobrazovat upozornění a poskytovat rychlý přístup při běhu na pozadí</string>
-
-    <string name="dialog_title_rationale_dialog">Požadována oprávnění</string>
-    <string name="confirm_button_rationale_dialog">Požádat znovu</string>
-    <string name="dialog_message_rationale_dialog_base">Pro pokračování aplikace potřebuje:\n\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Fotoaparát — pro ovládání svítilny \n</string>
-    <string name="dialog_message_rationale_dialog_notification">• Oznámení — pro zobrazení upozornění na pozadí a nabídku rychlých akcí</string>
-
-    <string name="dialog_title_setting_dialog">Povolit oprávnění v Nastavení</string>
-    <string name="confirm_button_setting_dialog">Otevřít Nastavení</string>
-    <string name="dialog_message_setting_dialog_base">Jedno nebo více oprávnění bylo trvale odmítnuto. Otevřete nastavení aplikace a povolte je:\n\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Fotoaparát (svítilna)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Oznámení\n</string>
 
     <string name="dialog_title_wear_api_unavailable">Funkce Wear nejsou dostupné</string>
     <string name="dialog_message_wear_api_unavailable">Toto zařízení nepodporuje funkce pro nositelná zařízení</string>
@@ -36,16 +17,20 @@
     <string name="snackbar_app_installed_on_watch_success">Instalace byla zahájena na hodinkách</string>
     <string name="snackbar_installation_on_watch_failed">Instalace na hodinkách selhala. Zkuste to prosím později</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Nepodařilo se spustit aplikaci na hodinkách</string>
-    <string name="snackbar_app_launched_on_watch">Spuštěno na hodinkách. Ovládejte aplikaci z hodinek</string>
+    <string name="snackbar_watch_connection_unconfirmed">Aplikace se otevřela v hodinkách. Pro připojení klepněte na ikonu telefonu na hodinkách.</string>
     <string name="snackbar_no_connected_watches">Nebyly nalezeny žádné připojené hodinky</string>
 
-    <string name="notification_title">Otevřít Light Signals</string>
-    <string name="notification_text">Použijte svítilnu nebo obrazovku k zobrazení signálů. Klepnutím otevřete.</string>
+    <string name="notification_title">Svítilna je aktivní</string>
+    <string name="notification_text">Klepnutím otevřete</string>
 
     <string name="notification_channel_name">Kanál oznámení Light Signals</string>
     <string name="notification_channel_description">Rychlý přístup ke svítilně a signálům na obrazovce</string>
 
     <string name="menu_item_synchronize_with_watch">Synchronizovat s hodinkami</string>
+    <string name="menu_item_add_quick_settings_tile">Přidat do rychlého nastavení</string>
+    <string name="quick_settings_tile_help_title">Rychlý přístup k Light Signals</string>
+    <string name="quick_settings_tile_instructions">Otevřete rychlé nastavení, klepněte na ikonu úprav a přidejte dlaždici %1$s.</string>
+    <string name="quick_settings_tile_usage">Klepnutím na dlaždici otevřete Light Signals</string>
 
     <string name="no_sound">Žádný</string>
     <string name="sound_1">Zvuk 1</string>
@@ -54,4 +39,5 @@
 
     <string name="circular_indicator_text">Spouští se na hodinkách</string>
 
+    <string name="snackbar_watch_control_available">Aplikaci můžete ovládat z hodinek</string>
 </resources>

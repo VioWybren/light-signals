@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dialog_title_pre_explain">Gerekli izinler</string>
-    <string name="dialog_message_pre_explain_base">Neden bu izinlere ihtiyaç duyuyoruz:\n\n</string>
-    <string name="dialog_message_pre_explain_camera">• Kamera — yalnızca el fenerini açıp kapatmak için kullanılır. Light Signals fotoğraf veya video çekmez.\n</string>
-    <string name="dialog_message_pre_explain_notification">• Bildirimler — uygulamanın arka planda uyarı gösterebilmesini ve hızlı erişim sağlamasını sağlar.\n</string>
-
-    <string name="dialog_title_rationale_dialog">Gerekli izinler</string>
-    <string name="confirm_button_rationale_dialog">Tekrar iste</string>
-    <string name="dialog_message_rationale_dialog_base">Devam etmek için uygulamanın aşağıdaki izinlere ihtiyacı var:\n</string>
-    <string name="dialog_message_rationale_dialog_camera">• Kamera — el fenerini kontrol etmek için.</string>
-    <string name="dialog_message_rationale_dialog_notification">• Bildirimler — arka plan uyarıları ve hızlı işlemler için.\n</string>
-
-    <string name="dialog_title_setting_dialog">Ayarlar\'da izinleri etkinleştir</string>
-    <string name="confirm_button_setting_dialog">Ayarları aç</string>
-    <string name="dialog_message_setting_dialog_base">Bir veya daha fazla izin kalıcı olarak reddedildi. Etkinleştirmek için uygulama ayarlarını açın:\n</string>
-    <string name="dialog_message_setting_dialog_camera">• Kamera (el feneri)\n</string>
-    <string name="dialog_message_setting_dialog_notification">• Bildirimler\n</string>
-
     <string name="_ok">Tamam</string>
     <string name="_cancel">İptal</string>
-    <string name="_continue">Devam</string>
-    <string name="_later">Daha sonra</string>
 
     <string name="dialog_title_wear_api_unavailable">Wear özellikleri kullanılamıyor</string>
     <string name="dialog_message_wear_api_unavailable">Bu cihaz giyilebilir özellikleri desteklemiyor</string>
@@ -35,16 +16,20 @@
     <string name="snackbar_app_installed_on_watch_success">Saate yükleme başlatıldı</string>
     <string name="snackbar_installation_on_watch_failed">Saatte yükleme başarısız oldu. Lütfen daha sonra tekrar deneyin</string>
     <string name="snackbar_app_failed_to_launch_on_watch">Uygulama saat üzerinde başlatılamadı</string>
-    <string name="snackbar_app_launched_on_watch">Saatte başlatıldı. Uygulamayı saatinizden kontrol edin</string>
+    <string name="snackbar_watch_connection_unconfirmed">Uygulama saatte açıldı. Bağlanmak için saatteki telefon simgesine dokunun.</string>
     <string name="snackbar_no_connected_watches">Bağlı saat yok</string>
 
-    <string name="notification_title">Light Signals\'ı aç</string>
-    <string name="notification_text">El feneri veya ekranı kullanarak sinyal gösterin. Açmak için dokunun.</string>
+    <string name="notification_title">El feneri etkin</string>
+    <string name="notification_text">Açmak için dokunun</string>
 
     <string name="notification_channel_name">Light Signals bildirim kanalı</string>
     <string name="notification_channel_description">El feneri ve ekran sinyallerine hızlı erişim</string>
 
     <string name="menu_item_synchronize_with_watch">Saat ile senkronize et</string>
+    <string name="menu_item_add_quick_settings_tile">Hızlı Ayarlara ekle</string>
+    <string name="quick_settings_tile_help_title">Light Signals uygulamasına hızlı erişim</string>
+    <string name="quick_settings_tile_instructions">Hızlı Ayarları açın, düzenleme simgesine dokunun ve %1$s kutucuğunu ekleyin.</string>
+    <string name="quick_settings_tile_usage">Light Signals uygulamasını açmak için kutucuğa dokunun</string>
 
     <string name="no_sound">Yok</string>
     <string name="sound_1">Ses 1</string>
@@ -53,5 +38,6 @@
 
     <string name="circular_indicator_text">Saatte başlatılıyor</string>
 
+    <string name="snackbar_watch_control_available">Uygulamayı saatinizden kontrol edebilirsiniz</string>
 </resources>
 
