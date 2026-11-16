@@ -23,6 +23,19 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
 
+/**
+ * Displays the ordered shared colour track and its current encoded selection.
+ *
+ * Hoists encoded drag values through onProgressChanged and completion through
+ * onValueChangeFinished.
+ *
+ * @param progress Encoded shared palette position shown by the custom-colour slider.
+ * @param onProgressChanged Hoisted callback receiving an encoded shared palette position while
+ *     dragging.
+ * @param onValueChangeFinished Hoisted callback invoked when the user finishes adjusting the
+ *     slider.
+ * @param modifier Modifier applied to the custom thumb and track elements.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhoneColorPickerSlider(

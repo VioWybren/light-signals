@@ -17,7 +17,14 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Test
 
+/**
+ * Verifies wake-lock ownership and cancellation-safe torch cleanup.
+ */
 class TorchSignalSessionTest {
+    /**
+     * Verifies that timed signal acquires before its first phase and releases after switch
+     * off.
+     */
     @Test fun timedSignalAcquiresBeforeItsFirstPhaseAndReleasesAfterSwitchOff() = runTest {
         val f = Fixture()
         f.session.run(keepCpuAwake = true) {
@@ -28,6 +35,9 @@ class TorchSignalSessionTest {
         assertFalse(f.held)
     }
 
+    /**
+     * Verifies that steady torch does not acquire a CPU wake lock.
+     */
     @Test fun steadyTorchDoesNotAcquireACpuWakeLock() = runTest {
         val f = Fixture()
         f.session.run(keepCpuAwake = false) { f.events += "steady" }
@@ -35,6 +45,9 @@ class TorchSignalSessionTest {
         assertFalse(f.held)
     }
 
+    /**
+     * Verifies that cancellation keeps the lock until suspending torch cleanup finishes.
+     */
     @Test fun cancellationKeepsTheLockUntilSuspendingTorchCleanupFinishes() = runTest {
         val f = Fixture()
         f.cleanup = {
@@ -56,6 +69,10 @@ class TorchSignalSessionTest {
         assertFalse(f.held)
     }
 
+    /**
+     * Verifies that SOS keeps the CPU awake across pulses and gaps then releases on
+     * cancellation.
+     */
     @Test fun sosKeepsTheCpuAwakeAcrossPulsesAndGapsThenReleasesOnCancellation() = runTest {
         val f = Fixture()
         val phases = mutableListOf<Boolean>()
@@ -78,6 +95,9 @@ class TorchSignalSessionTest {
         assertEquals(listOf("acquire", "off", "release"), f.events)
     }
 
+    /**
+     * Verifies that switching from blink to steady releases the previous modes lock.
+     */
     @Test fun switchingFromBlinkToSteadyReleasesThePreviousModesLock() = runTest {
         val f = Fixture()
         val blink = MutableStateFlow(true)
@@ -98,6 +118,9 @@ class TorchSignalSessionTest {
         assertEquals("off", f.events.last())
     }
 
+    /**
+     * Verifies that signal failure switches off and releases before propagating.
+     */
     @Test fun signalFailureSwitchesOffAndReleasesBeforePropagating() = runTest {
         val f = Fixture()
         val failure = IllegalStateException("Torch failed")
@@ -111,6 +134,9 @@ class TorchSignalSessionTest {
         assertFalse(f.held)
     }
 
+    /**
+     * Verifies that cleanup failure still releases the CPU lock.
+     */
     @Test fun cleanupFailureStillReleasesTheCpuLock() = runTest {
         val f = Fixture()
         val failure = IllegalStateException("Torch cleanup failed")
@@ -126,6 +152,9 @@ class TorchSignalSessionTest {
         assertFalse(f.held)
     }
 
+    /**
+     * Verifies that partially failed acquisition still cleans up without starting the signal.
+     */
     @Test fun partiallyFailedAcquisitionStillCleansUpWithoutStartingTheSignal() = runTest {
         val f = Fixture()
         f.failAcquire = true
@@ -138,11 +167,29 @@ class TorchSignalSessionTest {
         assertFalse(f.held)
     }
 
+    /**
+     * Owns the fakes, observed events and coroutine test state used by this test suite.
+     */
     private class Fixture {
+        /**
+         * Ordered hardware and wake-lock events recorded by the fixture.
+         */
         val events = mutableListOf<String>()
+        /**
+         * Whether the fake wake lock is currently held.
+         */
         var held = false
+        /**
+         * Whether fake wake-lock acquisition should fail.
+         */
         var failAcquire = false
+        /**
+         * Suspending fake torch cleanup operation used by the test.
+         */
         var cleanup: suspend () -> Unit = { events += "off" }
+        /**
+         * Torch signal session exercised by this fixture.
+         */
         val session = TorchSignalSession(
             acquireWakeLock = {
                 events += "acquire"

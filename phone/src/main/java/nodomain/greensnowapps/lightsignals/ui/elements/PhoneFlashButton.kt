@@ -11,6 +11,20 @@ import nodomain.greensnowapps.lightsignals.PhoneMainActivity
 import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 
+/**
+ * Displays the phone flashlight toggle from checkedFlash.
+ *
+ * Enabling delegates to the Activity's notification-permission flow; disabling delegates to the
+ * ViewModel.
+ *
+ * @param toggleBtnWidth Width of the toggle button.
+ * @param toggleBtnHeight Height of the toggle button.
+ * @param checkedFlash Whether phone torch output is selected.
+ * @param viewModel ViewModel supplying observable signal state and handling control events.
+ * @param activity Host Activity that enables the torch and coordinates the optional notification
+ *     request.
+ * @param iconSize Size of the icon inside the control.
+ */
 @Composable
 fun PhoneFlashButton(
     toggleBtnWidth: Dp,

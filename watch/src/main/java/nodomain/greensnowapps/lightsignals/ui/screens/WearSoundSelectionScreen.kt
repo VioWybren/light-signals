@@ -40,6 +40,18 @@ import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearSoundViewModel
 
 
+/**
+ * Displays watch sound choices, media-volume controls and the app version.
+ *
+ * Collects selected sound and volume with the lifecycle. Hoists selection and close events
+ * through callbacks and also forwards the chosen sample to the sound ViewModel.
+ *
+ * @param wearSoundViewModel ViewModel exposing watch sound and volume state and handling their
+ *     edits.
+ * @param onSoundSelected Hoisted callback receiving the selected sample number before the
+ *     selector closes.
+ * @param onHideSoundSelector Hoisted callback that closes the sound-selection screen.
+ */
 @Composable
 fun WearSoundSelectionScreen(
     wearSoundViewModel: WearSoundViewModel = hiltViewModel<WearSoundViewModel>(),

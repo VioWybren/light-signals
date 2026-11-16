@@ -64,14 +64,42 @@ import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearMainViewModel
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearSoundViewModel
 import nodomain.greensnowapps.lightsignals.utils.WearUtils
 
+/**
+ * ARGB container colour configured for selected watch controls.
+ */
 private const val COLOR_CHECKED_BUTTON = 0xFFc43e00
+/**
+ * ARGB border colour configured for watch controls.
+ */
 private const val COLOR_BUTTON_BORDER = 0xffff6f00
 
+/**
+ * Minimum blink half-period accepted by this screen, in milliseconds.
+ */
 private const val MIN_TIME_MS = 100
+/**
+ * Maximum blink half-period accepted by this screen, in milliseconds.
+ */
 private const val MAX_TIME_MS = 1000
+/**
+ * Lower frequency-slider position, expressed as a blink half-period in milliseconds.
+ */
 private const val MIN_SLIDER_PROGRESS = 100f
+/**
+ * Upper frequency-slider position, expressed as a blink half-period in milliseconds.
+ */
 private const val MAX_SLIDER_PROGRESS = 1000f
 
+/**
+ * Displays watch colour, timing, phone connection, LED, SOS and sound controls.
+ *
+ * Collects ViewModel state with the lifecycle, delegates control actions to the supplied
+ * ViewModels and hoists signal-page navigation through onNext.
+ *
+ * @param viewModel ViewModel supplying observable signal state and handling control events.
+ * @param soundViewModel ViewModel that owns sound selection and selector visibility.
+ * @param onNext Hoisted callback that navigates to the signal display.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WearMainScreen(

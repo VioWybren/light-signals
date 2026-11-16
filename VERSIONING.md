@@ -1,37 +1,65 @@
-# Release versioning
+# Versioning
 
-Release metadata is defined once in the root `gradle.properties` file:
+## Current release configuration
+
+The upcoming release is **v5.0.0**, still **Unreleased**. Root
+[gradle.properties](gradle.properties) defines:
 
 ```properties
-appVersionName=v4.0.0
-phoneVersionCode=374001
-watchVersionCode=374000
+appVersionName=v5.0.0
+phoneVersionCode=375001
+watchVersionCode=375000
 ```
 
-Both Android modules read `appVersionName`. Each reads its own upload code. The default
-configuration supplies these values to `debug`, `release`, and the isolated `uitest` build type.
+| Module | `versionName` property | `versionCode` property | Current code |
+| --- | --- | --- | ---: |
+| `phone` | `appVersionName` | `phoneVersionCode` | 375001 |
+| `watch` | `appVersionName` | `watchVersionCode` | 375000 |
 
-`versionName` is the product version shown to users. Use the same `vmajor.minor.patch` name for
-the phone and watch. `versionCode` is an independent integer upload/update identifier; it is
-not calculated from `targetSdk` or the semantic version.
+Both modules read these properties in `defaultConfig`. The values also apply to `debug`,
+`uitest` and `releasecheck`; test variants change the application ID, not the version values.
+`core` is a library and has no Android upload code.
 
-For each release:
+## Name and upload codes
 
-1. Update `appVersionName` once for the product release.
-2. Give every module being uploaded an unused code greater than its previously published code.
-3. Keep phone and watch codes distinct across the shared Play application, including codes
-   already uploaded to internal, closed, open, or production tracks.
-4. Keep codes within Google Play's positive-integer limit of 2,100,000,000.
-5. Check the generated APK/AAB manifest before uploading. Uploading/publishing is a separate step.
+- `versionName` is the user-facing product version. Use the same `vmajor.minor.patch` name
+  in both modules. UI labels and startup logs read generated `BuildConfig` values.
+- `versionCode` is Android's integer update identifier. It is independent of the display name,
+  target SDK and communication protocol.
+- Phone and watch are separate artifacts. Either can be built and uploaded independently;
+  changing one does not require uploading the other.
 
-The v4.0.0 codes exceed the previous repository values: phone 373041 and watch 373040.
-The repository cannot establish the full Play Console upload history; verify the proposed codes
-have not already been used there before publishing.
+Google Play requires unique codes across form factors in the shared listing. For every
+artifact being uploaded, use an unused code greater than the previous code for that artifact.
+Check every testing and production track, not only the current production release. The maximum
+allowed code is 2,100,000,000. See [Android versioning](https://developer.android.com/studio/publish/versioning)
+and [Wear OS packaging](https://developer.android.com/training/wearables/packaging).
 
-Changing this metadata retains application IDs, signing configuration, saved-preference keys,
-and the phone/watch wire protocol. Version metadata alone does not perform a data migration.
+The current codes are greater than the earlier v4.0.0 candidate codes, 374001 and 374000.
+Only Play Console can confirm that 375001 and 375000 are still unused; the repository cannot
+establish the complete upload history.
 
-Google's references:
+## Preparing an upload
 
-- [Version your app](https://developer.android.com/studio/publish/versioning)
-- [Package and distribute Wear OS apps](https://developer.android.com/training/wearables/packaging)
+1. Set the shared product name once. Keep both module configurations on that name even if
+   only one artifact is being uploaded.
+2. Increase the code for each artifact that needs a new upload. An unchanged, unuploaded
+   artifact does not need a new code.
+3. Keep [CHANGELOG.md](CHANGELOG.md) under **Unreleased** until publication.
+4. Build and verify the actual artifacts, rather than relying only on source properties:
+
+   ```powershell
+   .\gradlew.bat :phone:bundleRelease :watch:bundleRelease
+   ```
+
+   For a phone-only or watch-only upload, request only that module's task. Plain Gradle
+   release builds have no production signing configuration; use the existing Android Studio
+   signed-bundle process before uploading.
+5. Check the final package ID, version name/code, non-debuggable manifest and signing identity.
+   Test the signed candidate through the appropriate Play track or a compatible signed APK.
+6. Record the approved commit, artifact hashes and mapping files with the release. Follow
+   [GIT_WORKFLOW.md](GIT_WORKFLOW.md#release-workflow).
+
+Version changes do not rename preference keys, migrate stored data or change RPC endpoints.
+The production application ID remains `nodomain.greensnowapps.lightsignals`; `.uitest`
+installations cannot prove a production-app upgrade. See [TESTING.md](TESTING.md#remaining-coverage).

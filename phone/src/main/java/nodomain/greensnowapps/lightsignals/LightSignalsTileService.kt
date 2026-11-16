@@ -7,9 +7,21 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 
+/**
+ * Intent extra requesting the controls page when the Quick Settings tile opens the phone app.
+ */
 internal const val OPEN_CONTROLS_EXTRA = "nodomain.greensnowapps.lightsignals.extra.OPEN_CONTROLS"
 
+/**
+ * Opens the phone control screen from Quick Settings without directly changing a signal.
+ */
 class LightSignalsTileService : TileService() {
+    /**
+     * Publishes an inactive Quick Settings tile state while the system listens on Main.
+     *
+     * This tile opens the controls screen, so its state does not mirror the current phone LED
+     * selection.
+     */
     override fun onStartListening() {
         super.onStartListening()
         qsTile?.apply {
@@ -18,7 +30,13 @@ class LightSignalsTileService : TileService() {
         }
     }
 
-    @Suppress("DEPRECATION")
+    /**
+     * Opens the phone controls and collapses Quick Settings using the API-appropriate launch
+     * path.
+     *
+     * Android calls this callback on Main; older locked devices first use the unlock callback.
+     */
+    @Suppress("DEPRECATION", "StartActivityAndCollapseDeprecated") // API 24-33 compatibility.
     override fun onClick() {
         super.onClick()
         val intent = Intent.makeMainActivity(ComponentName(this, PhoneMainActivity::class.java))

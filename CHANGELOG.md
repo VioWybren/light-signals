@@ -1,80 +1,90 @@
 # Changelog
 
-Notable changes are recorded here, beginning with v4.0.0. The entry below describes the
-upcoming release; a release date should be added when it is published.
+Notable changes since the production 3.03 version are consolidated below. v5.0.0 remains
+**Unreleased**; add a publication date only after it is released.
 
-## App size improvements - Not released
-
-- Replaced Material Icons library references with the required Android XML vectors in
-  both apps, preserving the original artwork, dimensions, tint and RTL mirroring.
-- Removed both direct `material-icons-extended` dependencies and included the original
-  icon attribution and Apache 2.0 license with each app.
-- Added the missing ignore rule for generated `core/build` output.
-- Enabled R8 code and resource optimization for phone and watch releases. Added an
-  optimized `releasecheck` build for device testing with the test application ID.
-
-## Shared core refactoring - Not released
-
-- Added a Kotlin/JVM `core` module used by the phone and watch for the common SOS engine,
-  200 ms Morse unit, and control-state wire field names.
-- Moved the independent SOS timing fixture and its three tests into `core`; retained both
-  app-specific codec contract suites and their wire fixtures.
-- Updated local verification commands and the manual CI configuration to include `:core:test`.
-- Kept the existing wire values/types, Android components, preferences, and app version metadata.
-
-## Permission-free torch experiment - Not released
-
-- Removed the phone's camera permission, runtime camera-permission gates, explanation dialogs,
-  and internal missing-permission broadcasts. LED controls use the existing CameraManager torch API.
-- Request notification permission independently of LED operation on Android 13 and later.
-- Added merged-manifest/permission assertions and real camera-service torch tests for steady light,
-  blinking, SOS, and screen-off operation. Older-device compatibility remains to be established.
-- Preserve the original v4.0.0 release candidate at Git tag `baseline/v4.0.0-camera`.
-
-## [v4.0.0] - Unreleased
+## [v5.0.0] - Unreleased
 
 ### Added
 
-- Open the phone's signal controls from the Light Signals Quick Settings tile.
-  Add it from the phone app's three-dot menu.
-- Repository/state, SOS timing and cancellation, and phone/watch synchronization contract tests.
-- Android device tests for permissions, notifications, foreground-service behavior, Activity
-  recreation, Home/resume, watch brightness, and resource cleanup.
-- An isolated `uitest` build type, shared test support, and a device-selection test script.
-- A manual Bitbucket verification pipeline for tests, lint, debug/test APK builds, and report artifacts.
-- A manual Git workflow guide covering the first development checkpoint, task branches, releases, and hotfixes.
-- README, testing instructions, versioning guidance, and this changelog.
+- A phone Quick Settings tile that opens the controls page, with setup guidance in the menu.
+- Version labels in the phone menu and watch sound screen, plus version details in Activity logs.
+- A shared color slider with more colors, including orange and violet, and white at the end.
+- Phone-led watch connection that launches the companion and transfers the phone configuration.
+- Remembered companion relationships, availability checks and automatic resume after temporary
+  interruptions. Explicit disconnect disables automatic resume.
+- Repository/state, palette, SOS timing/cancellation and communication contract tests.
+- Isolated Android test apps, shared test helpers, physical LED tests and optimized device builds.
+- A manual Bitbucket verification pipeline and guides for testing, versioning, architecture
+  and the Git workflow.
+- KDoc for production and test declarations, including lifecycle and resource ownership.
 
 ### Changed
 
-- Unified both modules on `versionName = "v4.0.0"`, configured once in root `gradle.properties`.
-- Set independent upload codes to `374001` for the phone and `374000` for the watch.
-- Scoped UI state collection and watch signaling to the appropriate lifecycle.
-- Made preference initialization asynchronous and guarded synchronization until state is ready.
-- Send fresh control state on reconnect/resume without transmitting local blink phases.
-- Use Wear Material 3 theming for the watch and resource-backed accessibility labels for controls.
+- Set the shared display version to `v5.0.0`, phone upload code to `375001` and watch upload
+  code to `375000`, all configured in root `gradle.properties`.
+- Removed the phone's camera permission, permission requests, explanation dialogs, obsolete
+  permission broadcasts and related localized text. Flashlight control still uses CameraManager.
+- Made notification permission independent of flashlight operation on Android 13 and later.
+- Kept phone controls usable during watch control. Each explicit watch action transfers a
+  complete configuration; local phone edits are not continuously mirrored to the watch.
+- Import the phone's current settings on resume and reconnection to the last connected phone.
+  Preserve the running phone signal instead of replacing it with standalone watch settings.
+- Route sound to the phone during companion control. Show sound off when remote playback is
+  unavailable, while allowing an explicit offline choice to restore watch sound.
+- Use the watch's media-volume range for its volume controls.
+- Share the palette, SOS engine, signal snapshots and communication codecs through `core`.
+- Make preference restoration asynchronous and wait for readiness before applying controls.
+- Use lifecycle-aware state collection and explicit foreground ownership for watch resources.
+- Refresh launcher, adaptive, monochrome and splash assets while preserving the brand design.
+- Use localized accessibility labels and Wear Material 3 theming where appropriate.
+- Replace the Material Icons library dependencies with the required XML vectors and retain
+  their license attribution.
+- Enable R8 code/resource optimization for `release` and isolated `releasecheck` builds.
+  Preserve reflected Horologist Protobuf fields through targeted keep rules.
 
 ### Fixed
 
-- Keep the CPU awake during LED blinking/SOS with the display off, and release the partial
-  wake lock after torch cleanup on mode changes, service shutdown, cancellation, or failure.
-- Increased CI Gradle/D8 heap space and limited build concurrency to address heap exhaustion
-  during watch dependency dex merging; bounded the Kotlin daemon heap separately.
-- Restored debug JVM test tasks alongside the isolated `uitest` build by configuring AGP 9
-  to generate unit-test components for all build types.
-- Corrected the Bitbucket SDK platform package ID to `platforms;android-37.0` so a clean CI
-  environment can install the required Android platform.
-- Foreground-service startup crash when camera permission is missing, and flashlight operation
-  being blocked by notification permission denial.
-- Competing torch jobs and stale session cleanup interfering with a newer signal session.
-- Unhandled flashlight discovery/hardware failures and companion-operation failures.
-- Invalid saved frequencies, including NaN and infinity, restoring an unintended blink interval.
-- Pending preference writes and cancellation handling during state changes and shutdown.
-- SoundPool playback stream tracking and cleanup of queued playback.
-- Watch brightness changes from inactive pages and incomplete brightness restoration on stop.
-- Color-gradient discontinuities and invalid input handling.
+- LED blinking/SOS becoming steady or pausing when the phone display turns off. Timed sessions
+  hold a partial CPU wake lock through cancellation-safe cleanup.
+- Old torch jobs or service cleanup interfering with a newer signal. Serialized writes and
+  ownership tokens protect replacement sessions.
+- Missing foreground notification after the first notification-permission grant. Refresh the
+  active notification immediately and remove it when the service stops.
+- Watch discovery incorrectly treating an installed phone companion as missing after reopening.
+- Stale connection indicators and incomplete recovery when either app returns or the physical
+  connection becomes available again.
+- Watch actions leaving the phone in a locally selected SOS/blink mode. Apply each action's
+  captured configuration in order, including its mode and output selection.
+- Locked-phone handoff being rejected solely because the Activity was not resumed. Initialize
+  controls before the first draw and retain peer, readiness and session checks.
+- Explicit reconnect stopping a running phone blink when the watch app remained open.
+- Unhandled torch discovery, hardware and companion-operation failures.
+- Unsafe restoration of saved torch sessions, invalid frequencies and out-of-range settings.
+- Cancellation and queued preference writes being lost or treated as successful work.
+- SoundPool stream tracking, queued playback restarting after stop and duplicate local audio.
+- Watch cleanup depending on uninitialized playback resources during Activity stop.
+- Cached watch pages changing brightness and incomplete restoration when leaving the signal UI.
+- Palette discontinuities and compatibility with saved color positions from older versions.
+- Splash clipping, monochrome proportions and the extra startup loading indicator.
+- Minimum-API Quick Settings lint findings and Android 7 test-helper incompatibilities.
+- Bitbucket SDK package installation and build-memory settings; keep debug JVM test tasks
+  available when instrumented tests target `uitest`.
+- Generated build output and local Android Studio device selection entering source control.
 
-### Security
+### Security and compatibility
 
-- Restricted the phone's internal permission receiver to non-exported registration and scoped
-  permission broadcasts to the application package.
+- Validate modern companion requests against sender identity, capability, session, timestamp
+  and increasing action sequence; reject malformed or inconsistent snapshots.
+- Separate remembered relationship identity from the last-phone routing hint. The hint alone
+  does not authorize control or automatic reconnection.
+- Retain legacy DataItem fields, preference keys and the earlier command endpoint for compatibility.
+
+### Release status
+
+- Local checks and paired-device testing were recorded for the preceding v4.0.0 candidate.
+  They are not a new signed v5.0.0 release or proof of an installed-app upgrade.
+- Final v5.0.0 artifact/signing checks and the real 3.03 upgrade remain unverified in the
+  retained test record. See [TESTING.md](TESTING.md).
+- Bitbucket CI is unavailable during the reported billing migration. GitHub migration and
+  automated deployment are not part of this release.

@@ -9,6 +9,15 @@ import androidx.compose.ui.unit.Dp
 import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 
+/**
+ * Displays the phone SOS selection and forwards toggle events to the main ViewModel.
+ *
+ * @param toggleBtnWidth Width of the toggle button.
+ * @param toggleBtnHeight Height of the toggle button.
+ * @param checkedSOS Whether SOS mode is selected.
+ * @param viewModel ViewModel supplying observable signal state and handling control events.
+ * @param iconSize Size of the icon inside the control.
+ */
 @Composable
 fun PhoneSosButton(
     toggleBtnWidth: Dp,

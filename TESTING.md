@@ -1,204 +1,213 @@
-# Testing Light Signals
+# Testing
 
-The shared `core` module owns platform-independent SOS timing and wire names. Its tests run
-without Android. Both app modules retain repository, service, lifecycle, and codec coverage.
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the current module boundary.
+Run commands from the repository root in PowerShell. Use Android Studio's normal **Run**
+and test actions when preferred. Choose the smallest check that covers a change; a full R8
+build and both device suites are not needed after every edit.
 
-This checkout also includes permission-free torch operation. Keep compatibility results separate from the
-camera-permission-based `baseline/v4.0.0-camera` checkpoint; see
-[PERMISSION_EXPERIMENT.md](PERMISSION_EXPERIMENT.md).
+## Everyday checks
 
-Run the local JVM suites from the project directory in PowerShell:
+| Change | Start with | Add when needed |
+| --- | --- | --- |
+| KDoc or Markdown only | Review the diff, links and examples | No APK or device rebuild for text-only changes |
+| Shared signal or codec logic | `:core:test` | Both app JVM suites for integration changes |
+| Phone state or repository | `:phone:testDebugUnitTest` | Phone lint and affected device tests |
+| Watch state or repository | `:watch:testDebugUnitTest` | Watch lint and affected device tests |
+| Compose UI | Affected app's `assembleUitest`, then Run | Relevant lifecycle/UI tests |
+| Manifest, permissions, service or hardware | Affected app's lint and Android tests | Physical device check |
+| Companion communication | Core/app contract tests | Matching phone/watch device check |
+| R8, keep rules or release dependencies | Optimized builds | Paired optimized smoke check |
+
+Run all local JVM suites:
 
 ```powershell
-.\gradlew.bat :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest --stacktrace
+.\gradlew.bat :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest
 ```
 
-The first run may download the coroutine testing dependency. HTML reports are written to
-`core/build/reports/tests/test/index.html`,
-`phone/build/reports/tests/testDebugUnitTest/index.html`, and
-`watch/build/reports/tests/testDebugUnitTest/index.html`.
+Or run one suite or a focused class:
 
-## Coverage in this batch
+```powershell
+.\gradlew.bat :phone:testDebugUnitTest
+.\gradlew.bat :phone:testDebugUnitTest --tests "*.TorchSignalSessionTest"
+.\gradlew.bat :phone:lintDebug
+```
 
-- Phone state: defaults, legacy preferences, range validation, non-finite numbers, and safe restoration without restarting a previous torch session.
-- Phone repository: initialization, remote state application, mode precedence, service-start failure, cancellation, queued writes, and recoverable storage errors.
-- Watch repository: foreground ownership, stop/restart and delayed initialization, mode changes, remote disconnect, ordered writes, and storage failures.
-- SOS: exact dot/dash durations, letter and word gaps, repetition, cancellation during a pulse or gap, and failed hardware enable.
-- Synchronization: exact DataMap field names and value types, defaults for older payloads, unknown future fields, delivery timestamps, recoverable transport failures, cancellation, and readiness/reconnect/resume gates.
-- Preference helpers: cancellation and programming errors propagate instead of becoming default values or successful writes.
-- Existing torch ownership/concurrency and gradient regression tests remain included.
-- Timed LED sessions: acquire a CPU wake lock before signaling, keep it through SOS gaps and
-  cancellation-safe torch cleanup, and release it on mode changes or failures. Steady torch
-  operation does not hold this lock.
+Use `:watch:testDebugUnitTest` and `:watch:lintDebug` for watch-only work. Leave the local Gradle
+daemon and incremental outputs available. Avoid routine `clean`, `--rerun-tasks` and repeated
+release builds. Use `--stacktrace` after a failure or `--profile` when investigating build time.
 
-## Test design
+JVM HTML reports are written to:
 
-Both Android app modules select `uitest` for instrumented tests. AGP 9 normally generates JVM test tasks
-only for that selected build type. Root `gradle.properties` sets
-`android.onlyEnableUnitTestForTheTestedBuildType=false` so `testDebugUnitTest` remains available
-in both modules. This enables unit-test components for the other build types as well; the
-commands above run the debug JVM suites.
+- `core/build/reports/tests/test/index.html`
+- `phone/build/reports/tests/testDebugUnitTest/index.html`
+- `watch/build/reports/tests/testDebugUnitTest/index.html`
 
-JUnit 4 and `kotlinx-coroutines-test` run these suites on the JVM. Coroutine tests use a shared virtual scheduler and advance time explicitly. Repository scopes and platform callbacks can be replaced through internal constructors; Hilt continues to use the Android constructors. Test-owned scopes are cancelled when each test finishes.
+## What local tests cover
 
-`test-support/src/main/kotlin` contains an atomic in-memory preferences fake and fixture readers. It is compiled only into the test source sets of the two modules. It does not simulate Android filesystem persistence, permission enforcement, service startup, or physical hardware.
+- SOS dot/dash timing, gaps, repetition, cancellation and failed output writes.
+- Shared palette anchors, slider conversion and compatibility with older saved colors.
+- Preference defaults, invalid/non-finite values, safe torch restoration and queued writes.
+- Repository initialization, foreground ownership, replacement jobs and recoverable failures.
+- Torch ownership, serialized hardware access and CPU-lock cleanup through cancellation/failure.
+- Legacy DataMap fields/types/defaults and modern connection, resume and command layouts.
+- Ordered action snapshots, mode replacement, readiness, session validation and legacy fallback.
 
-`test-support/src/main/resources/contracts` contains independent wire reference fixtures used by both app modules. The phone tests check the production decoder against them; the watch tests check the production sender/encoder. This catches an accidental key, value-type, path, or default change in either module. Keep these fixtures independent of the encoder; do not regenerate them automatically from production code.
+JUnit 4 and `kotlinx-coroutines-test` use virtual time for deterministic logic checks. Internal
+constructors allow fake callbacks, scopes and stores; Hilt uses the production constructors.
+Root `android.onlyEnableUnitTestForTheTestedBuildType=false` keeps debug JVM tasks available
+while instrumented tests target `uitest`.
 
-The SOS fixture now lives at `core/src/test/resources/contracts/sos-v1.csv`. It was moved
-without changing its contents and records absolute edges for a 200 ms unit, including the
-beginning of the next cycle. The three duplicated SOS tests have been consolidated into
-`core`; app repository and torch-session tests still cover their ownership and cleanup integration. The signal pattern delegates cancellation cleanup to its owning repository or torch session. Repository tests verify that obsolete signal jobs cannot continue after stop or replacement; torch-controller tests cover release and ownership.
-
-The synchronization gate tests exercise the function used by `WearMainViewModel`. Actual Google Play services listener registration, DataEventBuffer handling, radio delivery, and paired-device compatibility still require integration tests.
+`test-support` supplies an in-memory Preferences fake and independent wire fixtures. The SOS
+reference is `core/src/test/resources/contracts/sos-v1.csv`. Keep fixtures independent of the
+production encoders. JVM fakes do not prove Android persistence, permissions, radio delivery
+or hardware behavior.
 
 ## Android device tests
 
-The `uitest` build type installs as **Light Signals Tests**, with application ID
-`nodomain.greensnowapps.lightsignals.uitest`. It has separate data, permissions, and notifications
-from the production/debug app. Instrumentation targets this build type, so its tasks use `Uitest`
-in their names. The default `debug` and `release` application IDs are unchanged.
+### Choose the correct apps
 
-Build the test apps and their instrumentation APKs:
+Select **uitest** for both app modules in Android Studio's **Build Variants** window. Both
+install as **Light Signals Tests**, using `nodomain.greensnowapps.lightsignals.uitest` and
+separate data from the regular app. Run the phone module on the phone and watch module on
+the watch. Keep regular Light Signals apps closed during paired checks.
 
-```powershell
-.\gradlew.bat :phone:assembleUitest :phone:assembleUitestAndroidTest :watch:assembleUitest :watch:assembleUitestAndroidTest --stacktrace
-```
-
-List connected devices with `adb devices -l`, then run the phone and watch suites separately.
-Substitute each device's actual serial in these examples:
+Instrumentation targets `uitest`. Build the apps and test APKs when needed:
 
 ```powershell
-.\scripts\Test-Android.ps1 -Module phone -Serial 'emulator-5554'
-.\scripts\Test-Android.ps1 -Module watch -Serial 'emulator-5556'
+.\gradlew.bat :phone:assembleUitest :phone:assembleUitestAndroidTest :watch:assembleUitest :watch:assembleUitestAndroidTest
 ```
 
-The script also accepts real-device serials. It checks the device type, builds the APKs,
-checks the isolated application ID, resets only an existing `.uitest` installation, and selects
-the requested device through `ANDROID_SERIAL`. Keep devices unlocked and available while UI
-automation runs; a watch using wireless ADB must remain connected. The script reads the SDK
-location from `ANDROID_HOME`, `ANDROID_SDK_ROOT`, or `local.properties`; `-AdbPath` can override it.
-During watch runs, a temporary job sends a wake-up key every five seconds to keep the display
-awake while building, installing, and testing. The job stops when the script exits; it does not
-change persistent screen-timeout settings.
+For a simple manual UI check, build/run only the affected `uitest` app; no instrumentation
+APK is needed. In Android Studio, run JVM or Android test classes from their gutter actions
+with the appropriate variant/device selected.
 
-Android Test Orchestrator runs each case in a fresh instrumentation invocation and clears test-app
-data between cases. This isolates application settings and permission decisions; it does not
-reset the device's secure lock state. The test runner also checks the isolated target package.
-
-On a personal phone with a secure lock, `wakeUp()` turns the display on but does not unlock it.
-A screen-off case can therefore leave the keyguard covering subsequent UI cases. Keep the
-phone unlocked for UI cases, run screen-off cases last, and unlock between filtered runs when
-needed. Do not change PIN, fingerprint, or lock settings for these tests. Preserve initial
-failures as well as rerun results; successful filtered reruns are not a single unattended
-full-suite pass.
-
-The phone suite covers:
-
-- Absence of camera permission from the installed app's merged manifest and runtime grants.
-- Starting/stopping the flashlight without a camera permission prompt.
-- Granting or denying the independent notification permission, continued LED operation after
-  denial, and respecting that denial after relaunch (API 33+).
-- Foreground notification flags, channel, title, launch intent, and service shutdown.
-- Home/resume while the torch service is active, and cleanup when the Activity finishes.
-- LED blinking/SOS phases with the display off, actual partial wake lock ownership, and lock
-  release after switching to steady light, finishing the Activity, stopping, or hardware failure.
-- Screen selection/blink mode across Activity recreation.
-- Recovery from unavailable torch hardware.
-- A separate hardware suite verifies actual CameraManager torch callbacks without camera
-  permission for steady LED, blinking, SOS, screen-off operation, and cleanup.
-
-The watch suite covers:
-
-- Actual Activity start/stop ownership, Home/resume, and keep-screen-on flags.
-- An offscreen cached signal page leaving window brightness unchanged.
-- Brightness application/restoration when selecting/leaving the signal page or pressing Home.
-- Mode retention and owner replacement during Activity recreation.
-- Signal/session/window cleanup when finishing the Activity.
-
-`PhoneAndroidBehaviorTest` starts the real Android service and uses the real notification and
-permission frameworks. Hilt replaces its torch driver with a recording backend and supplies
-matching flash availability, so the UI cases can also run on emulators without an LED.
-`PhoneTorchHardwareTest` keeps the production Hilt bindings and checks real CameraManager torch
-callbacks. Its cases require a physical device with a rear LED; emulators and devices without
-that hardware are skipped, not counted as hardware compatibility proof.
-Watch tests restore the previous media volume.
-These tests recreate or stop Activities; they do not claim process-death or OS service-restart coverage.
-
-### Physical LED screen-off regression
-
-The behavior tests check Android's actual power manager/service with a recording torch backend.
-The hardware tests also check on/off callbacks from the real camera service. Both check the
-service's partial wake lock in `dumpsys power` while the display is non-interactive. A test runner,
-USB charging, or other device activity can also keep the CPU awake, so these tests do not replace
-an unplugged physical LED check.
-
-On the affected phone:
-
-1. Start LED blinking and disconnect the charger/USB cable.
-2. Turn the display off and observe the LED for at least three minutes. Repeat at the fastest
-   and slowest blink settings, and repeat in SOS mode.
-3. Turn the display back on, switch to steady LED, then turn the LED off. Confirm that the
-   requested modes work and the foreground notification disappears after stopping.
-4. Record the phone model, Android version, and Battery Saver setting with the result.
-
-The lock is scoped to an active blinking/SOS session and released after its final LED-off write.
-The user controls the session duration, so it has no fixed wake lock timeout that could interrupt
-a longer signal. It does not keep the display on. Forced deep Doze and manufacturer battery
-restrictions are separate scenarios: Android can ignore ordinary wake locks in Doze; see
-[Android's Doze restrictions](https://developer.android.com/training/monitoring-device-state/doze-standby#restrictions).
-
-The baseline's first device run caught a service-start deadline crash on the missing-camera path.
-This experiment removes that permission path; the service still supplies its foreground
-notification before observing LED requests. The Home/resume tests explicitly refocus the existing Android task instead
-of assuming that a lifecycle state request can bring a background task to the foreground.
-The shared `focusTask` helper uses the public `ActivityManager.AppTask.moveToFront()` API,
-matching the existing task by ID with the pre-API-29 field fallback. Android 7 does not support
-the `am task focus` shell command, so that command must not be used for minimum-SDK tests.
-Home/resume polling reads the original Activity's `Lifecycle.currentState` on the main thread.
-`ActivityScenario.state` can throw while its framework monitor is in a transient `STARTED`
-stage, so it is not used as a polling predicate during asynchronous task transitions.
-
-Reports from Gradle device runs are under each module's `build/reports/androidTests/connected`
-and `build/outputs/androidTest-results/connected` directories. Tests conditioned on a newer API
-are reported as skipped on older devices.
-
-## Optimized release checks
-
-Build the release bundles and the optimized device test APKs from the project root.
+### Select devices from PowerShell
 
 ```powershell
-.\gradlew.bat :phone:bundleRelease :watch:bundleRelease :phone:assembleReleasecheck :watch:assembleReleasecheck
+adb devices -l
+$phoneSerial = Read-Host 'Enter the phone serial shown by adb devices'
+.\scripts\Test-Android.ps1 -Module phone -Serial $phoneSerial
+$watchSerial = Read-Host 'Enter the watch serial shown by adb devices'
+.\scripts\Test-Android.ps1 -Module watch -Serial $watchSerial
 ```
 
-`releasecheck` uses the release optimizer and the `.uitest` application ID. Both device APKs
-use the debug signing key and the **Light Signals Tests** label. Install the phone APK on the
-phone and the watch APK on its paired watch. This replaces the corresponding `uitest` app.
+Here, a serial is the device identifier in the first output column, not its model name.
+`adb` must be on PATH; Android Studio also supplies it in the SDK's `platform-tools` directory.
+
+The script checks the device type, builds the APKs, verifies the isolated app ID, clears only
+the existing test app's data and runs `connectedUitestAndroidTest` for the selected device.
+It finds ADB through `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `local.properties` or `-AdbPath`.
+For watch runs, a temporary job wakes the display every five seconds and stops on script exit.
+
+Android Test Orchestrator clears test-app data between cases. It does not unlock a secure
+keyguard. Keep devices unlocked for UI cases, run screen-off/locked cases last and unlock
+between filtered runs when necessary. Preserve failures and rerun results separately; filtered
+passes are not one unattended full-suite pass. Wireless ADB can disconnect independently of
+the app's Wearable connection.
+
+### Suite responsibilities
+
+| Suite | Covers | Prerequisites / limits |
+| --- | --- | --- |
+| `PhoneAndroidBehaviorTest` | Permission absence, optional notifications, real foreground service, recorded LED phases, wake locks, recreation and cleanup | Uses a recording torch and matching availability binding; suitable for emulators |
+| `PhoneTorchHardwareTest` | Actual CameraManager torch callbacks, steady/blink/SOS, screen-off operation and cleanup | Physical rear LED required; unsupported devices skip |
+| `PhoneWatchBackgroundBehaviorTest` | Real phone handoff handlers while stopped, state-read reconnect and cold initialization behind keyguard | Some cases require a matching watch app or secure keyguard; inspect skipped assumptions |
+| `WearAndroidLifecycleTest` | Foreground ownership, Home/resume, keep-screen-on, cached pages, brightness restoration and recreation | Wear device/emulator; tests restore prior media volume |
+
+The background-handler tests invoke real handlers in the unoptimized app; they do not replace
+watch-to-phone radio and remote-launch checks. API 33+ notification cases skip on older Android.
+Emulator runs do not prove physical LED compatibility.
+
+Connected reports are under each app's `build/reports/androidTests/connected/` and
+`build/outputs/androidTest-results/connected/` directories. These suites do not claim complete
+process-death or OS service-restart coverage.
+
+## Optimized release validation
+
+Before a release, run the combined check once from the approved source:
 
 ```powershell
-adb -s PHONE_SERIAL install -r -t .\phone\build\outputs\apk\releasecheck\phone-releasecheck.apk
-adb -s WATCH_SERIAL install -r -t .\watch\build\outputs\apk\releasecheck\watch-releasecheck.apk
+.\gradlew.bat :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest :phone:lintRelease :watch:lintRelease :phone:bundleRelease :watch:bundleRelease :phone:assembleReleasecheck :watch:assembleReleasecheck
 ```
 
-Check the main screens, icons, sound selection and volume. Exercise steady LED, blinking,
-and SOS, including screen-off operation. Verify phone control from the watch and confirm
-that stopping the signal clears the foreground notification. Check Home and resume on the
-watch and confirm the screen brightness returns to normal when leaving the signal screen.
-Reinstall the regular `uitest` APKs before running instrumentation.
+If the JVM suites already passed and only keep rules changed, repeat the affected optimized
+builds and device checks rather than every earlier test.
 
-Measure the release AABs with `android analyze` and retain the release `mapping.txt` files
-for crash deobfuscation. Record uncompressed DEX sizes and R8 scores as separate measures.
-[Android DEX optimization guidance](https://developer.android.com/google/play/vitals/code-optimization)
-
-## Before merging or releasing
-
-Run the full Gradle checks:
+`releasecheck` uses R8, debug signing and the `.uitest` app ID. Select it in Android Studio
+and use **Run** on both devices, or install the built APKs using the serials collected above:
 
 ```powershell
-.\gradlew.bat :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest :phone:lintDebug :watch:lintDebug :phone:assembleDebug :watch:assembleDebug --stacktrace
+adb -s $phoneSerial install -r -t .\phone\build\outputs\apk\releasecheck\phone-releasecheck.apk
+adb -s $watchSerial install -r -t .\watch\build\outputs\apk\releasecheck\watch-releasecheck.apk
 ```
 
-The next batches should add real DataStore upgrade and corruption tests, process-death/service-restart
-tests, paired phone/watch tests with mixed released versions, and physical-hardware checks for LED,
-audio, memory, and performance.
+These replace the corresponding test apps. Use matching IDs and certificates on the pair.
+Reinstall the unoptimized `uitest` apps before running instrumentation.
+
+For manual release checks:
+
+1. Check screens, icons, version labels, sound selection, watch volume and brightness restoration.
+2. Connect from the phone and verify that the watch imports its settings. With Blink selected
+   on the watch, select SOS on the phone. Check that each watch color, flashlight and sound
+   action restores the watch's complete configuration, selecting phone SOS again before each.
+3. Close/reopen each app and interrupt/restore connectivity. A remembered relationship can resume;
+   explicit disconnect must stay disconnected until the user reconnects.
+4. Open the phone app once, dismiss it, then lock it. Connect from the watch, wait about 30 seconds
+   and exercise LED/Blink/SOS/stop without unlocking. Android force-stop is a separate scenario.
+5. While the locked phone is blinking, disconnect/reconnect from the watch, first keeping its
+   app open and then dismissing/reopening it. The blink must continue and the watch must import
+   current phone settings.
+6. Unplug the phone and observe screen-off blinking for at least three minutes, then SOS for
+   at least three minutes. Include fast/slow blinking and record Battery Saver, model and OS.
+7. Stop LED and sound; check notification removal. Record the exact commit, variant, versions,
+   devices, results and any skips.
+
+USB and instrumentation activity can keep the CPU awake. Automated wake-lock checks do not
+replace unplugged observation or establish forced-Doze behavior.
+
+Release artifacts are under each app's `build/outputs/bundle/release/`. Retain the corresponding
+`build/outputs/mapping/release/mapping.txt` for crash deobfuscation. Measure uncompressed DEX
+separately from AAB/download size. A locally debug-signed `releasecheck` app does not verify
+production signing or an in-place Play upgrade.
+
+## Recorded results
+
+Last documentation review: **16 November 2026**. The following are retained results, not new
+tests run during this documentation edit. The latest runtime/release checks used the preceding
+permission-free **v4.0.0 candidate**, before the v5.0.0 version-only change.
+
+| Check | Recorded result | Scope |
+| --- | --- | --- |
+| JVM suites, 14 November | 147 passed: core 21, phone 64, watch 62; no failures/errors/skips | Normal local Gradle run; these counts also match current test declarations |
+| Debug and release lint | Zero errors; phone 29 warnings, watch 37 warnings | Candidate reports; not warning-free |
+| Phone SM-A536E, API 36 | Platform, hardware and stopped/locked-phone regressions passed | Filtered runs with manual unlocking; not one unattended suite |
+| Watch SM-L310, API 36 | Five lifecycle cases passed | Physical watch |
+| API 24 emulator | 11 applicable phone cases passed; optimized startup/tile check passed | Minimum-API software behavior, no physical LED proof |
+| API 33 / 34 emulators | 13 selected cases passed on each | Earlier permission-free checkpoint; not a fresh final-candidate run |
+| SM-A520, Android 8.0.0 / API 26 | Manual steady/Blink/SOS/stop and unplugged screen-off checks passed with Battery Saver enabled | Earlier permission-free debug APK, confirmed by user; no ADB automation |
+| Optimized paired apps, 14 November | Locked launch/control, both explicit reconnect paths, SOS and stop passed | User report on refreshed matching test APKs |
+| Unplugged screen-off LED | Blink and SOS each passed at least three minutes | User report; usual Battery Saver setting, exact on/off value not separately recorded |
+| Release packaging | Required Protobuf fields preserved; optimized APK ZIP and inspected 64-bit ELF alignment passed 16 KB checks | Static inspection, not runtime proof on a 16 KB-page device |
+| v5.0.0 source metadata | Shared `v5.0.0`, phone 375001, watch 375000 checked | Does not verify newly signed artifacts or Play delivery |
+
+Earlier permission checks are detailed in [PERMISSION_EXPERIMENT.md](PERMISSION_EXPERIMENT.md).
+The validation session retained Gradle XML, lint reports, artifact hashes and manual results
+outside the repository. Keep future release evidence with the tested commit and artifact hashes.
+Bitbucket has no successful CI result recorded for the current candidate; see [CI.md](CI.md).
+
+## Remaining coverage
+
+- Final signed v5.0.0 artifacts: package, version/code, signature, optimized behavior and exact
+  source-to-artifact association. The retained v5 record stops at source metadata checks.
+- A real 3.03-to-v5.0.0 update preserving production app data. Keep the old app installed and
+  update through Play internal testing or an APK with an accepted app-signing identity.
+  An AAB is for Play upload; an APK is for local installation. An upload key may differ from
+  the installed app-signing key.
+- Mixed released-version phone/watch pairs and broader manufacturer/OS coverage, including
+  physical Android 7 LED operation.
+- Real DataStore migration/corruption, process death, OS service recreation and force-stop behavior.
+- Extended Doze/manufacturer restrictions, long-duration battery/audio/memory testing and
+  runtime verification on a 16 KB-page-size device.
+- Restored cloud CI coverage when the Bitbucket billing issue is resolved or migration is completed.
+
+Do not convert an assumed or planned check into a passed result. Publication and upgrade
+approval remain separate from the local checks above.

@@ -7,7 +7,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.math.abs
 
+/**
+ * Verifies the phone palette adapter.
+ */
 class PhoneUtilsTest {
+    /**
+     * Verifies that historical palette keeps its original anchors.
+     */
     @Test
     fun historicalPaletteKeepsItsOriginalAnchors() {
         val stops = listOf(
@@ -20,6 +26,9 @@ class PhoneUtilsTest {
         }
     }
 
+    /**
+     * Verifies that adjacent new slider values are continuous.
+     */
     @Test
     fun adjacentNewSliderValuesAreContinuous() {
         val firstStoredProgress = SignalColorPalette.MAX_PROGRESS - SignalColorPalette.MAX_SLIDER_PROGRESS
@@ -36,12 +45,18 @@ class PhoneUtilsTest {
         }
     }
 
+    /**
+     * Verifies that out of range progress clamps to endpoints.
+     */
     @Test
     fun outOfRangeProgressClampsToEndpoints() {
         assertEquals(Color.Black, PhoneUtils.computeSpecialColor(Int.MIN_VALUE))
         assertEquals(Color.White, PhoneUtils.computeSpecialColor(Int.MAX_VALUE))
     }
 
+    /**
+     * Verifies that the new slider uses exact orange violet and white.
+     */
     @Test
     fun theNewSliderUsesExactOrangeVioletAndWhite() {
         for ((slider, expected) in listOf(

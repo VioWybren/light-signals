@@ -5,7 +5,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.math.abs
 
+/**
+ * Verifies shared palette interpolation, saved-colour compatibility and slider bounds.
+ */
 class SignalColorPaletteTest {
+    /**
+     * Verifies that every previously saved position renders exactly as before.
+     */
     @Test
     fun everyPreviouslySavedPositionRendersExactlyAsBefore() {
         for (progress in 0..2295) {
@@ -27,6 +33,9 @@ class SignalColorPaletteTest {
         assertEquals(1530f, SignalColorPalette.DEFAULT_PROGRESS, 0f)
     }
 
+    /**
+     * Verifies that the visible track follows the color sequence and ends at white.
+     */
     @Test
     fun theVisibleTrackFollowsTheColorSequenceAndEndsAtWhite() {
         val expected = listOf(
@@ -51,6 +60,9 @@ class SignalColorPaletteTest {
         }
     }
 
+    /**
+     * Verifies that the new track remains opaque and continuous within its own range.
+     */
     @Test
     fun theNewTrackRemainsOpaqueAndContinuousWithinItsOwnRange() {
         for (progress in 2297..4591) {
@@ -65,6 +77,9 @@ class SignalColorPaletteTest {
         }
     }
 
+    /**
+     * Verifies that a saved color maps to the corresponding position on the new slider.
+     */
     @Test
     fun aSavedColorMapsToTheCorrespondingPositionOnTheNewSlider() {
         for ((stored, slider) in listOf(
@@ -83,6 +98,10 @@ class SignalColorPaletteTest {
         assertEquals(2295f, SignalColorPalette.toSliderProgress(4591f), 0f)
     }
 
+    /**
+     * Verifies that touches near orange and violet snap without quantizing the rest of the
+     * track.
+     */
     @Test
     fun touchesNearOrangeAndVioletSnapWithoutQuantizingTheRestOfTheTrack() {
         assertEquals(2806f, SignalColorPalette.fromSliderProgress(500f), 0f)
@@ -94,6 +113,9 @@ class SignalColorPaletteTest {
         assertEquals(4591f, SignalColorPalette.fromSliderProgress(9999f), 0f)
     }
 
+    /**
+     * Verifies that invalid stored positions clamp safely including the gap between encodings.
+     */
     @Test
     fun invalidStoredPositionsClampSafelyIncludingTheGapBetweenEncodings() {
         assertEquals(0f, SignalColorPalette.clampProgress(-1f), 0f)
@@ -106,6 +128,9 @@ class SignalColorPaletteTest {
         assertEquals(0xFFFFFFFF.toInt(), SignalColorPalette.argbAt(Int.MAX_VALUE))
     }
 
+    /**
+     * Verifies that both extensions keep a usable fallback for legacy companions.
+     */
     @Test
     fun bothExtensionsKeepAUsableFallbackForLegacyCompanions() {
         assertEquals(1785f, SignalColorPalette.legacyProgress(1785f), 0f)
@@ -117,6 +142,10 @@ class SignalColorPaletteTest {
         }
     }
 
+    /**
+     * Verifies that decoding preserves both extension versions and rejects unknown
+     * coordinates.
+     */
     @Test
     fun decodingPreservesBothExtensionVersionsAndRejectsUnknownCoordinates() {
         assertEquals(2040f, SignalColorPalette.decodeProgress(1467f, 2040f), 0f)
@@ -132,6 +161,15 @@ class SignalColorPaletteTest {
         assertEquals(1530f, SignalColorPalette.decodeProgress(Float.NaN, Float.NaN), 0f)
     }
 
+    /**
+     * Calculates the independent pre-reordering RGB reference used by compatibility tests.
+     *
+     * Keep this reference separate from production palette helpers so a regression cannot change
+     * both the implementation and its expected result.
+     *
+     * @param progress Previously supported saved integer palette position.
+     * @return The historical opaque ARGB colour.
+     */
     // Snapshot of the RGB mapping used before the slider and stored coordinates were separated.
     private fun historicalColorAt(progress: Int): Int {
         val segment = minOf(progress / 255, 8)

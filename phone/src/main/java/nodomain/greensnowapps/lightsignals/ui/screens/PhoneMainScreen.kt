@@ -96,12 +96,35 @@ import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneTorchViewModel
 import nodomain.greensnowapps.lightsignals.utils.PhoneUtils
 import kotlin.math.roundToInt
 
+/**
+ * Minimum blink half-period accepted by this screen, in milliseconds.
+ */
 private const val MIN_TIME_MS = 100
+/**
+ * Maximum blink half-period accepted by this screen, in milliseconds.
+ */
 private const val MAX_TIME_MS = 1000
+/**
+ * Lower frequency-slider position, expressed as a blink half-period in milliseconds.
+ */
 private const val MIN_SLIDER_PROGRESS = 100f
+/**
+ * Upper frequency-slider position, expressed as a blink half-period in milliseconds.
+ */
 private const val MAX_SLIDER_PROGRESS = 1000f
 
 
+/**
+ * Displays phone color, timing, LED, SOS and sound controls with companion actions and version
+ * information.
+ *
+ * Collects ViewModel state with the lifecycle, hoists next-page navigation through onNext and
+ * uses snackbarHostState for connection and operation feedback.
+ *
+ * @param viewModel ViewModel supplying observable signal state and handling control events.
+ * @param onNext Hoisted callback that navigates to the signal display.
+ * @param snackbarHostState Host state used to display operation feedback and connection notices.
+ */
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -192,6 +215,15 @@ fun PhoneMainScreen(
 
     val scope = rememberCoroutineScope()
 
+    /**
+     * Launches localized phone feedback in the composition-owned coroutine scope.
+     *
+     * Call from a UI event on Main. Returns before snackbar display completes; leaving the
+     * owning composition cancels its pending coroutine.
+     *
+     * @param msg Already localized message displayed by the supplied snackbar host.
+     * @param duration Requested snackbar display duration.
+     */
     fun showSnack(msg: String, duration: SnackbarDuration = SnackbarDuration.Short) {
         scope.launch {
             snackbarHostState.showSnackbar(

@@ -12,7 +12,13 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Test
 
+/**
+ * Verifies SOS pulse timing, cancellation and output failure behavior.
+ */
 class SosSignalTest {
+    /**
+     * Verifies that full cycle matches the shared morse timing contract.
+     */
     @Test fun fullCycleMatchesTheSharedMorseTimingContract() = runTest {
         val edges = mutableListOf<Pair<Long, Boolean>>()
         val job = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -25,6 +31,9 @@ class SosSignalTest {
         job.cancelAndJoin()
     }
 
+    /**
+     * Verifies that cancellation during dot dash or gap prevents every later edge.
+     */
     @Test fun cancellationDuringDotDashOrGapPreventsEveryLaterEdge() = runTest {
         for (cancelAt in listOf(100L, 1800L, 5700L)) {
             val edges = mutableListOf<Pair<Long, Boolean>>()
@@ -41,6 +50,9 @@ class SosSignalTest {
         }
     }
 
+    /**
+     * Verifies that failed enable stops without scheduling another pulse.
+     */
     @Test fun failedEnableStopsWithoutSchedulingAnotherPulse() = runTest {
         val writes = mutableListOf<Boolean>()
         runSosSignal(SOS_UNIT_MS) { enabled -> writes += enabled; false }
@@ -48,6 +60,12 @@ class SosSignalTest {
         assertEquals(0L, currentTime)
     }
 
+    /**
+     * Loads expected absolute SOS edges from the independent CSV contract and closes the reader.
+     *
+     * @return Timestamp and output-state pairs from the shared timing fixture.
+     * @throws IllegalStateException If the independent timing fixture is missing.
+     */
     private fun expectedEdges(): List<Pair<Long, Boolean>> = checkNotNull(
         javaClass.getResourceAsStream("/contracts/sos-v1.csv")
     ) { "Missing independent SOS timing fixture" }.bufferedReader().useLines { lines ->

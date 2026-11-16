@@ -6,11 +6,20 @@ import nodomain.greensnowapps.lightsignals.DEFAULT_COLOR_PROGRESS
 import org.junit.Assert.*
 import org.junit.Test
 
+/**
+ * Verifies phone preference restoration and bounds validation.
+ */
 class PhoneControlStateTest {
+    /**
+     * Verifies that empty preferences restore safe defaults.
+     */
     @Test fun emptyPreferencesRestoreSafeDefaults() {
         assertEquals(PhoneControlState(), PhoneControlState.fromPreferences(emptyPreferences()))
     }
 
+    /**
+     * Verifies that previous torch selection never restarts hardware or its saved modes.
+     */
     @Test fun previousTorchSelectionNeverRestartsHardwareOrItsSavedModes() {
         val state = PhoneControlState.fromPreferences(preferencesOf(
             KEY_FLASH_ON to true, KEY_BLINK_ON to true, KEY_SOS_ON to true,
@@ -23,6 +32,9 @@ class PhoneControlStateTest {
         assertEquals(1, state.screenIndex)
     }
 
+    /**
+     * Verifies that current frequency preference takes precedence over legacy delay.
+     */
     @Test fun currentFrequencyPreferenceTakesPrecedenceOverLegacyDelay() {
         val state = PhoneControlState.fromPreferences(preferencesOf(
             KEY_FREQUENCY_PROGRESS to 725f, KEY_BLINK_DELAY to 300L
@@ -30,10 +42,16 @@ class PhoneControlStateTest {
         assertEquals(725L, state.frequency)
     }
 
+    /**
+     * Verifies that legacy delay remains readable.
+     */
     @Test fun legacyDelayRemainsReadable() {
         assertEquals(350L, PhoneControlState.fromPreferences(preferencesOf(KEY_BLINK_DELAY to 350L)).frequency)
     }
 
+    /**
+     * Verifies that non finite saved frequency falls back to legacy value.
+     */
     @Test fun nonFiniteSavedFrequencyFallsBackToLegacyValue() {
         for (value in listOf(Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY)) {
             val state = PhoneControlState.fromPreferences(preferencesOf(
@@ -43,11 +61,17 @@ class PhoneControlStateTest {
         }
     }
 
+    /**
+     * Verifies that non finite frequency without a legacy value uses the default.
+     */
     @Test fun nonFiniteFrequencyWithoutALegacyValueUsesTheDefault() {
         val state = PhoneControlState.fromPreferences(preferencesOf(KEY_FREQUENCY_PROGRESS to Float.NaN))
         assertEquals(500L, state.frequency)
     }
 
+    /**
+     * Verifies that invalid numbers and indices are clamped before use.
+     */
     @Test fun invalidNumbersAndIndicesAreClampedBeforeUse() {
         assertEquals(
             PhoneControlState(frequency = 100L, activeSound = 3, color = DEFAULT_COLOR_PROGRESS,
@@ -64,11 +88,17 @@ class PhoneControlStateTest {
         assertEquals(0, upper.activeColorButton)
     }
 
+    /**
+     * Verifies that valid state is unchanged by repeated validation.
+     */
     @Test fun validStateIsUnchangedByRepeatedValidation() {
         val state = PhoneControlState(true, false, true, 275L, 2, 621.5f, 1, 1)
         assertEquals(state, state.validated().validated())
     }
 
+    /**
+     * Verifies that saved extended colors from both encodings restore unchanged.
+     */
     @Test fun savedExtendedColorsFromBothEncodingsRestoreUnchanged() {
         for (stored in listOf(2040f, 2295f, 2296f, 2806f, 4591f)) {
             val state = PhoneControlState.fromPreferences(preferencesOf(KEY_COLOR_PROGRESS to stored))

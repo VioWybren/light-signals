@@ -48,20 +48,44 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Verifies phone Activity, notification, foreground-service and recording-torch behavior.
+ */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class PhoneAndroidBehaviorTest {
+    /**
+     * JUnit rule that initializes and injects the Hilt test component.
+     */
     @get:Rule(order = 0) val hilt = HiltAndroidRule(this)
+    /**
+     * JUnit rule used to query and operate the target app's Compose UI.
+     */
     @get:Rule(order = 1) val compose = createEmptyComposeRule()
 
+    /**
+     * Thread-safe ordered recording of fake torch writes made by the isolated service tests.
+     */
     private val writes = CopyOnWriteArrayList<Boolean>()
+    /**
+     * Atomic fake hardware state updated by the test torch driver.
+     */
     private val torchEnabled = AtomicBoolean(false)
+    /**
+     * Atomic switch that makes the fake torch driver reject an on-write.
+     */
     private val failEnable = AtomicBoolean(false)
 
+    /**
+     * Hilt test binding that makes torch controls available without requiring real hardware.
+     */
     // An emulator need not advertise a physical flash to test the recording LED UI.
     @BindValue @JvmField val torchAvailability = PhoneTorchAvailability { true }
 
+    /**
+     * Injected serialized torch driver; tests can replace it with a recording backend.
+     */
     // Android starts the real service and checks real permissions. Only the LED is replaced.
     @BindValue @JvmField val torchDriver = PhoneTorchDriver { enabled ->
         writes += enabled
@@ -71,17 +95,36 @@ class PhoneAndroidBehaviorTest {
         }
     }
 
+    /**
+     * Control state or injected repository used by this test fixture.
+     */
     @Inject lateinit var controls: PhoneControlRepository
+    /**
+     * Test-owned ActivityScenario, closed and cleared during cleanup.
+     */
     private var scenario: ActivityScenario<PhoneMainActivity>? = null
+    /**
+     * Fully qualified torch-service class name used by service-state assertions.
+     */
     private val serviceName get() = FlashLightService::class.java.name
+    /**
+     * Target application notification manager used to verify foreground notification cleanup.
+     */
     private val notifications get() = context.getSystemService(NotificationManager::class.java)
 
+    /**
+     * Prepares the isolated test application, bindings and device state before each case.
+     */
     @Before fun inject() {
         device.wakeUp()
         hilt.inject()
         assertCameraPermissionAbsent()
     }
 
+    /**
+     * Stops test-owned signals and restores test-owned Activity, service or device resources
+     * after each case.
+     */
     @After fun cleanup() {
         device.wakeUp()
         scenario?.close()
@@ -92,10 +135,16 @@ class PhoneAndroidBehaviorTest {
         }
     }
 
+    /**
+     * Verifies that merged manifest does not request camera permission.
+     */
     @Test fun mergedManifestDoesNotRequestCameraPermission() {
         assertCameraPermissionAbsent()
     }
 
+    /**
+     * Verifies that torch starts without camera permission or camera explanation.
+     */
     @Test fun torchStartsWithoutCameraPermissionOrCameraExplanation() {
         grantNotifications()
         launchPhone()
@@ -106,6 +155,9 @@ class PhoneAndroidBehaviorTest {
         awaitTorchStopped()
     }
 
+    /**
+     * Verifies that foreground notification works without camera permission.
+     */
     @Test fun foregroundNotificationWorksWithoutCameraPermission() {
         grantNotifications()
         launchPhone()
@@ -124,6 +176,10 @@ class PhoneAndroidBehaviorTest {
         assertCameraPermissionAbsent()
     }
 
+    /**
+     * Verifies that denying notifications does not stop torch or repeat the prompt on
+     * relaunch.
+     */
     @Test @SdkSuppress(minSdkVersion = 33)
     fun denyingNotificationsDoesNotStopTorchOrRepeatThePromptOnRelaunch() {
         assertPermissionDenied(Manifest.permission.POST_NOTIFICATIONS)
@@ -146,6 +202,9 @@ class PhoneAndroidBehaviorTest {
         awaitTorchStopped()
     }
 
+    /**
+     * Verifies that granting notifications posts the notification for the running torch.
+     */
     @Test @SdkSuppress(minSdkVersion = 33)
     fun grantingNotificationsPostsTheNotificationForTheRunningTorch() {
         assertPermissionDenied(Manifest.permission.POST_NOTIFICATIONS)
@@ -166,6 +225,9 @@ class PhoneAndroidBehaviorTest {
         awaitTorchStopped()
     }
 
+    /**
+     * Verifies that leaving the activity keeps an explicit torch request running.
+     */
     @Test fun leavingTheActivityKeepsAnExplicitTorchRequestRunning() {
         grantNotifications()
         launchPhone()
@@ -188,6 +250,9 @@ class PhoneAndroidBehaviorTest {
         awaitTorchStopped()
     }
 
+    /**
+     * Verifies that finishing the activity stops torch service and removes notification.
+     */
     @Test fun finishingTheActivityStopsTorchServiceAndRemovesNotification() {
         grantNotifications()
         launchPhone()
@@ -201,6 +266,9 @@ class PhoneAndroidBehaviorTest {
         assertTrue(writes.contains(false))
     }
 
+    /**
+     * Verifies that blinking continues with screen off and steady mode releases the CPU lock.
+     */
     @Test fun blinkingContinuesWithScreenOffAndSteadyModeReleasesTheCpuLock() {
         grantNotifications()
         launchPhone()
@@ -224,6 +292,9 @@ class PhoneAndroidBehaviorTest {
         }
     }
 
+    /**
+     * Verifies that SOS continues with screen off and stopping releases the CPU lock.
+     */
     @Test fun sosContinuesWithScreenOffAndStoppingReleasesTheCpuLock() {
         grantNotifications()
         launchPhone()
@@ -241,6 +312,9 @@ class PhoneAndroidBehaviorTest {
         }
     }
 
+    /**
+     * Verifies that failed blinking torch releases the CPU lock and stops the service.
+     */
     @Test fun failedBlinkingTorchReleasesTheCpuLockAndStopsTheService() {
         grantNotifications()
         launchPhone()
@@ -251,6 +325,9 @@ class PhoneAndroidBehaviorTest {
         awaitTorchStopped()
     }
 
+    /**
+     * Verifies that recreation preserves screen selection and blink mode.
+     */
     @Test fun recreationPreservesScreenSelectionAndBlinkMode() {
         launchPhone()
         compose.onNodeWithContentDescription(text(R.string.green_signal)).performClick()
@@ -264,6 +341,9 @@ class PhoneAndroidBehaviorTest {
         assertFalse(controls.flashOn.value)
     }
 
+    /**
+     * Verifies that unavailable torch stops the real service and recovers UI state.
+     */
     @Test fun unavailableTorchStopsTheRealServiceAndRecoversUiState() {
         grantNotifications()
         failEnable.set(true)
@@ -274,11 +354,20 @@ class PhoneAndroidBehaviorTest {
         assertFalse(controls.flashOn.value)
     }
 
+    /**
+     * Launches the isolated phone Activity, retains its scenario and waits for control
+     * semantics.
+     *
+     * Call on the instrumentation test thread with the device available for UI interaction.
+     */
     private fun launchPhone() {
         scenario = ActivityScenario.launch(PhoneMainActivity::class.java)
         awaitMainControls()
     }
 
+    /**
+     * Waits up to 15 seconds on the test thread for the localized flashlight control to appear.
+     */
     private fun awaitMainControls() {
         compose.waitUntil(timeoutMillis = 15_000) {
             compose.onAllNodesWithContentDescription(text(R.string.flashlight))
@@ -286,22 +375,52 @@ class PhoneAndroidBehaviorTest {
         }
     }
 
+    /**
+     * Clicks the localized flashlight control through the Compose test rule.
+     *
+     * @return The clicked semantics interaction for optional chained assertions.
+     */
     private fun clickTorch() = compose.onNodeWithContentDescription(text(R.string.flashlight)).performClick()
+    /**
+     * Resolves a string from the isolated target application.
+     *
+     * @param id Target application string resource ID.
+     * @return The localized resource text.
+     */
     private fun text(id: Int) = context.getString(id)
 
+    /**
+     * Grants notification permission to the isolated target on Android 13 or later.
+     *
+     * Call on the instrumentation thread; earlier releases require no runtime grant.
+     */
     private fun grantNotifications() {
         if (Build.VERSION.SDK_INT >= 33) grantPermission(Manifest.permission.POST_NOTIFICATIONS)
     }
 
+    /**
+     * Polls on the test thread until torch selection, recording hardware and foreground service
+     * agree.
+     */
     private fun awaitTorchRunning() = eventually("Torch did not enter the foreground") {
         controls.flashOn.value && torchEnabled.get() && DeviceTestSupport.serviceRunning(serviceName, true)
     }
 
+    /**
+     * Polls on the test thread until selection, recording hardware, service, notification and
+     * CPU lock are off.
+     */
     private fun awaitTorchStopped() = eventually("Torch service or notification survived shutdown") {
         !controls.flashOn.value && !torchEnabled.get() && !DeviceTestSupport.serviceRunning(serviceName) &&
             notifications.activeNotifications.none { it.id == NOTIF_ID } && !signalCpuLockHeld()
     }
 
+    /**
+     * Inspects dumpsys power for the isolated service's partial wake-lock tag on the test
+     * thread.
+     *
+     * @return True when the service's tagged partial wake lock is reported held.
+     */
     private fun signalCpuLockHeld(): Boolean {
         val tag = "${context.packageName}:FlashLightService"
         return device.executeShellCommand("dumpsys power").lineSequence().any {
@@ -309,6 +428,13 @@ class PhoneAndroidBehaviorTest {
         }
     }
 
+    /**
+     * Waits for display-off state and verifies repeated fake torch phases with the CPU lock
+     * held.
+     *
+     * Call on the instrumentation thread after requesting screen-off. Requires at least three
+     * new on and off writes within the deadline and asserts that the display stays off.
+     */
     private fun awaitScreenOffPhases() {
         val power = context.getSystemService(PowerManager::class.java)
         eventually("Display did not turn off") { !power.isInteractive }
@@ -322,6 +448,14 @@ class PhoneAndroidBehaviorTest {
         assertTrue("Service released its CPU lock during an active signal", signalCpuLockHeld())
     }
 
+    /**
+     * Waits on the test thread for a system permission button matching one of the resource
+     * names.
+     *
+     * @param ids Alternative permission-controller resource entry names to match.
+     * @return The matching system UI button.
+     * @throws IllegalStateException If no matching button appears within ten seconds.
+     */
     private fun permissionButton(vararg ids: String): androidx.test.uiautomator.UiObject2 {
         val pattern = Pattern.compile(".*:id/(" + ids.joinToString("|") + ")")
         return checkNotNull(device.wait(Until.findObject(By.res(pattern)), 10_000)) {

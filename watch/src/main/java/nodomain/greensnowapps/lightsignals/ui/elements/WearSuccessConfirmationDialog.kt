@@ -9,6 +9,16 @@ import androidx.wear.compose.material3.ConfirmationDialogColors
 import androidx.wear.compose.material3.ConfirmationDialogDefaults
 import androidx.wear.compose.material3.Text
 
+/**
+ * Displays the watch success message and icon while showDialog is true.
+ *
+ * Uses the three-second confirmation duration and reports dismissal through onDismiss. The
+ * caller owns the visible state.
+ *
+ * @param showDialog Whether the confirmation overlay is visible.
+ * @param message Body text displayed in the dialog.
+ * @param onDismiss Hoisted callback invoked when the dialog is dismissed.
+ */
 @Composable
 fun WearSuccessConfirmationDialog(
     showDialog: Boolean,
