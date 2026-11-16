@@ -5,7 +5,13 @@ import nodomain.greensnowapps.lightsignals.testing.ContractFixtures
 import org.junit.Assert.*
 import org.junit.Test
 
+/**
+ * Verifies legacy phone control decoding against independent contract fixtures.
+ */
 class PhoneControlStateContractTest {
+    /**
+     * Verifies that production watch fixture decodes with all fields intact.
+     */
     @Test fun productionWatchFixtureDecodesWithAllFieldsIntact() {
         val fixture = ContractFixtures.wireState("control-state-v1.properties")
         assertEquals(fixture.path, CONTROL_STATE_PATH)
@@ -13,6 +19,9 @@ class PhoneControlStateContractTest {
             decodeControlState(fixture.toDataMap()))
     }
 
+    /**
+     * Verifies that older watch payload uses defaults for missing optional fields.
+     */
     @Test fun olderWatchPayloadUsesDefaultsForMissingOptionalFields() {
         val fixture = ContractFixtures.wireState("control-state-legacy-v1.properties")
         assertEquals(fixture.path, CONTROL_STATE_PATH)
@@ -20,10 +29,16 @@ class PhoneControlStateContractTest {
             decodeControlState(fixture.toDataMap()))
     }
 
+    /**
+     * Verifies that empty payload uses safe defaults.
+     */
     @Test fun emptyPayloadUsesSafeDefaults() {
         assertEquals(PhoneControlState(), decodeControlState(DataMap()))
     }
 
+    /**
+     * Verifies that future fields and delivery timestamp do not alter control state.
+     */
     @Test fun futureFieldsAndDeliveryTimestampDoNotAlterControlState() {
         val payload = ContractFixtures.wireState("control-state-v1.properties").toDataMap()
         val expected = decodeControlState(payload)
@@ -32,6 +47,9 @@ class PhoneControlStateContractTest {
         assertEquals(expected, decodeControlState(payload))
     }
 
+    /**
+     * Verifies that invalid remote values are validated at the decode boundary.
+     */
     @Test fun invalidRemoteValuesAreValidatedAtTheDecodeBoundary() {
         val payload = DataMap().apply {
             putLong("frequency", -10L)
@@ -44,6 +62,9 @@ class PhoneControlStateContractTest {
             decodeControlState(payload))
     }
 
+    /**
+     * Verifies that supported extended colors take precedence over the legacy fallback.
+     */
     @Test fun supportedExtendedColorsTakePrecedenceOverTheLegacyFallback() {
         for ((fallback, extended) in listOf(1467f to 2040f, 1275f to 2295f, 0f to 2296f, 1467f to 2806f, 1785f to 4591f)) {
             val payload = DataMap().apply {
@@ -57,6 +78,9 @@ class PhoneControlStateContractTest {
         }
     }
 
+    /**
+     * Verifies that unsupported extended colors preserve the legacy fallback.
+     */
     @Test fun unsupportedExtendedColorsPreserveTheLegacyFallback() {
         for (invalid in listOf(Float.NaN, Float.POSITIVE_INFINITY, 1785f, 2295.5f, 4592f)) {
             val payload = DataMap().apply {

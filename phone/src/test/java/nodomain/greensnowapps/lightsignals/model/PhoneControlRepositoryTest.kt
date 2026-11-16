@@ -22,26 +22,64 @@ import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.REJECT
 import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply.RETRY
 import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeRequest
 import nodomain.greensnowapps.lightsignals.core.sync.WatchControl
+import nodomain.greensnowapps.lightsignals.core.sync.WatchControlCommand
 import nodomain.greensnowapps.lightsignals.core.sync.WatchModeChange
 import nodomain.greensnowapps.lightsignals.testing.FakePreferencesDataStore
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel.Companion.Active
 import org.junit.Assert.*
 import org.junit.Test
 
+/**
+ * Verifies phone state restoration, control transitions and watch-command application.
+ */
 class PhoneControlRepositoryTest {
+    /**
+     * Owns the fakes, observed events and coroutine test state used by this test suite.
+     *
+     * @param scope Coroutine test scope that owns the fixture's jobs and virtual-time
+     *     scheduler.
+     * @param saved Saved preferences used to seed the fixture.
+     */
     private class Fixture(scope: TestScope, saved: Preferences = emptyPreferences()) {
+        /**
+         * In-memory preferences store used by the fixture.
+         */
         val store = FakePreferencesDataStore(saved)
+        /**
+         * Mutable legacy peer state supplied to the repository under test.
+         */
         val remote = MutableStateFlow<PhoneControlState?>(null)
+        /**
+         * Preference failures observed by this fixture.
+         */
         val errors = mutableListOf<IOException>()
+        /**
+         * Number of foreground torch start requests observed by the fixture.
+         */
         var serviceStarts = 0
+        /**
+         * Number of foreground torch stop requests observed by the fixture.
+         */
         var serviceStops = 0
+        /**
+         * Whether the fake foreground service accepts startup.
+         */
         var serviceAvailable = true
+        /**
+         * Session-state machine used by this fixture.
+         */
         val sessions = WatchControlSessions()
+        /**
+         * Repository instance exercised by this fixture.
+         */
         val repo = PhoneControlRepository(store, remote,
             { serviceStarts++; serviceAvailable }, { serviceStops++ },
             scope.backgroundScope, scope.backgroundScope, { errors += it })
     }
 
+    /**
+     * Verifies that initialization waits for preferences and is idempotent.
+     */
     @Test fun initializationWaitsForPreferencesAndIsIdempotent() = runTest {
         val f = Fixture(this, preferencesOf(KEY_ACTIVE_SOUND to 2, KEY_BLINK_DELAY to 325L))
         val gate = CompletableDeferred<Unit>()
@@ -59,6 +97,9 @@ class PhoneControlRepositoryTest {
         assertEquals(0, f.serviceStarts)
     }
 
+    /**
+     * Verifies that restoration gives SOS precedence without starting saved torch.
+     */
     @Test fun restorationGivesSosPrecedenceWithoutStartingSavedTorch() = runTest {
         val f = Fixture(this, preferencesOf(KEY_SOS_ON to true, KEY_BLINK_ON to true))
         f.repo.initFromPrefs()
@@ -69,6 +110,9 @@ class PhoneControlRepositoryTest {
         assertEquals(0, f.serviceStarts)
     }
 
+    /**
+     * Verifies that remote state is validated applied and persisted together.
+     */
     @Test fun remoteStateIsValidatedAppliedAndPersistedTogether() = runTest {
         val f = Fixture(this)
         f.repo.initFromPrefs()
@@ -87,6 +131,9 @@ class PhoneControlRepositoryTest {
         assertEquals(true, f.store.snapshot[KEY_SOS_ON])
     }
 
+    /**
+     * Verifies that starting torch is idempotent and stopping it does not clear screen mode.
+     */
     @Test fun startingTorchIsIdempotentAndStoppingItDoesNotClearScreenMode() = runTest {
         val f = Fixture(this)
         f.repo.setBlinking(true, 300L)
@@ -103,7 +150,10 @@ class PhoneControlRepositoryTest {
         assertTrue(f.repo.colorBlinkActive.value)
     }
 
-    @Test fun linkedWatchSnapshotAndUnrelatedControlsPreserveTheRunningSos() = runTest {
+    /**
+     * Verifies that legacy watch commands without a snapshot preserve the running SOS.
+     */
+    @Test fun legacyWatchCommandsWithoutASnapshotPreserveTheRunningSos() = runTest {
         val f = Fixture(this)
         f.repo.initFromPrefs()
         runCurrent()
@@ -132,6 +182,77 @@ class PhoneControlRepositoryTest {
         assertEquals(1, f.serviceStops)
     }
 
+    /**
+     * Verifies that watch actions restore blink and every watch setting after phone selects
+     * SOS.
+     */
+    @Test fun watchActionsRestoreBlinkAndEveryWatchSettingAfterPhoneSelectsSos() = runTest {
+        val watch = PhoneSignalState(true, true, false, 350L, 3000f, 2, 1, Active.MIDDLE.ordinal)
+        val actions = listOf(
+            Triple(WatchControl.COLOR, 3400f.toBits(), watch.copy(color = 3400f)),
+            Triple(WatchControl.TORCH, 0, watch.copy(torchOn = false)),
+            Triple(WatchControl.TORCH, 1, watch),
+            Triple(WatchControl.SOUND, 3, watch.copy(activeSound = 3)),
+            Triple(WatchControl.FREQUENCY, 600, watch.copy(frequency = 600L))
+        )
+        for ((control, value, expected) in actions) {
+            val f = Fixture(this)
+            f.repo.initFromPrefs()
+            runCurrent()
+            assertTrue(f.repo.applyWatchHandoff(watch))
+            f.repo.switchSOS(true)
+            f.repo.setBlinking(false, 800L)
+            f.repo.updateColorProgress(70f)
+            f.repo.setActiveSound(1)
+            f.repo.updateScreenIndex(0)
+            assertTrue(f.repo.sosOn.value)
+            val wire = WatchControlCommand(UUID.randomUUID(), 1, control, value, signal = expected).encode()
+            assertTrue(f.repo.applyWatchControl(checkNotNull(WatchControlCommand.decode(wire))))
+            runCurrent()
+            assertEquals("Watch action $control must replace the conflicting phone mode", expected, f.repo.connectionSignal())
+            assertEquals(false, f.store.snapshot[KEY_SOS_ON])
+            assertEquals(true, f.store.snapshot[KEY_BLINK_ON])
+        }
+    }
+
+    /**
+     * Verifies that watch SOS and steady settings replace locally selected blink.
+     */
+    @Test fun watchSosAndSteadySettingsReplaceLocallySelectedBlink() = runTest {
+        for (sos in listOf(true, false)) {
+            val f = Fixture(this)
+            f.repo.initFromPrefs()
+            runCurrent()
+            f.repo.setBlinking(true, 300L)
+            val watch = PhoneSignalState(false, false, sos, 600L, 3400f, 2, 1, Active.MIDDLE.ordinal)
+            val command = WatchControlCommand(UUID.randomUUID(), 1, WatchControl.COLOR, watch.color.toBits(), signal = watch)
+            assertTrue(f.repo.applyWatchControl(checkNotNull(WatchControlCommand.decode(command.encode()))))
+            assertEquals(watch, f.repo.connectionSignal())
+        }
+    }
+
+    /**
+     * Verifies that rejected snapshot and unavailable torch leave phone state unchanged.
+     */
+    @Test fun rejectedSnapshotAndUnavailableTorchLeavePhoneStateUnchanged() = runTest {
+        val f = Fixture(this)
+        val watch = PhoneSignalState(true, true, false, 350L, 3400f)
+        val command = WatchControlCommand(UUID.randomUUID(), 1, WatchControl.TORCH, 1, signal = watch)
+        assertFalse(f.repo.applyWatchControl(command))
+        f.repo.initFromPrefs()
+        runCurrent()
+        f.repo.switchSOS(true)
+        val before = f.repo.connectionSignal()
+        assertFalse(f.repo.applyWatchControl(command.copy(value = 0)))
+        assertEquals(before, f.repo.connectionSignal())
+        f.serviceAvailable = false
+        assertFalse(f.repo.applyWatchControl(command))
+        assertEquals(before, f.repo.connectionSignal())
+    }
+
+    /**
+     * Verifies that linked watch frequency preserves modes and color selection stops torch.
+     */
     @Test fun linkedWatchFrequencyPreservesModesAndColorSelectionStopsTorch() = runTest {
         val f = Fixture(this)
         f.repo.initFromPrefs()
@@ -154,6 +275,9 @@ class PhoneControlRepositoryTest {
         assertEquals(300f, f.store.snapshot[KEY_FREQUENCY_PROGRESS])
     }
 
+    /**
+     * Verifies that linked watch commands reject unavailable or invalid changes.
+     */
     @Test fun linkedWatchCommandsRejectUnavailableOrInvalidChanges() = runTest {
         val f = Fixture(this)
         assertFalse(f.repo.applyWatchControl(WatchControl.TORCH, 1))
@@ -168,6 +292,9 @@ class PhoneControlRepositoryTest {
         assertFalse(f.repo.flashOn.value)
     }
 
+    /**
+     * Verifies that watch SOS uses torch after it was turned off on phone.
+     */
     @Test fun watchSosUsesTorchAfterItWasTurnedOffOnPhone() = runTest {
         val f = Fixture(this)
         f.repo.initFromPrefs()
@@ -190,6 +317,10 @@ class PhoneControlRepositoryTest {
         assertEquals(2, f.serviceStarts)
     }
 
+    /**
+     * Verifies that watch blink uses selected output and rejected torch start leaves state
+     * intact.
+     */
     @Test fun watchBlinkUsesSelectedOutputAndRejectedTorchStartLeavesStateIntact() = runTest {
         val f = Fixture(this)
         f.repo.initFromPrefs()
@@ -214,6 +345,10 @@ class PhoneControlRepositoryTest {
         assertFalse(f.repo.colorBlinkActive.value)
     }
 
+    /**
+     * Verifies that linked watch authorization rejects wrong watch wrong session and replayed
+     * commands.
+     */
     @Test fun linkedWatchAuthorizationRejectsWrongWatchWrongSessionAndReplayedCommands() {
         val id = UUID.randomUUID()
         val connection = LinkedWatchControl("watch", id, acceptsEarlyControl = true)
@@ -227,6 +362,9 @@ class PhoneControlRepositoryTest {
         assertTrue(connection.allows("watch", id, 3L))
     }
 
+    /**
+     * Verifies that local phone controls remain available after watch handoff.
+     */
     @Test fun localPhoneControlsRemainAvailableAfterWatchHandoff() = runTest {
         val f = Fixture(this)
         f.repo.initFromPrefs()
@@ -255,6 +393,9 @@ class PhoneControlRepositoryTest {
         assertSame(session, f.sessions.active)
     }
 
+    /**
+     * Verifies that explicit resync replaces the session for the same watch.
+     */
     @Test fun explicitResyncReplacesTheSessionForTheSameWatch() {
         val sessions = WatchControlSessions()
         val initial = checkNotNull(sessions.begin("watch", UUID.randomUUID(), acceptsEarlyControl = false))
@@ -270,6 +411,9 @@ class PhoneControlRepositoryTest {
         assertNull(sessions.begin("watch", refresh.requestId, acceptsEarlyControl = true))
     }
 
+    /**
+     * Verifies that reopened watch can replace its previous session.
+     */
     @Test fun reopenedWatchCanReplaceItsPreviousSession() {
         val sessions = WatchControlSessions()
         val previous = checkNotNull(sessions.begin("watch", UUID.randomUUID(), acceptsEarlyControl = false))
@@ -285,6 +429,9 @@ class PhoneControlRepositoryTest {
         assertNull(sessions.begin("watch", previous.requestId, acceptsEarlyControl = false))
     }
 
+    /**
+     * Verifies that only the confirmed watch can resume and old commands stay invalid.
+     */
     @Test fun onlyTheConfirmedWatchCanResumeAndOldCommandsStayInvalid() {
         var now = 100_000L
         val sessions = WatchControlSessions { now }
@@ -310,6 +457,9 @@ class PhoneControlRepositoryTest {
         assertEquals(REJECTED, sessions.resume("watch", newer))
     }
 
+    /**
+     * Verifies that closing the phone preserves only its confirmed relationship.
+     */
     @Test fun closingThePhonePreservesOnlyItsConfirmedRelationship() {
         val sessions = WatchControlSessions()
         val link = checkNotNull(sessions.begin("watch", UUID.randomUUID(), acceptsEarlyControl = true))
@@ -327,6 +477,10 @@ class PhoneControlRepositoryTest {
         assertFalse(checkNotNull(sessions.active).allows("watch", link.requestId, Long.MAX_VALUE))
     }
 
+    /**
+     * Verifies that a new phone process restores the relationship and requires a fresh
+     * handshake.
+     */
     @Test fun aNewPhoneProcessRestoresTheRelationshipAndRequiresAFreshHandshake() {
         var now = 100_000L
         val prefs = mutablePreferencesOf()
@@ -355,6 +509,9 @@ class PhoneControlRepositoryTest {
         assertEquals(REJECTED, afterDisconnect.resume("watch", WatchResumeRequest.create(initial.linkId, ++now)))
     }
 
+    /**
+     * Verifies that malformed saved watch identity cannot restore control.
+     */
     @Test fun malformedSavedWatchIdentityCannotRestoreControl() {
         val prefs = preferencesOf(
             stringPreferencesKey("linked_watch_node") to "watch",
@@ -363,6 +520,9 @@ class PhoneControlRepositoryTest {
         assertNull(RememberedWatchLink.read(prefs))
     }
 
+    /**
+     * Verifies that local change during pending handoff and failed start preserve state.
+     */
     @Test fun localChangeDuringPendingHandoffAndFailedStartPreserveState() = runTest {
         val f = Fixture(this)
         f.repo.initFromPrefs()
@@ -376,6 +536,9 @@ class PhoneControlRepositoryTest {
         assertEquals(current, f.repo.connectionSignal())
     }
 
+    /**
+     * Verifies that failed service start returns to safe screen state.
+     */
     @Test fun failedServiceStartReturnsToSafeScreenState() = runTest {
         val f = Fixture(this)
         f.serviceAvailable = false
@@ -388,6 +551,9 @@ class PhoneControlRepositoryTest {
         assertTrue(f.serviceStops > 0)
     }
 
+    /**
+     * Verifies that mode switch cancels SOS and uses only the new blink period.
+     */
     @Test fun modeSwitchCancelsSosAndUsesOnlyTheNewBlinkPeriod() = runTest {
         val f = Fixture(this)
         f.repo.switchSOS(true)
@@ -405,6 +571,9 @@ class PhoneControlRepositoryTest {
         assertFalse(f.repo.colorBlinkActive.value)
     }
 
+    /**
+     * Verifies that clearing cancels signals and remote collection but keeps queued writes.
+     */
     @Test fun clearingCancelsSignalsAndRemoteCollectionButKeepsQueuedWrites() = runTest {
         val f = Fixture(this)
         f.repo.initFromPrefs()
@@ -426,6 +595,9 @@ class PhoneControlRepositoryTest {
         assertFalse(f.repo.colorBlinkActive.value)
     }
 
+    /**
+     * Verifies that invalid UI values are clamped and latest write wins.
+     */
     @Test fun invalidUiValuesAreClampedAndLatestWriteWins() = runTest {
         val f = Fixture(this)
         f.repo.setActiveSound(-9)
@@ -442,6 +614,9 @@ class PhoneControlRepositoryTest {
         assertEquals(100L, f.repo.blinkDelay.value)
     }
 
+    /**
+     * Verifies that read failure initializes defaults and reports the error.
+     */
     @Test fun readFailureInitializesDefaultsAndReportsTheError() = runTest {
         val f = Fixture(this)
         val failure = IOException("unreadable preferences")
@@ -454,6 +629,9 @@ class PhoneControlRepositoryTest {
         assertEquals(0, f.serviceStarts)
     }
 
+    /**
+     * Verifies that failed write does not prevent later writes.
+     */
     @Test fun failedWriteDoesNotPreventLaterWrites() = runTest {
         val f = Fixture(this)
         val failure = IOException("disk unavailable")

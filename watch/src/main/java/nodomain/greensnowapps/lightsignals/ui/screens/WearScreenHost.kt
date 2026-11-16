@@ -21,6 +21,12 @@ import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearMainViewModel
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearSoundViewModel
 
+/**
+ * Hosts the watch controls/signal pager after preference initialization.
+ *
+ * Keeps the selected page in the ViewModel and supplies page-active state for brightness
+ * ownership.
+ */
 @Composable
 fun WearScreenHost() {
 

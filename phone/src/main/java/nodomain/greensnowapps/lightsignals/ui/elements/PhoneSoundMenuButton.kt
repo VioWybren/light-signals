@@ -26,6 +26,17 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneSoundViewModel
 
+/**
+ * Displays the phone sound menu and its selected sample from the sound ViewModel.
+ *
+ * Owns only menu expansion; sound choices are delegated to the ViewModel.
+ *
+ * @param toggleBtnWidth Width of the toggle button.
+ * @param toggleBtnHeight Height of the toggle button.
+ * @param iconSize Size of the icon inside the control.
+ * @param phoneSoundViewModel ViewModel supplying the selected sound and handling menu
+ *     selections.
+ */
 @Composable
 fun PhoneSoundMenuButton(
     toggleBtnWidth: Dp,

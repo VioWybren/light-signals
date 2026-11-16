@@ -35,6 +35,18 @@ import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearMainViewModel
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.WearSoundViewModel
 
+/**
+ * Displays the watch's selected screen signal and handles active-page rotary brightness.
+ *
+ * Collects ViewModel state with the lifecycle and restores the prior window brightness on stop
+ * or disposal. The host owns pager navigation.
+ *
+ * @param viewModel ViewModel supplying observable signal state and handling control events.
+ * @param soundViewModel Host-supplied sound ViewModel; this screen currently does not read it.
+ * @param isActive Whether this control or pager page is currently selected.
+ * @param onBack Host-provided back-navigation callback; this screen currently does not invoke
+ *     it.
+ */
 @Composable
 fun WearSignalScreen(
     viewModel: WearMainViewModel,

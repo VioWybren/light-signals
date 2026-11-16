@@ -13,13 +13,95 @@ import nodomain.greensnowapps.lightsignals.testing.ContractFixtures
 import nodomain.greensnowapps.lightsignals.core.sync.PhoneSignalState
 import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionReply
 import nodomain.greensnowapps.lightsignals.core.sync.WatchConnectionRequest
+import nodomain.greensnowapps.lightsignals.core.sync.WatchControl
+import nodomain.greensnowapps.lightsignals.core.sync.WatchControlCommand
 import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeReply
 import nodomain.greensnowapps.lightsignals.core.sync.WatchResumeRequest
 import java.util.UUID
 import org.junit.Assert.*
 import org.junit.Test
 
+/**
+ * Verifies watch transport acknowledgment, legacy fallback and cancellation behavior.
+ */
 class WearSyncStateRepositoryTest {
+    /**
+     * Verifies that user action sends the full signal in one acknowledged request.
+     */
+    @Test fun userActionSendsTheFullSignalInOneAcknowledgedRequest() = runTest {
+        val signal = PhoneSignalState(true, true, false, 350L, 3400f, 2, 1, 1)
+        val command = WatchControlCommand(UUID.randomUUID(), 1, WatchControl.COLOR, signal.color.toBits(), signal = signal)
+        val paths = mutableListOf<String>()
+        val repo = WearSyncStateRepository({ _, _ -> fail("Linked controls must not publish cached DataItems") },
+            System::currentTimeMillis, { throw AssertionError(it) },
+            { node, path, payload ->
+                assertEquals("phone", node)
+                paths += path
+                assertEquals(command, WatchControlCommand.decode(payload))
+                byteArrayOf(WatchControlCommand.ACCEPTED)
+            })
+        assertTrue(repo.sendCommand("phone", command))
+        assertEquals(listOf(WatchControlCommand.STATE_PATH), paths)
+    }
+
+    /**
+     * Verifies that older endpoint falls back without changing session or sequence.
+     */
+    @Test fun olderEndpointFallsBackWithoutChangingSessionOrSequence() = runTest {
+        val signal = PhoneSignalState(true, true, false, 350L, 3400f)
+        val command = WatchControlCommand(UUID.randomUUID(), 4, WatchControl.COLOR, signal.color.toBits(), signal = signal)
+        val paths = mutableListOf<String>()
+        val repo = WearSyncStateRepository({ _, _ -> }, System::currentTimeMillis, { throw AssertionError(it) },
+            { _, path, payload ->
+                paths += path
+                if (path == WatchControlCommand.STATE_PATH) byteArrayOf()
+                else {
+                    assertEquals(command.copy(signal = null), WatchControlCommand.decode(payload))
+                    byteArrayOf(WatchControlCommand.ACCEPTED)
+                }
+            })
+        assertTrue(repo.sendCommand("phone", command))
+        assertEquals(listOf(WatchControlCommand.STATE_PATH, WatchControlCommand.PATH), paths)
+    }
+
+    /**
+     * Verifies that rejected or timed out snapshot does not fall back to a different command.
+     */
+    @Test fun rejectedOrTimedOutSnapshotDoesNotFallBackToADifferentCommand() = runTest {
+        val signal = PhoneSignalState(true, true, false, 350L)
+        val command = WatchControlCommand(UUID.randomUUID(), 1, WatchControl.TORCH, 1, signal = signal)
+        for (timeout in listOf(false, true)) {
+            val paths = mutableListOf<String>()
+            val repo = WearSyncStateRepository({ _, _ -> }, System::currentTimeMillis, { throw AssertionError(it) },
+                { _, path, _ ->
+                    paths += path
+                    if (timeout) awaitCancellation() else byteArrayOf(WatchControlCommand.REJECTED)
+                })
+            assertFalse(repo.sendCommand("phone", command))
+            assertEquals(listOf(WatchControlCommand.STATE_PATH), paths)
+        }
+    }
+
+    /**
+     * Verifies that heartbeat carries no snapshot and uses the original endpoint.
+     */
+    @Test fun heartbeatCarriesNoSnapshotAndUsesTheOriginalEndpoint() = runTest {
+        val command = WatchControlCommand(UUID.randomUUID(), 1, WatchControl.CHECK, 0)
+        val paths = mutableListOf<String>()
+        val repo = WearSyncStateRepository({ _, _ -> }, System::currentTimeMillis, { throw AssertionError(it) },
+            { _, path, payload ->
+                paths += path
+                assertEquals(37, payload.size)
+                assertNull(checkNotNull(WatchControlCommand.decode(payload)).signal)
+                byteArrayOf(WatchControlCommand.ACCEPTED)
+            })
+        assertTrue(repo.sendCommand("phone", command))
+        assertEquals(listOf(WatchControlCommand.PATH), paths)
+    }
+
+    /**
+     * Verifies that resume fetches the complete phone state for the new command session.
+     */
     @Test fun resumeFetchesTheCompletePhoneStateForTheNewCommandSession() = runTest {
         val invitation = WatchResumeRequest.create(UUID.randomUUID())
         val current = PhoneSignalState(true, false, true, 725L, 1450f, 3, 1, 2)
@@ -36,6 +118,9 @@ class WearSyncStateRepositoryTest {
         assertEquals(listOf(WatchConnectionRequest.RESUME_STATE_PATH), paths)
     }
 
+    /**
+     * Verifies that an older phone can use the original resume endpoint.
+     */
     @Test fun anOlderPhoneCanUseTheOriginalResumeEndpoint() = runTest {
         val invitation = WatchResumeRequest.create(UUID.randomUUID())
         val paths = mutableListOf<String>()
@@ -49,6 +134,9 @@ class WearSyncStateRepositoryTest {
         assertEquals(listOf(WatchConnectionRequest.RESUME_STATE_PATH, WatchConnectionRequest.RESUME_PATH), paths)
     }
 
+    /**
+     * Verifies that an incomplete snapshot keeps the watch waiting for a complete reply.
+     */
     @Test fun anIncompleteSnapshotKeepsTheWatchWaitingForACompleteReply() = runTest {
         val paths = mutableListOf<String>()
         val repo = WearSyncStateRepository({ _, _ -> }, System::currentTimeMillis, { throw AssertionError(it) },
@@ -61,6 +149,9 @@ class WearSyncStateRepositoryTest {
         assertEquals(listOf(WatchConnectionRequest.RESUME_STATE_PATH), paths)
     }
 
+    /**
+     * Verifies that sender uses the shared wire path types and values.
+     */
     @Test fun senderUsesTheSharedWirePathTypesAndValues() = runTest {
         val fixture = ContractFixtures.wireState("control-state-v1.properties")
         val sent = mutableListOf<Pair<String, DataMap>>()
@@ -72,6 +163,9 @@ class WearSyncStateRepositoryTest {
         fixture.assertMatches(sent.single().second)
     }
 
+    /**
+     * Verifies that unchanged controls get fresh delivery metadata on another send.
+     */
     @Test fun unchangedControlsGetFreshDeliveryMetadataOnAnotherSend() = runTest {
         val payloads = mutableListOf<DataMap>()
         var now = 100L
@@ -87,6 +181,9 @@ class WearSyncStateRepositoryTest {
         assertFalse(payloads[0].containsKey("colorBlinkActive"))
     }
 
+    /**
+     * Verifies that transport failure is reported and the next send can succeed.
+     */
     @Test fun transportFailureIsReportedAndTheNextSendCanSucceed() = runTest {
         val failure = IOException("disconnected")
         val errors = mutableListOf<Exception>()
@@ -99,6 +196,9 @@ class WearSyncStateRepositoryTest {
         assertEquals(2, attempts)
     }
 
+    /**
+     * Verifies that cancellation is propagated and is not reported as a transport failure.
+     */
     @Test fun cancellationIsPropagatedAndIsNotReportedAsATransportFailure() = runTest {
         val started = CompletableDeferred<Unit>()
         val errors = mutableListOf<Exception>()
@@ -111,6 +211,10 @@ class WearSyncStateRepositoryTest {
         assertTrue(errors.isEmpty())
     }
 
+    /**
+     * Verifies that extended colors keep a usable legacy value and send the exact new
+     * position.
+     */
     @Test fun extendedColorsKeepAUsableLegacyValueAndSendTheExactNewPosition() = runTest {
         val payloads = mutableListOf<DataMap>()
         val repo = WearSyncStateRepository(
@@ -131,6 +235,9 @@ class WearSyncStateRepositoryTest {
         payloads.forEach { assertEquals(1, it.getInt("key_active_color_button")) }
     }
 
+    /**
+     * Verifies that ordered slider colors send exact progress and an old compatible fallback.
+     */
     @Test fun orderedSliderColorsSendExactProgressAndAnOldCompatibleFallback() = runTest {
         val payloads = mutableListOf<DataMap>()
         val repo = WearSyncStateRepository(

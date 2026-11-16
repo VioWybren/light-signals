@@ -14,7 +14,13 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+/**
+ * Verifies serialized torch ownership across competing service sessions.
+ */
 class TorchSessionControllerTest {
+    /**
+     * Verifies that old service cannot disable or overwrite replacement service.
+     */
     @Test
     fun oldServiceCannotDisableOrOverwriteReplacementService() = runBlocking {
         val writes = mutableListOf<Boolean>()
@@ -34,6 +40,9 @@ class TorchSessionControllerTest {
         assertEquals(listOf(true, true, false), writes)
     }
 
+    /**
+     * Verifies that concurrent commands never enter hardware together.
+     */
     @Test
     fun concurrentCommandsNeverEnterHardwareTogether() = runBlocking {
         val active = AtomicInteger()
@@ -60,6 +69,9 @@ class TorchSessionControllerTest {
         assertEquals(30, writes.size)
     }
 
+    /**
+     * Verifies that cancellation still releases active session.
+     */
     @Test
     fun cancellationStillReleasesActiveSession() = runBlocking {
         val writes = mutableListOf<Boolean>()
@@ -81,6 +93,9 @@ class TorchSessionControllerTest {
         assertEquals(listOf(true, false), writes)
     }
 
+    /**
+     * Verifies that hardware failure is reported and does not keep session locked.
+     */
     @Test
     fun hardwareFailureIsReportedAndDoesNotKeepSessionLocked() = runBlocking {
         val controller = TorchSessionController({ enabled -> !enabled }, Dispatchers.Unconfined)

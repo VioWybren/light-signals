@@ -8,7 +8,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.math.abs
 
+/**
+ * Verifies the watch palette adapter.
+ */
 class WearUtilsTest {
+    /**
+     * Verifies that historical palette keeps its original anchors.
+     */
     @Test
     fun historicalPaletteKeepsItsOriginalAnchors() {
         val anchors = listOf(
@@ -25,6 +31,9 @@ class WearUtilsTest {
         )
     }
 
+    /**
+     * Verifies that adjacent new slider values are continuous.
+     */
     @Test
     fun adjacentNewSliderValuesAreContinuous() {
         val firstStoredProgress = SignalColorPalette.MAX_PROGRESS - SignalColorPalette.MAX_SLIDER_PROGRESS
@@ -40,12 +49,18 @@ class WearUtilsTest {
         }
     }
 
+    /**
+     * Verifies that invalid stored progress clamps to the slider endpoints.
+     */
     @Test
     fun invalidStoredProgressClampsToTheSliderEndpoints() {
         assertEquals(Color.Black, WearUtils.computeSpecialColor(Int.MIN_VALUE))
         assertEquals(Color.White, WearUtils.computeSpecialColor(Int.MAX_VALUE))
     }
 
+    /**
+     * Verifies that the new slider uses exact orange violet and white.
+     */
     @Test
     fun theNewSliderUsesExactOrangeVioletAndWhite() {
         for ((slider, expected) in listOf(

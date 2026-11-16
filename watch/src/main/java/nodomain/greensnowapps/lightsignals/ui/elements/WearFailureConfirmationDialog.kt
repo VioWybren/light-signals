@@ -14,6 +14,13 @@ import androidx.wear.compose.material3.AlertDialogDefaults.ConfirmIcon
 import androidx.wear.compose.material3.Text
 
 
+/**
+ * Shows watch failure feedback while showDialog is true and hoists dismissal through onDismiss.
+ *
+ * @param showDialog Whether the confirmation overlay is visible.
+ * @param message Body text displayed in the dialog.
+ * @param onDismiss Hoisted callback invoked when the dialog is dismissed.
+ */
 @Composable
 fun WearFailureConfirmationDialog(
     showDialog: Boolean,

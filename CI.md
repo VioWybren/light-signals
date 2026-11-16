@@ -1,90 +1,96 @@
-# Manual Bitbucket verification
+# CI and local verification
 
-The root [bitbucket-pipelines.yml](bitbucket-pipelines.yml) defines one custom pipeline,
-`verify`, for Bitbucket Cloud. It runs only when started manually, or if someone explicitly
-adds a schedule in Bitbucket. Pushes, pull requests, and tags have no automatic triggers.
+## Current status
 
-## First run
+**Bitbucket Pipelines is unavailable for this workspace during the reported billing migration.**
+The owner has contacted Atlassian support. No successful cloud verification is recorded for the
+current release candidate. Git hosting and pull requests remain the manual collaboration process.
 
-For the complete commit/push/review sequence and the existing v4.0.0 checkpoint, follow
-[GIT_WORKFLOW.md](GIT_WORKFLOW.md).
+Continue with local checks, record their results in the pull request, and identify CI as
+**not run — unavailable**. Local success is not a Bitbucket CI status. GitHub migration is
+deferred; this repository has no configured GitHub Actions workflow or automated deployment.
 
-1. Review and commit the pipeline, this guide, and the application/test changes you want to verify.
-2. Push that commit to the intended Bitbucket branch, normally `develop`.
-3. Enable Pipelines under the repository's **Repository settings > Pipelines > Settings**.
-   Keep the checked-in YAML when using the setup screen.
-4. Open **Pipelines > Run pipeline**, select the branch and the custom `verify` pipeline,
-   then start it. Check that the displayed commit is the one you intended to verify.
-5. Inspect the build log, test results, and downloadable artifacts before merging the changes.
+## Local process while CI is unavailable
 
-No additional repository variables or release credentials are required. The pipeline installs
-the Android SDK and accepts its licenses non-interactively as part of the build setup.
-The initial run downloads SDK packages, Gradle, the daemon JDK, and dependencies, so it takes
-longer than runs with populated caches.
+1. Work on a task branch and run the smallest relevant checks from [TESTING.md](TESTING.md).
+2. Before merging code changes, check the affected modules and any shared contracts. Review
+   the complete staged diff. Text-only documentation changes do not need APK/device rebuilds.
+3. Record the tested commit (`git rev-parse HEAD`), commands, pass/fail/skip results and device
+   details in the pull request. Include local changes in a commit before claiming that a
+   particular commit was tested.
+4. Review and merge manually. Check the integrated result where a merge or conflict resolution
+   changes the tested source.
+5. Use optimized artifacts and the release device checks before publishing. Signing and Play
+   uploads remain manual.
 
-## What it checks
+For a combined local equivalent of the retained CI tasks:
 
-- Shared `core` JVM tests and both Android app modules' JVM unit tests.
-- Debug lint for the phone and watch.
-- Both debug APKs.
-- Both isolated `uitest` apps and their Android instrumentation APKs, including Hilt/KSP generation.
+```powershell
+.\gradlew.bat :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest :phone:lintDebug :watch:lintDebug :phone:assembleDebug :watch:assembleDebug :phone:assembleUitest :phone:assembleUitestAndroidTest :watch:assembleUitest :watch:assembleUitestAndroidTest --continue
+```
 
-The root `android.onlyEnableUnitTestForTheTestedBuildType=false` setting keeps the debug JVM
-test tasks available alongside the `uitest` instrumentation build. Without it, AGP 9 generates
-unit tests only for `uitest`, and the pipeline's `testDebugUnitTest` targets do not exist.
-The Kotlin/JVM `core` module uses the standard `:core:test` task and has no Android build type.
+This is a broad checkpoint, not the command to run after every small edit. Keep the local daemon
+and incremental outputs. Release lint, R8 builds and device execution are separate steps in
+[TESTING.md](TESTING.md).
 
-The Gradle invocation uses `--continue` to collect results from independent tasks when a task
-fails. A failed task still fails the pipeline. Test XML and available HTML reports are captured
-on success or failure; APK artifacts are captured after successful verification.
+## Retained Bitbucket pipeline
 
-Instrumentation APKs are built here. Run the actual device tests separately using
-[TESTING.md](TESTING.md). These checks need a connected phone/watch or a suitable emulator;
-this pipeline does not start an emulator or connect to your personal devices.
+[bitbucket-pipelines.yml](bitbucket-pipelines.yml) defines one custom pipeline, `verify`.
+There are no automatic push, pull-request or tag triggers. It can be started explicitly and
+could be scheduled separately in Bitbucket.
 
-## Build environment
+It checks:
 
-- Official Temurin JDK 21 / Ubuntu 24.04 image, pinned by its registry digest.
-- The checked-in Gradle wrapper and JetBrains JDK 21 daemon criteria.
-- Android command-line tools build `15859902`, verified against Google's published SHA-256.
-- Android Platform 37 (`platforms;android-37.0`), Build Tools 37.0.0, and Platform-Tools.
-- A `2x` step (8 GB of memory), a 60-minute timeout, and one Gradle worker with task parallelism disabled.
-- CI heap limits of 4 GiB for Gradle/D8 and 1.5 GiB for the Kotlin compiler daemon.
-- Caches for Gradle dependencies, wrapper distributions, downloaded JDKs, and the Android SDK.
+- `:core:test`, `:phone:testDebugUnitTest` and `:watch:testDebugUnitTest`.
+- Debug lint for both apps.
+- Both debug APKs and both isolated `uitest` apps/instrumentation APKs.
 
-The bootstrap Temurin JDK starts Gradle; Gradle provisions the JetBrains daemon JDK required by
-`gradle/gradle-daemon-jvm.properties`. Application bytecode continues to target Java 17.
-The SDK cache is invalidated when the YAML or either module's build script changes.
+`--continue` collects independent failures; a failed task still fails the step. Instrumentation
+APKs are built, but the pipeline does not start an emulator or run paired-device tests. It also
+does not build release bundles, verify production signing or publish to Play.
 
-The pipeline overrides JVM settings on the Gradle command line. D8 runs inside the Gradle
-build JVM and can exceed the project's 2 GiB default during dependency dex merging. The
-larger CI heap and single worker reduce memory pressure when building both applications and
-their test APKs. Kotlin gets a separate limit because its daemon otherwise inherits Gradle's
-heap setting. The runner also needs memory for metaspace, native tools, test JVMs, and the OS.
+### Build environment
 
-When updating the build image, refresh its digest. When updating the Android command-line
-tools, change the build number and checksum together. Keep the SDK packages aligned with the modules'
-`compileSdk` and the Android Gradle Plugin's Build Tools requirements.
+The YAML currently specifies:
 
-## Release boundary
+- Temurin JDK 21 on Ubuntu 24.04, pinned by image digest.
+- The checked-in Gradle 9.8.2 wrapper and JetBrains JDK 21 daemon criteria.
+- Android command-line tools build `15859902`, with a pinned SHA-256 check.
+- SDK packages `platform-tools`, `platforms;android-37.0` and `build-tools;37.0.0`.
+- A `2x` step, 60-minute timeout, one Gradle worker and no task parallelism.
+- A 4 GiB Gradle/D8 heap and a separate 1.5 GiB Kotlin daemon heap.
+- Caches for Gradle dependencies, wrapper distributions, JDK downloads and the Android SDK.
 
-The generated APKs use the build container's debug signing key. Use phone/watch APKs from the
-same run when testing companion communication. These artifacts are for development/testing.
-Release signing and Google Play uploads remain manual, using the existing production signing
-setup. This pipeline has no deployment step and needs no production keystore or Play credentials.
+The pipeline accepts SDK licenses during setup. Gradle provisions the required daemon JDK;
+application bytecode still targets Java 17. Keep SDK packages, tool versions, checksums and
+image digests aligned when changing the build environment.
 
-Cloud execution is confirmed only after the first successful Bitbucket run. Local YAML/schema
-and shell syntax checks cannot validate Bitbucket quotas, network access, SDK downloads, or
-the complete Linux build.
+### Reports and artifacts
+
+- JUnit XML: `core/build/test-results/test/` and each app's
+  `build/test-results/testDebugUnitTest/`, captured on success or failure.
+- HTML/lint/build reports: root and module `build/reports/`, captured on success or failure.
+- Debug/test APKs: each app's `build/outputs/apk/`, captured after successful verification.
+
+Test APKs use the container's debug signing key. Use the phone and watch from the same run;
+they are not production-signed updates. No production keystore, password or Play credentials
+are required by this pipeline.
+
+## When Bitbucket becomes available
+
+1. Keep the existing YAML when opening Bitbucket's pipeline setup screen.
+2. Open **Pipelines → Run pipeline**, select the intended branch and custom `verify` pipeline.
+3. Confirm the displayed commit and run it. Review the log, test results, skips and artifacts.
+4. Record that result against that commit. A later code change needs relevant verification
+   again; an earlier green run does not cover it.
+
+Availability and Linux execution must be checked at that time. Static YAML review and local
+Windows builds do not verify Bitbucket billing, quotas, network downloads or the runner image.
 
 ## References
 
-- [Bitbucket custom manual pipelines](https://support.atlassian.com/bitbucket-cloud/docs/pipeline-start-conditions/)
-- [Bitbucket artifact configuration](https://support.atlassian.com/bitbucket-cloud/docs/use-bitbucket-artifacts-in-step/)
+- [Manual Git workflow](GIT_WORKFLOW.md)
+- [Testing and release validation](TESTING.md)
+- [Bitbucket manual/custom pipelines](https://support.atlassian.com/bitbucket-cloud/docs/pipeline-start-conditions/)
+- [Bitbucket artifacts](https://support.atlassian.com/bitbucket-cloud/docs/use-bitbucket-artifacts-in-step/)
 - [Bitbucket test reporting](https://support.atlassian.com/bitbucket-cloud/docs/test-reporting-in-pipelines/)
-- [Official Temurin build images](https://github.com/adoptium/containers)
-- [Android command-line tools and published checksums](https://developer.android.com/studio)
-- [Google SDK repository package metadata](https://dl.google.com/android/repository/repository2-3.xml)
-- [Gradle build JVM memory](https://docs.gradle.org/current/userguide/config_gradle.html#sec:configuring_jvm_memory)
-- [Kotlin daemon JVM settings](https://kotlinlang.org/docs/gradle-compilation-and-caches.html#setting-kotlin-daemon-s-jvm-arguments)
-- [Bitbucket step resources](https://support.atlassian.com/bitbucket-cloud/docs/step-options/#Size)

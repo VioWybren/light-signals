@@ -5,8 +5,18 @@ import nodomain.greensnowapps.lightsignals.core.signal.SignalColorPalette
 import nodomain.greensnowapps.lightsignals.core.sync.ControlStateWire
 import nodomain.greensnowapps.lightsignals.DEFAULT_COLOR_PROGRESS
 
+/**
+ * Stable legacy DataItem path shared by the phone decoder and watch publisher.
+ */
 internal const val CONTROL_STATE_PATH = ControlStateWire.PATH
 
+/**
+ * Decodes a legacy watch DataMap with safe defaults for absent or invalid fields.
+ *
+ * @param data Legacy watch DataMap containing typed control fields; absent or invalid values use
+ *     safe defaults.
+ * @return The phone control snapshot represented by the payload.
+ */
 internal fun decodeControlState(data: DataMap): PhoneControlState = PhoneControlState(
     blinkEnabled = data.getBoolean(ControlStateWire.BLINK_ENABLED, false),
     sosEnabled = data.getBoolean(ControlStateWire.SOS_ENABLED, false),

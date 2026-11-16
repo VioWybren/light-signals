@@ -7,6 +7,9 @@ import nodomain.greensnowapps.lightsignals.testing.DeviceTestSupport.context
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 
+/**
+ * Asserts that the target APK declares no CAMERA permission.
+ */
 @Suppress("DEPRECATION")
 internal fun assertCameraPermissionAbsent() {
     val permissions = context.packageManager

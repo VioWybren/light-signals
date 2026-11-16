@@ -24,6 +24,22 @@ import androidx.compose.ui.unit.sp
 import nodomain.greensnowapps.lightsignals.EMPTY_STRING
 import nodomain.greensnowapps.lightsignals.R
 
+/**
+ * Displays a circular phone colour control, including selection, Blink/SOS phases and torch
+ * masking.
+ *
+ * Hoists colour selection through onClick; the caller owns all signal state.
+ *
+ * @param sosOn Whether SOS mode is active.
+ * @param flashOn Whether phone torch output is selected.
+ * @param color Screen colour rendered by this control during a lit phase.
+ * @param isActive Whether this colour control is selected.
+ * @param blinkOn Whether Blink mode is active.
+ * @param blinkActive Current lit phase used to render timed screen signals.
+ * @param labelRes String resource describing the colour control for accessibility.
+ * @param onClick Hoisted callback invoked when the user selects the control.
+ * @param size Diameter of the circular colour control.
+ */
 @Composable
 fun PhoneColorButton(
     sosOn: Boolean,

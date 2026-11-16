@@ -10,6 +10,17 @@ import androidx.wear.compose.material3.AlertDialogDefaults.DismissIcon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 
+/**
+ * Displays a watch confirmation dialog from visible and caller-supplied text.
+ *
+ * Hoists confirmation and dismissal; the caller owns whether the dialog remains visible.
+ *
+ * @param visible Whether the dialog should be rendered.
+ * @param title Heading shown by the dialog.
+ * @param message Body text displayed in the dialog.
+ * @param onConfirm Hoisted callback invoked by confirmation.
+ * @param onDismiss Hoisted callback invoked when the dialog is dismissed.
+ */
 @Composable
 fun WearUniversalDialog(
     visible: Boolean,

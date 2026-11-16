@@ -18,6 +18,18 @@ import androidx.compose.ui.unit.dp
 import nodomain.greensnowapps.lightsignals.COLOR_CHECKED_BUTTON
 import nodomain.greensnowapps.lightsignals.COLOR_UNCHECKED_BUTTON
 
+/**
+ * Displays a phone icon toggle using the supplied checked state and hoists changes through
+ * onCheckedChange.
+ *
+ * @param toggleBtnWidth Width of the toggle button.
+ * @param toggleBtnHeight Height of the toggle button.
+ * @param checkedBtn Whether the toggle currently appears selected.
+ * @param onCheckedChange Hoisted callback receiving the requested checked state after a toggle.
+ * @param icon Vector icon displayed inside the toggle.
+ * @param contentDescriptionRes String resource used for the icon's accessibility description.
+ * @param modifier Modifier applied to the icon inside the toggle.
+ */
 @Composable
 fun LSToggleButton(
     toggleBtnWidth: Dp,

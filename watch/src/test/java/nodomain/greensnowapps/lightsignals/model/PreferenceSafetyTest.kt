@@ -9,7 +9,13 @@ import nodomain.greensnowapps.lightsignals.testing.FakePreferencesDataStore
 import org.junit.Assert.*
 import org.junit.Test
 
+/**
+ * Verifies preference IO recovery and propagation of cancellation or non-IO failures.
+ */
 class PreferenceSafetyTest {
+    /**
+     * Verifies that programming errors during read are not converted to defaults.
+     */
     @Test fun programmingErrorsDuringReadAreNotConvertedToDefaults() = runTest {
         val store = FakePreferencesDataStore()
         val failure = IllegalStateException("broken reader")
@@ -24,6 +30,9 @@ class PreferenceSafetyTest {
         assertTrue(reported.isEmpty())
     }
 
+    /**
+     * Verifies that cancellation during read is not converted to defaults.
+     */
     @Test fun cancellationDuringReadIsNotConvertedToDefaults() = runTest {
         val store = FakePreferencesDataStore()
         val cancellation = CancellationException("session stopped")
@@ -36,6 +45,9 @@ class PreferenceSafetyTest {
         }
     }
 
+    /**
+     * Verifies that programming errors during write are not swallowed.
+     */
     @Test fun programmingErrorsDuringWriteAreNotSwallowed() = runTest {
         val store = FakePreferencesDataStore()
         val failure = IllegalStateException("broken writer")
@@ -49,6 +61,9 @@ class PreferenceSafetyTest {
         assertTrue(store.snapshot.asMap().isEmpty())
     }
 
+    /**
+     * Verifies that cancellation during write is not swallowed.
+     */
     @Test fun cancellationDuringWriteIsNotSwallowed() = runTest {
         val store = FakePreferencesDataStore()
         val cancellation = CancellationException("write cancelled")

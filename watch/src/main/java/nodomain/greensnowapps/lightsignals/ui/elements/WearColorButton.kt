@@ -22,6 +22,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nodomain.greensnowapps.lightsignals.R
 
+/**
+ * Displays a watch colour control from selection, output and Blink/SOS phase state.
+ *
+ * Hoists selection through onClick and exposes the supplied accessibility label.
+ *
+ * @param sosOn Whether SOS mode is active.
+ * @param flashOn Whether phone torch output is selected.
+ * @param color Screen colour rendered by this control during a lit phase.
+ * @param isActive Whether this colour control is selected.
+ * @param blinkOn Whether Blink mode is active.
+ * @param blinkActive Current lit phase used to render timed screen signals.
+ * @param label Accessibility label for the colour control.
+ * @param onClick Hoisted callback invoked when the user selects the control.
+ */
 @Composable
 fun WearColorButton(
     sosOn: Boolean,

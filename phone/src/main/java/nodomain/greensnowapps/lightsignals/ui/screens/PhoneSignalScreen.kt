@@ -20,6 +20,16 @@ import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 
 
+/**
+ * Displays the selected phone screen signal, using Blink/SOS phases and a dark screen for torch
+ * output.
+ *
+ * Collects signal state with the lifecycle; the host owns page navigation.
+ *
+ * @param viewModel ViewModel supplying observable signal state and handling control events.
+ * @param onBack Host-provided back-navigation callback; this screen currently does not invoke
+ *     it.
+ */
 @Composable
 fun PhoneSignalScreen(
     viewModel: PhoneMainViewModel,

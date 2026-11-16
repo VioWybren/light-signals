@@ -43,6 +43,10 @@ import kotlinx.coroutines.launch
 import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 
+/**
+ * Hosts the phone controls/signal pager and its navigation, lifecycle-aware state and snackbar
+ * feedback.
+ */
 @Composable
 fun PhoneScreenHost() {
     val mainVm: PhoneMainViewModel = hiltViewModel()

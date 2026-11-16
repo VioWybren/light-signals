@@ -9,6 +9,18 @@ import androidx.compose.ui.unit.Dp
 import nodomain.greensnowapps.lightsignals.R
 import nodomain.greensnowapps.lightsignals.ui.viewmodels.PhoneMainViewModel
 
+/**
+ * Displays the phone Blink toggle and forwards taps to the main ViewModel using the current
+ * selection.
+ *
+ * @param toggleBtnWidth Width of the toggle button.
+ * @param toggleBtnHeight Height of the toggle button.
+ * @param checkedBtn Whether the toggle currently appears selected.
+ * @param sosOn Current SOS selection passed to the tap helper; repository events enforce mutual
+ *     exclusion.
+ * @param viewModel ViewModel supplying observable signal state and handling control events.
+ * @param iconSize Size of the icon inside the control.
+ */
 @Composable
 fun PhoneBlinkButton(
     toggleBtnWidth: Dp,
