@@ -4,8 +4,12 @@ The phone, watch and shared core use one repository. Run commands from its root 
 one line at a time. Android Studio's branch, commit, push and test actions are equally suitable.
 If a command fails, inspect the result before continuing.
 
-**Bitbucket CI is currently unavailable.** Use local verification and record the tested commit,
-commands and results in the pull request; mark CI as unavailable. See [CI.md](CI.md).
+Follow [MIGRATION_TO_GITHUB.md](MIGRATION_TO_GITHUB.md) once to copy the repository and
+make `origin` point to GitHub. The daily commands below assume that remote change is complete.
+Until then, `origin` still means Bitbucket; do not confuse the two destinations.
+
+Quick JVM/lint checks run on GitHub pull requests. Full APK/test builds and optimized release
+checks are manual; see [CI.md](CI.md). The first GitHub run is pending until migration setup.
 
 ## Branches and checkpoints
 
@@ -31,7 +35,7 @@ hotfix from master → master → back into develop
 - **Merge** when the task is complete, reviewed and appropriately verified.
 - **Tag** the exact approved release-build commit. A tag or push does not publish the app.
 
-Use Bitbucket pull requests with **Merge commit** as the normal merge method. Keep `develop`
+Use GitHub pull requests with **Merge commit** as the normal merge method. Keep `develop`
 and `master` open. Do not squash release merges between those long-lived branches.
 
 ## 1. Start a task
@@ -111,10 +115,11 @@ git push --set-upstream origin chore/update-docs
 git rev-parse HEAD
 ```
 
-Later pushes on that branch can use `git push`. Create a Bitbucket pull request from the task
+Later pushes on that branch can use `git push`. Create a GitHub pull request from the task
 branch into `develop`. Describe what changed, why, how it was checked and any remaining gaps.
-Record local checks against the intended commit and note **CI unavailable** while billing
-migration blocks Pipelines. Do not treat a pipeline from an older commit as current verification.
+Record local checks against the intended commit and inspect its quick GitHub check. Start
+manual full/release verification when needed. If CI is unavailable, record that fact and the local
+results. An older commit's successful run does not verify new source.
 
 Push unfinished checkpoints only to the task branch and make their unfinished status clear in
 the pull request. After further source changes, repeat the relevant checks before merging.
@@ -122,7 +127,7 @@ the pull request. After further source changes, repeat the relevant checks befor
 ## 5. Merge and update develop
 
 Review the final diff and verification record, then merge the pull request using **Merge commit**.
-After Bitbucket reports the merge:
+After GitHub reports the merge:
 
 ```powershell
 git switch develop
@@ -142,7 +147,7 @@ git fetch origin --prune
 ```
 
 `-d` deletes the local branch only if Git considers it merged. Remote branch deletion is a
-separate Bitbucket action. Keep long-lived branches and release tags.
+separate GitHub action. Keep long-lived branches and release tags.
 
 ## Release workflow
 
@@ -168,8 +173,8 @@ git rev-parse HEAD
 ```
 
 Confirm that this is the source used for final validation. If a merge changes source, test the
-affected result before signing. When CI returns, also run `verify` on the approved commit;
-while unavailable, retain the local verification record.
+affected result before signing. Run the manual `release` mode from the approved commit when the workflow is enabled.
+While CI is unavailable, retain the local verification record.
 
 ### Sign, tag and publish manually
 

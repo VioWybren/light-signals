@@ -17,3 +17,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Generated phone release output and local signing material.
+/phone/release/
+*.jks
+*.keystore
+*.p12
+*.pfx
+keystore.properties

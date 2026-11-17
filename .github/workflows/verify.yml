@@ -1,0 +1,165 @@
+name: Verify Android
+
+on:
+  pull_request:
+    branches: [develop, master]
+  workflow_dispatch:
+    inputs:
+      checks:
+        description: Checks to run
+        required: true
+        default: quick
+        type: choice
+        options: [quick, full, release]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: JVM and lint / selected builds
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CHECKS: ${{ github.event_name == 'pull_request' && 'quick' || inputs.checks }}
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Java 21
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Validate wrapper and cache Gradle
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5.0.0
+        with:
+          cache-read-only: ${{ github.event_name == 'pull_request' || (github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop') }}
+          gradle-home-cache-includes: |
+            caches
+            notifications
+            jdks
+          dependency-graph: disabled
+          build-scan-publish: false
+
+      - name: Ensure Android SDK packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk_manager="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$sdk_manager"
+          set +o pipefail
+          yes | "$sdk_manager" --licenses > /dev/null
+          set -o pipefail
+          "$sdk_manager" "platform-tools" "platforms;android-37.0" "build-tools;37.0.0"
+
+      - name: Run selected checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          tasks=(:core:test :phone:testDebugUnitTest :watch:testDebugUnitTest)
+          case "$CHECKS" in
+            quick)
+              tasks+=(:phone:lintDebug :watch:lintDebug)
+              ;;
+            full)
+              tasks+=(:phone:lintDebug :watch:lintDebug)
+              tasks+=(:phone:assembleDebug :watch:assembleDebug)
+              tasks+=(:phone:assembleUitest :phone:assembleUitestAndroidTest)
+              tasks+=(:watch:assembleUitest :watch:assembleUitestAndroidTest)
+              ;;
+            release)
+              tasks+=(:phone:lintRelease :watch:lintRelease)
+              tasks+=(:phone:bundleRelease :watch:bundleRelease)
+              tasks+=(:phone:assembleReleasecheck :watch:assembleReleasecheck)
+              ;;
+            *)
+              echo "Unknown check selection: $CHECKS" >&2
+              exit 2
+              ;;
+          esac
+          bash ./gradlew --console=plain --stacktrace --build-cache \
+            --max-workers=1 --no-parallel --continue \
+            "-Dorg.gradle.jvmargs=-Xmx4096m -Dfile.encoding=UTF-8" \
+            "-Pkotlin.daemon.jvmargs=-Xmx1536m" "${tasks[@]}"
+
+      - name: Summarize test and lint reports
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          import xml.etree.ElementTree as ET
+
+          lines = [f"## Verification: {os.environ['CHECKS']}", "",
+                   "See the job result and Gradle log for overall build success or failure.", "",
+                   "| Module | Tests | Failures | Errors | Skipped |",
+                   "| --- | ---: | ---: | ---: | ---: |"]
+          for module, task in [('core', 'test'), ('phone', 'testDebugUnitTest'),
+                               ('watch', 'testDebugUnitTest')]:
+              reports = list(Path(module, 'build/test-results', task).glob('TEST-*.xml'))
+              if not reports:
+                  lines.append(f"| {module} | No report | - | - | - |")
+                  continue
+              counts = dict.fromkeys(['tests', 'failures', 'errors', 'skipped'], 0)
+              for report in reports:
+                  suite = ET.parse(report).getroot()
+                  for key in counts:
+                      counts[key] += int(suite.get(key, '0'))
+              lines.append('| ' + module + ' | ' + ' | '.join(map(str, counts.values())) + ' |')
+          variant = 'release' if os.environ['CHECKS'] == 'release' else 'debug'
+          lines += ['', '| Lint | Errors | Warnings |', '| --- | ---: | ---: |']
+          for module in ['phone', 'watch']:
+              report = Path(module, f'build/reports/lint-results-{variant}.xml')
+              if not report.exists():
+                  lines.append(f'| {module} / {variant} | No report | - |')
+                  continue
+              issues = ET.parse(report).getroot().findall('issue')
+              errors = sum(i.get('severity') in ['Error', 'Fatal'] for i in issues)
+              warnings = sum(i.get('severity') == 'Warning' for i in issues)
+              lines.append(f'| {module} / {variant} | {errors} | {warnings} |')
+          lines += ['', 'Device execution, production signing and publishing remain manual.']
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
+              summary.write('\n'.join(lines) + '\n')
+          PY
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: reports-${{ env.CHECKS }}
+          retention-days: 14
+          if-no-files-found: ignore
+          path: |
+            core/build/test-results/test/TEST-*.xml
+            phone/build/test-results/testDebugUnitTest/TEST-*.xml
+            watch/build/test-results/testDebugUnitTest/TEST-*.xml
+            core/build/reports/
+            phone/build/reports/
+            watch/build/reports/
+            build/reports/
+
+      - name: Upload manually requested build artifacts
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.checks != 'quick'
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: android-artifacts-${{ env.CHECKS }}
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+          path: |
+            phone/build/outputs/apk/
+            watch/build/outputs/apk/
+            phone/build/outputs/bundle/release/
+            watch/build/outputs/bundle/release/
+            phone/build/outputs/mapping/
+            watch/build/outputs/mapping/

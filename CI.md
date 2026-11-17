@@ -1,96 +1,92 @@
-# CI and local verification
+# GitHub Actions verification
 
-## Current status
+## Migration status
 
-**Bitbucket Pipelines is unavailable for this workspace during the reported billing migration.**
-The owner has contacted Atlassian support. No successful cloud verification is recorded for the
-current release candidate. Git hosting and pull requests remain the manual collaboration process.
+[.github/workflows/verify.yml](.github/workflows/verify.yml) is the new verification workflow.
+The repository migration and first GitHub-hosted run must be completed before cloud CI is
+considered verified. Follow [MIGRATION_TO_GITHUB.md](MIGRATION_TO_GITHUB.md).
 
-Continue with local checks, record their results in the pull request, and identify CI as
-**not run — unavailable**. Local success is not a Bitbucket CI status. GitHub migration is
-deferred; this repository has no configured GitHub Actions workflow or automated deployment.
+Bitbucket Pipelines remains unavailable during the reported billing migration. Its YAML is
+retained as a fallback; GitHub does not execute it. Git history is copied separately from CI
+configuration. Signing and Play publishing remain manual.
 
-## Local process while CI is unavailable
+## Checks and triggers
 
-1. Work on a task branch and run the smallest relevant checks from [TESTING.md](TESTING.md).
-2. Before merging code changes, check the affected modules and any shared contracts. Review
-   the complete staged diff. Text-only documentation changes do not need APK/device rebuilds.
-3. Record the tested commit (`git rev-parse HEAD`), commands, pass/fail/skip results and device
-   details in the pull request. Include local changes in a commit before claiming that a
-   particular commit was tested.
-4. Review and merge manually. Check the integrated result where a merge or conflict resolution
-   changes the tested source.
-5. Use optimized artifacts and the release device checks before publishing. Signing and Play
-   uploads remain manual.
+| Mode | Trigger | Work |
+| --- | --- | --- |
+| `quick` | Pull requests targeting `develop` or `master`; also manual | Core and app JVM tests, phone/watch debug lint |
+| `full` | Manual | Quick checks plus both debug apps, isolated `uitest` apps and instrumentation APKs |
+| `release` | Manual | JVM tests, release lint, both release bundles and optimized `releasecheck` APKs |
 
-For a combined local equivalent of the retained CI tasks:
+There is no automatic full/release build on push or tag and no deployment job. A newer run
+for the same PR/ref cancels an older run in that group. Avoid starting duplicate long builds.
+Quick checks can still take time on a cold cache; no fixed runtime is promised.
 
-```powershell
-.\gradlew.bat :core:test :phone:testDebugUnitTest :watch:testDebugUnitTest :phone:lintDebug :watch:lintDebug :phone:assembleDebug :watch:assembleDebug :phone:assembleUitest :phone:assembleUitestAndroidTest :watch:assembleUitest :watch:assembleUitestAndroidTest --continue
-```
+The workflow must exist on GitHub's default branch, `master`, before the **Run workflow**
+button can start it manually. Select the intended branch and mode in **Actions → Verify Android**.
+Confirm the run's commit before treating it as verification for a release.
 
-This is a broad checkpoint, not the command to run after every small edit. Keep the local daemon
-and incremental outputs. Release lint, R8 builds and device execution are separate steps in
-[TESTING.md](TESTING.md).
+## Build environment
 
-## Retained Bitbucket pipeline
+- GitHub-hosted `ubuntu-24.04`, selected explicitly rather than the moving `ubuntu-latest` label.
+- Temurin JDK 21 for startup; checked-in criteria select the JetBrains JDK 21 Gradle daemon.
+- The Gradle wrapper, currently 9.9.1; Java/Kotlin bytecode remains target 17.
+- The runner's Android SDK, with `platforms;android-37.0`, `build-tools;37.0.0` and Platform-Tools
+  ensured before the build. No custom SDK ZIP bootstrap is needed.
+- Gradle build cache, wrapper validation and cached Gradle/JDK downloads.
+- One Gradle worker, no task parallelism, 4 GiB Gradle heap and 1.5 GiB Kotlin daemon heap.
 
-[bitbucket-pipelines.yml](bitbucket-pipelines.yml) defines one custom pipeline, `verify`.
-There are no automatic push, pull-request or tag triggers. It can be started explicitly and
-could be scheduled separately in Bitbucket.
+Actions are pinned to reviewed commit SHAs. Gradle setup uses the open-source v5 action.
+PR runs read caches; trusted manual runs on `master` or `develop` can update them. The workflow
+does not publish Build Scans or submit dependency snapshots.
 
-It checks:
+## Results and artifacts
 
-- `:core:test`, `:phone:testDebugUnitTest` and `:watch:testDebugUnitTest`.
-- Debug lint for both apps.
-- Both debug APKs and both isolated `uitest` apps/instrumentation APKs.
+The job summary shows per-module JVM test totals, failures, errors and skips, plus lint error
+and warning counts. Missing reports are shown as missing, not passing. The overall job status
+and Gradle log determine whether verification succeeded; `--continue` does not hide failures.
 
-`--continue` collects independent failures; a failed task still fails the step. Instrumentation
-APKs are built, but the pipeline does not start an emulator or run paired-device tests. It also
-does not build release bundles, verify production signing or publish to Play.
+- XML and HTML reports are uploaded even after failure when files exist; retained for 14 days.
+- Successful manual `full` runs upload debug/test APKs.
+- Successful manual `release` runs upload AABs, optimized test APKs and mapping files.
+- Build artifacts are retained for three days to limit storage. Save the approved production
+  artifacts and matching mappings separately for long-term release/crash investigation.
 
-### Build environment
+Instrumentation APKs are built but not executed on devices. A physical phone/watch and the
+checks in [TESTING.md](TESTING.md) are still needed. Cloud APKs use the runner's debug key;
+use both companion apps from one run. A `releasecheck` app is isolated under `.uitest`.
+Plain release bundles have no production signing configuration and are not ready for Play upload.
 
-The YAML currently specifies:
+The workflow uses a read-only repository token. No keystore, signing password or Play service
+account is needed in GitHub secrets. Keep production signing files and `keystore.properties`
+outside Git; ignore rules do not remove files already committed.
 
-- Temurin JDK 21 on Ubuntu 24.04, pinned by image digest.
-- The checked-in Gradle 9.8.2 wrapper and JetBrains JDK 21 daemon criteria.
-- Android command-line tools build `15859902`, with a pinned SHA-256 check.
-- SDK packages `platform-tools`, `platforms;android-37.0` and `build-tools;37.0.0`.
-- A `2x` step, 60-minute timeout, one Gradle worker and no task parallelism.
-- A 4 GiB Gradle/D8 heap and a separate 1.5 GiB Kotlin daemon heap.
-- Caches for Gradle dependencies, wrapper distributions, JDK downloads and the Android SDK.
+## Cost and day-to-day use
 
-The pipeline accepts SDK licenses during setup. Gradle provisions the required daemon JDK;
-application bytecode still targets Java 17. Keep SDK packages, tool versions, checksums and
-image digests aligned when changing the build environment.
+GitHub private repositories also have plan-dependent Actions and storage allowances. Review the
+account's usage/budget settings before enabling paid usage. The workflow needs no paid action
+service; hosted runner usage is still governed by GitHub's billing rules.
 
-### Reports and artifacts
+Use quick PR checks for ordinary work. Start `full` for APK/test-wiring changes, and `release`
+for an approved release candidate or R8/dependency change. Keep local checks focused and reuse
+passing results for unchanged source. See [TESTING.md](TESTING.md) for commands and coverage.
 
-- JUnit XML: `core/build/test-results/test/` and each app's
-  `build/test-results/testDebugUnitTest/`, captured on success or failure.
-- HTML/lint/build reports: root and module `build/reports/`, captured on success or failure.
-- Debug/test APKs: each app's `build/outputs/apk/`, captured after successful verification.
+If cloud CI is unavailable, run the relevant local checks, record the tested commit and results
+in the PR, and label CI as not run. A local result is not a GitHub status check.
 
-Test APKs use the container's debug signing key. Use the phone and watch from the same run;
-they are not production-signed updates. No production keystore, password or Play credentials
-are required by this pipeline.
+## Initial enablement
 
-## When Bitbucket becomes available
-
-1. Keep the existing YAML when opening Bitbucket's pipeline setup screen.
-2. Open **Pipelines → Run pipeline**, select the intended branch and custom `verify` pipeline.
-3. Confirm the displayed commit and run it. Review the log, test results, skips and artifacts.
-4. Record that result against that commit. A later code change needs relevant verification
-   again; an earlier green run does not cover it.
-
-Availability and Linux execution must be checked at that time. Static YAML review and local
-Windows builds do not verify Bitbucket billing, quotas, network downloads or the runner image.
+1. Finish the Git migration and select `master` as the default branch.
+2. Open the migration PR into `develop`; check its quick run when Actions is enabled.
+3. Merge reviewed changes into `develop`, then into `master`, keeping both branches open.
+4. Start a manual `full` run from the intended branch. Inspect its summary, logs and artifacts.
+5. Record the exact passing commit. Add required checks or branch rules where the account's
+   plan supports them; choose the checks produced by this workflow.
 
 ## References
 
+- [GitHub workflow triggers](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)
+- [Gradle action setup and caching](https://github.com/gradle/actions/blob/v5/docs/setup-gradle.md)
+- [Ubuntu runner software](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md)
+- [GitHub Actions billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
 - [Manual Git workflow](GIT_WORKFLOW.md)
-- [Testing and release validation](TESTING.md)
-- [Bitbucket manual/custom pipelines](https://support.atlassian.com/bitbucket-cloud/docs/pipeline-start-conditions/)
-- [Bitbucket artifacts](https://support.atlassian.com/bitbucket-cloud/docs/use-bitbucket-artifacts-in-step/)
-- [Bitbucket test reporting](https://support.atlassian.com/bitbucket-cloud/docs/test-reporting-in-pipelines/)

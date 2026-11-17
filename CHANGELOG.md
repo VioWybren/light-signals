@@ -18,6 +18,8 @@ Notable changes since the production 3.03 version are consolidated below. v5.0.0
 - A manual Bitbucket verification pipeline and guides for testing, versioning, architecture
   and the Git workflow.
 - KDoc for production and test declarations, including lifecycle and resource ownership.
+- GitHub Actions verification with quick PR checks, manual full/release modes, cached builds
+  and downloadable test/lint reports; a guide for preserving branches, tags and history during migration.
 
 ### Changed
 
@@ -40,6 +42,7 @@ Notable changes since the production 3.03 version are consolidated below. v5.0.0
 - Use localized accessibility labels and Wear Material 3 theming where appropriate.
 - Replace the Material Icons library dependencies with the required XML vectors and retain
   their license attribution.
+- Upgrade the Gradle wrapper to 9.9.1.
 - Enable R8 code/resource optimization for `release` and isolated `releasecheck` builds.
   Preserve reflected Horologist Protobuf fields through targeted keep rules.
 
@@ -82,9 +85,10 @@ Notable changes since the production 3.03 version are consolidated below. v5.0.0
 
 ### Release status
 
-- Local checks and paired-device testing were recorded for the preceding v4.0.0 candidate.
-  They are not a new signed v5.0.0 release or proof of an installed-app upgrade.
-- Final v5.0.0 artifact/signing checks and the real 3.03 upgrade remain unverified in the
-  retained test record. See [TESTING.md](TESTING.md).
-- Bitbucket CI is unavailable during the reported billing migration. GitHub migration and
-  automated deployment are not part of this release.
+- Local Gradle 9.9.1 verification and optimized paired checks passed for v5.0.0. Earlier
+  Android device/emulator results remain attributed to their tested candidates; see [TESTING.md](TESTING.md).
+- Production signing acceptance, Play delivery, the real 3.03 upgrade and mixed-version pairing
+  remain separate checks. v5.0.0 remains Unreleased.
+- GitHub migration is being prepared because Bitbucket CI is unavailable. Repository transfer
+  and the first GitHub Actions run must be verified before the migration is considered complete.
+- Signing and publishing remain manual; no automated Play deployment is configured.
