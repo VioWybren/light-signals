@@ -171,33 +171,36 @@ production signing or an in-place Play upgrade.
 
 ## Recorded results
 
-Last documentation review: **16 November 2026**. The following are retained results, not new
-tests run during this documentation edit. The latest runtime/release checks used the preceding
-permission-free **v4.0.0 candidate**, before the v5.0.0 version-only change.
+Last documentation review: **17 November 2026**. These are retained results, not new tests
+run while preparing CI. Local Gradle 9.9.1 verification and the short optimized paired checks
+passed for **v5.0.0** on 16 November. Earlier automated Android and compatibility runs remain
+attributed to the preceding permission-free candidates.
 
 | Check | Recorded result | Scope |
 | --- | --- | --- |
-| JVM suites, 14 November | 147 passed: core 21, phone 64, watch 62; no failures/errors/skips | Normal local Gradle run; these counts also match current test declarations |
+| JVM suites, v5.0.0 / Gradle 9.9.1 | 147 passed: core 21, phone 64, watch 62; no failures/errors/skips | Normal local Gradle run; these counts also match current test declarations |
 | Debug and release lint | Zero errors; phone 29 warnings, watch 37 warnings | Candidate reports; not warning-free |
 | Phone SM-A536E, API 36 | Platform, hardware and stopped/locked-phone regressions passed | Filtered runs with manual unlocking; not one unattended suite |
 | Watch SM-L310, API 36 | Five lifecycle cases passed | Physical watch |
 | API 24 emulator | 11 applicable phone cases passed; optimized startup/tile check passed | Minimum-API software behavior, no physical LED proof |
 | API 33 / 34 emulators | 13 selected cases passed on each | Earlier permission-free checkpoint; not a fresh final-candidate run |
 | SM-A520, Android 8.0.0 / API 26 | Manual steady/Blink/SOS/stop and unplugged screen-off checks passed with Battery Saver enabled | Earlier permission-free debug APK, confirmed by user; no ADB automation |
-| Optimized paired apps, 14 November | Locked launch/control, both explicit reconnect paths, SOS and stop passed | User report on refreshed matching test APKs |
+| Optimized paired apps, v5.0.0 | State transfer, mode replacement, locked-phone reconnect paths, SOS and stop passed | User report after the Gradle 9.9.1 build; matching `releasecheck` apps |
 | Unplugged screen-off LED | Blink and SOS each passed at least three minutes | User report; usual Battery Saver setting, exact on/off value not separately recorded |
 | Release packaging | Required Protobuf fields preserved; optimized APK ZIP and inspected 64-bit ELF alignment passed 16 KB checks | Static inspection, not runtime proof on a 16 KB-page device |
-| v5.0.0 source metadata | Shared `v5.0.0`, phone 375001, watch 375000 checked | Does not verify newly signed artifacts or Play delivery |
+| v5.0.0 test artifact metadata | Shared `v5.0.0`, phone 375001, watch 375000 checked in generated `releasecheck` metadata | Isolated, debug-signed artifacts; production signing acceptance and Play delivery remain separate |
 
 Earlier permission checks are detailed in [PERMISSION_EXPERIMENT.md](PERMISSION_EXPERIMENT.md).
 The validation session retained Gradle XML, lint reports, artifact hashes and manual results
 outside the repository. Keep future release evidence with the tested commit and artifact hashes.
-Bitbucket has no successful CI result recorded for the current candidate; see [CI.md](CI.md).
+The GitHub workflow is prepared, but its first hosted run remains pending migration.
+See [CI.md](CI.md) for quick PR checks and manual full/release modes.
 
 ## Remaining coverage
 
 - Final signed v5.0.0 artifacts: package, version/code, signature, optimized behavior and exact
-  source-to-artifact association. The retained v5 record stops at source metadata checks.
+  source-to-artifact association. Local test artifacts are verified; production signing acceptance and the Play-installed update
+  are not established by those results.
 - A real 3.03-to-v5.0.0 update preserving production app data. Keep the old app installed and
   update through Play internal testing or an APK with an accepted app-signing identity.
   An AAB is for Play upload; an APK is for local installation. An upload key may differ from
@@ -207,7 +210,7 @@ Bitbucket has no successful CI result recorded for the current candidate; see [C
 - Real DataStore migration/corruption, process death, OS service recreation and force-stop behavior.
 - Extended Doze/manufacturer restrictions, long-duration battery/audio/memory testing and
   runtime verification on a 16 KB-page-size device.
-- Restored cloud CI coverage when the Bitbucket billing issue is resolved or migration is completed.
+- The first GitHub-hosted quick/full verification and confirmation that migrated branch/tag refs match.
 
 Do not convert an assumed or planned check into a passed result. Publication and upgrade
 approval remain separate from the local checks above.
