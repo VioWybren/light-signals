@@ -49,7 +49,7 @@ The checked-in toolchain is:
 
 | Tool | Version |
 | --- | --- |
-| Gradle wrapper | 9.8.2 |
+| Gradle wrapper | 9.9.1 |
 | Android Gradle Plugin | 9.5.1 |
 | Kotlin | 2.4.21 |
 | Gradle daemon JDK | JetBrains JDK 21, selected by daemon JVM criteria |
@@ -131,11 +131,13 @@ Develop on short branches from `develop`, review through a pull request, and mer
 release into `master`. Android Studio can handle editing, testing, commits and pushes.
 See [GIT_WORKFLOW.md](GIT_WORKFLOW.md).
 
-**Bitbucket Pipelines is currently unavailable because of the workspace's reported billing
-migration.** Use local checks and record the tested commit and results. The retained
-[bitbucket-pipelines.yml](bitbucket-pipelines.yml) defines a manual `verify` pipeline; it does
-not publish releases. GitHub migration is deferred, and no GitHub Actions workflow is configured.
-See [CI.md](CI.md).
+GitHub migration is prepared in [MIGRATION_TO_GITHUB.md](MIGRATION_TO_GITHUB.md). Keep
+`master` and `develop`, copy all intended branches/tags, and keep Bitbucket as a fallback until
+remote references and the first GitHub CI run are verified.
+
+[GitHub Actions](.github/workflows/verify.yml) runs JVM/lint checks on pull requests. Longer
+APK and optimized release builds are manual. Production signing and Play uploads remain manual;
+CI needs no signing keys. See [CI.md](CI.md) for modes, reports and migration status.
 
 ## Documentation
 

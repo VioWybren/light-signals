@@ -170,5 +170,4 @@ notification; denial leaves LED selection unchanged. The service uses `specialUs
 companion RPCs. `releasecheck` uses the isolated test app ID and debug signing; it does not prove
 production signing or a Play-installed upgrade.
 
-See [TESTING.md](TESTING.md) for validation, [CI.md](CI.md) for unavailable cloud CI and the
-local process, and [VERSIONING.md](VERSIONING.md) for independent uploads.
+See [TESTING.md](TESTING.md) for validation, [CI.md](CI.md) for GitHub verification and migration status, and [VERSIONING.md](VERSIONING.md) for independent uploads.
