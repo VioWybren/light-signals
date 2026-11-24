@@ -1,9 +1,8 @@
 # Changelog
 
-Notable changes since the production 3.03 version are consolidated below. v5.0.0 remains
-**Unreleased**; add a publication date only after it is released.
+Notable changes since production version 3.03 are consolidated below.
 
-## [v5.0.0] - Unreleased
+## [v5.0.0] - 2026-11-25
 
 ### Added
 
@@ -87,8 +86,11 @@ Notable changes since the production 3.03 version are consolidated below. v5.0.0
 
 - Local Gradle 9.9.1 verification and optimized paired checks passed for v5.0.0. Earlier
   Android device/emulator results remain attributed to their tested candidates; see [TESTING.md](TESTING.md).
-- Production signing acceptance, Play delivery, the real 3.03 upgrade and mixed-version pairing
-  remain separate checks. v5.0.0 remains Unreleased.
-- GitHub migration is being prepared because Bitbucket CI is unavailable. Repository transfer
-  and the first GitHub Actions run must be verified before the migration is considered complete.
+- Phone (`375001`) and watch (`375000`) were published on Google Play on 25 November 2026.
+  Play Console lists 16 November 2026 as the rollout start date.
+- Both published bundles record source commit `2e3cb30a365493397d02e35bc0dd66482af5950a`.
+- GitHub migration is complete. The manual `full` and `release` CI runs passed, as reported
+  by the maintainer. Bitbucket remains a backup.
+- A real 3.03-to-v5.0.0 upgrade and mixed-version pairing still need recorded results;
+  see [TESTING.md](TESTING.md#remaining-coverage).
 - Signing and publishing remain manual; no automated Play deployment is configured.
